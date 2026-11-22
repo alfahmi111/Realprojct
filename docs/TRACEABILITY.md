@@ -146,8 +146,8 @@
 | REQ-0139 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0140 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0141 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
-| REQ-0142 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0143 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0142 | §4.6 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0143 | §4.6 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0144 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0145 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0146 | §4.6 | BUILD | MVP | TODO |  |  |  |
@@ -304,13 +304,13 @@
 | REQ-0297 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
 | REQ-0298 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949؛ «المحتمل مغادرتهم» يعتمد على المؤشر P2 §12 L958 |
 | REQ-0299 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0300 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
+| REQ-0300 | §7.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0301 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964، L966 |
 | REQ-0302 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0303 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0304 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0305 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L941، L949 |
-| REQ-0306 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
+| REQ-0305 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L941، L949 |
+| REQ-0306 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0307 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
 | REQ-0308 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L959 |
 | REQ-0309 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
@@ -320,7 +320,7 @@
 | REQ-0313 | §7.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942؛ قراءات العدادات P2 §12 L968، ومهام الجرد غير التأسيسي P2 §12 L963 |
 | REQ-0314 | §7.5 | BUILD | MVP | TODO |  |  |  |
 | REQ-0315 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0316 | §7.5 | BUILD | MVP | TODO |  |  |  |
+| REQ-0316 | §7.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0317 | §7.5 | BUILD | MVP | TODO |  |  |  |
 | REQ-0318 | §7.5 | BUILD | MVP | TODO |  |  |  |
 | REQ-0319 | §7.5 | BUILD | MVP | TODO |  |  |  |
@@ -416,31 +416,31 @@
 | REQ-0409 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0410 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 (EXPECTED_VACANCY)؛ PROSPECT_MATCH وVIEWING_SLOT P2 §12 L965 |
 | REQ-0411 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
-| REQ-0412 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0413 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0414 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0415 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0416 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0417 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0418 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0419 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0420 | §9.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0421 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
-| REQ-0422 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
-| REQ-0423 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
-| REQ-0424 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
+| REQ-0412 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0413 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0414 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0415 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0416 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | NEEDS-PRO-REVIEW: الضيافة P3 ويُؤكَّد مع مستشار ضريبي |
+| REQ-0417 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0418 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | بيع العقار خارج نطاق MVP — لا منطق |
+| REQ-0419 | §9.1 | BUILD | MVP | DONE | app/Models/Owner.php (resident) | tests/Feature/Finance/FinanceTest.php | NEEDS-PRO-REVIEW: ضريبة الاستقطاع يُؤكَّد مع مستشار؛ الحقل محفوظ فقط |
+| REQ-0420 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0421 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
+| REQ-0422 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
+| REQ-0423 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
+| REQ-0424 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0425 | §9.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L967 — قرار Q5 |
 | REQ-0426 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0427 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0428 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0429 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0430 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0431 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0432 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0433 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0434 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0435 | §9.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0436 | §9.4 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
+| REQ-0427 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0428 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0429 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0430 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0431 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0432 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0433 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0434 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0435 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0436 | §9.4 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0437 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0438 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0439 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
@@ -452,7 +452,7 @@
 | REQ-0445 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0446 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
 | REQ-0447 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
-| REQ-0448 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
+| REQ-0448 | §9.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0449 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0450 | §9.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0451 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
@@ -469,8 +469,8 @@
 | REQ-0462 | §10.1 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L960 |
 | REQ-0463 | §10.1 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php | MIXED→MVP: §12 L939 |
 | REQ-0464 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0465 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
-| REQ-0466 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
+| REQ-0465 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
+| REQ-0466 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · البوابة الفعلية غير مختارة — BLOCKED للإنتاج |
 | REQ-0467 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0468 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
 | REQ-0469 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L938 |
@@ -630,23 +630,23 @@
 | REQ-0623 | §12.R | CONTEXT | CONTEXT | READ |  |  |  |
 | REQ-0624 | §12.R | CONTEXT | CONTEXT | READ |  |  |  |
 | REQ-0625 | §12.R | CONTEXT | CONTEXT | READ |  |  |  |
-| REQ-0626 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0627 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0628 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0629 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0630 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0631 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0632 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0633 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0634 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0635 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0636 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ تعدد الملاك ضمنها P2 §12 L959 |
-| REQ-0637 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0638 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ اللوحات P2 §12 L961، الملصقات P2 §12 L963، الضيافة P3 §12 L971 |
-| REQ-0639 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0640 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0641 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0642 | §13 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0626 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0627 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · مرجع أسعار المنافسين — سياق، لا أسعار مثبتة |
+| REQ-0628 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0629 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0630 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0631 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0632 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0633 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0634 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0635 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0636 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ تعدد الملاك ضمنها P2 §12 L959 |
+| REQ-0637 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0638 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ اللوحات P2 §12 L961، الملصقات P2 §12 L963، الضيافة P3 §12 L971 |
+| REQ-0639 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0640 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0641 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0642 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0643 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0644 | §14 | DECISION | DECISIONS | SEE-§14 | app/Integrations/ | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0645 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |

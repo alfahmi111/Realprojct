@@ -21,4 +21,9 @@ class BillingScheduleLine extends Model
     {
         return ['due_on' => 'date', 'period_start' => 'date', 'period_end' => 'date', 'amount_minor' => MoneyCast::class, 'archived_at' => 'datetime'];
     }
+
+    public function lease(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Lease::class);
+    }
 }

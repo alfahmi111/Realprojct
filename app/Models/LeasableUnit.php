@@ -26,6 +26,17 @@ class LeasableUnit extends Model
         return ['is_composite' => 'boolean', 'hospitality_license_expires_on' => 'date', 'archived_at' => 'datetime', 'last_registered_rent_minor' => MoneyCast::class];
     }
 
+    protected static function booted(): void
+    {
+        // Plan unit limit (REQ-0635…REQ-0637); composites do not count.
+        static::creating(function (self $u) {
+            if (! $u->is_composite && ($sid = app(\App\Tenancy\TenantContext::class)->subscriberId())) {
+                $s = app(\App\Tenancy\TenantContext::class)->run(null, fn () => \App\Models\Subscriber::find($sid));
+                \App\Plans\PlanEntitlements::assertCanAddUnit($s);
+            }
+        });
+    }
+
     public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class);
