@@ -49,18 +49,18 @@
 | REQ-0042 | §2.3 | CONTEXT | CONTEXT | READ |  |  |  |
 | REQ-0043 | §2.3 | CONTEXT | CONTEXT | READ |  |  |  |
 | REQ-0044 | §2.3 | CONTEXT | CONTEXT | READ |  |  |  |
-| REQ-0045 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0046 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0045 | §2.4 | BUILD | MVP | READ |  |  | رأس جدول؛ صفوفه متتبَّعة منفردة |
+| REQ-0046 | §2.4 | BUILD | MVP | READ |  |  | رأس جدول؛ صفوفه متتبَّعة منفردة |
 | REQ-0047 | §2.4 | BUILD | MVP | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
 | REQ-0048 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0049 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0050 | §2.4 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
-| REQ-0051 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0051 | §2.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0053 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 9.2 (REQ-0425) المصنّف P2 §12 L967 — قرار Q5: يُنفَّذ مع P2 |
 | REQ-0054 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 6.7 (P2) و§12 L964 — قرار Q8: يُنفَّذ مع P2 |
 | REQ-0055 | §2.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0056 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0056 | §2.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0057 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0058 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0059 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
@@ -68,11 +68,11 @@
 | REQ-0061 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0062 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0063 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
-| REQ-0064 | §3 | BUILD | MVP | TODO |  |  |  |
+| REQ-0064 | §3 | BUILD | MVP | DONE | app/BuildingQr/ | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0065 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0066 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0067 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0068 | §3.1 | BUILD | MVP | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
+| REQ-0068 | §3.1 | BUILD | MVP | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
 | REQ-0069 | §3.1 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0070 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0071 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -158,21 +158,21 @@
 | REQ-0151 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0152 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0153 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
-| REQ-0154 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0154 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
 | REQ-0155 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0156 | §4.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
-| REQ-0157 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0158 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0159 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0160 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0161 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0162 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0163 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0157 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0158 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0159 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0160 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0161 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0162 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
+| REQ-0163 | §4.6 | BUILD | MVP | BLOCKED |  |  | الكيان يُبنى مع ميزته في المرحلة 2 (§12.P2: الجرد/المطابقة/العدادات/الموازنة/الخزنة/المتأخرات) |
 | REQ-0164 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0165 | §4.7 | BUILD | MVP | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
 | REQ-0166 | §4.7 | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0167 | §4.7 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0168 | §4.7 | BUILD | MVP | IN-PROGRESS | app/Support/Database/Rls.php (archiveOnly) | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على الجداول المالية والعقود عند إنشائها |
+| REQ-0168 | §4.7 | BUILD | MVP | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | الآلية جاهزة؛ تُطبَّق على الجداول المالية والعقود عند إنشائها |
 | REQ-0169 | §4.7 | BUILD | MVP | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
 | REQ-0170 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
 | REQ-0171 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
@@ -240,7 +240,7 @@
 | REQ-0233 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0234 | §6.4 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
 | REQ-0235 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L943 |
-| REQ-0236 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
+| REQ-0236 | §6.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L942 |
 | REQ-0237 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · إرشاد فقط؛ لا ادعاء شهادة |
 | REQ-0238 | §6.5 | BUILD | P2 | TODO |  |  |  |
 | REQ-0239 | §6.5 | BUILD | P2 | TODO |  |  |  |
@@ -275,40 +275,40 @@
 | REQ-0268 | §6.7 | BUILD | P2 | TODO |  |  |  |
 | REQ-0269 | §6.7 | BUILD | P2 | TODO |  |  |  |
 | REQ-0270 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0271 | §7 | BUILD | MVP | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
-| REQ-0272 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948 |
-| REQ-0273 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948 |
-| REQ-0274 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948؛ الدفع عبر سداد P2 §12 L962 |
-| REQ-0275 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948 |
+| REQ-0271 | §7 | BUILD | MVP | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php, tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
+| REQ-0272 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948 |
+| REQ-0273 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948 |
+| REQ-0274 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948؛ الدفع عبر سداد P2 §12 L962 |
+| REQ-0275 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948 |
 | REQ-0276 | §7.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L974 |
 | REQ-0277 | §7.1 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
-| REQ-0278 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0278 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0279 | §7.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L973 |
-| REQ-0280 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0281 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0282 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0283 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0284 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0285 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0286 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0287 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0288 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0289 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
+| REQ-0280 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0281 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0282 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0283 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0284 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0285 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0286 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0287 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0288 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0289 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
 | REQ-0290 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
-| REQ-0291 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0292 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0291 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0292 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0293 | §7.2 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0294 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0295 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
-| REQ-0296 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0297 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0298 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949؛ «المحتمل مغادرتهم» يعتمد على المؤشر P2 §12 L958 |
+| REQ-0296 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0297 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
+| REQ-0298 | §7.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949؛ «المحتمل مغادرتهم» يعتمد على المؤشر P2 §12 L958 |
 | REQ-0299 | §7.2 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0300 | §7.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0301 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964، L966 |
 | REQ-0302 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0303 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
-| REQ-0304 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
+| REQ-0304 | §7.3 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
 | REQ-0305 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L941، L949 |
 | REQ-0306 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0307 | §7.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L949 |
@@ -317,14 +317,14 @@
 | REQ-0310 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0311 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964 — قرار Q4 |
 | REQ-0312 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
-| REQ-0313 | §7.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942؛ قراءات العدادات P2 §12 L968، ومهام الجرد غير التأسيسي P2 §12 L963 |
-| REQ-0314 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0315 | §7.5 | BUILD | MVP | TODO |  |  |  |
+| REQ-0313 | §7.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L942؛ قراءات العدادات P2 §12 L968، ومهام الجرد غير التأسيسي P2 §12 L963 |
+| REQ-0314 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
+| REQ-0315 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0316 | §7.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
-| REQ-0317 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0318 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0319 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0320 | §7.5 | BUILD | MVP | TODO |  |  |  |
+| REQ-0317 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
+| REQ-0318 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
+| REQ-0319 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
+| REQ-0320 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0321 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0322 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0323 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
@@ -391,7 +391,7 @@
 | REQ-0384 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0385 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0386 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L965؛ أ.8 D4 |
-| REQ-0387 | §8.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0387 | §8.2 | BUILD | MVP | DONE | app/Plans/PlanEntitlements.php | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0388 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 · NEEDS-PRO-REVIEW: رأي قانوني قبل التفعيل (8.3) |
 | REQ-0389 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 · NEEDS-PRO-REVIEW: رأي قانوني قبل التفعيل (8.3) |
 | REQ-0390 | §8.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
@@ -412,8 +412,8 @@
 | REQ-0405 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0406 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0407 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
-| REQ-0408 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0409 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0408 | §8.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0409 | §8.5 | BUILD | MVP | BLOCKED |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · «قائمة طويلة» غير محددة رقمياً — سؤال Q15 |
 | REQ-0410 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 (EXPECTED_VACANCY)؛ PROSPECT_MATCH وVIEWING_SLOT P2 §12 L965 · EXPECTED_VACANCY منجز؛ PROSPECT_MATCH وVIEWING_SLOT في P2 |
 | REQ-0411 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0412 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
@@ -430,7 +430,7 @@
 | REQ-0423 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0424 | §9.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0425 | §9.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L967 — قرار Q5 |
-| REQ-0426 | §9.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0426 | §9.2 | BUILD | MVP | READ |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · حجة تسويقية — لا بناء |
 | REQ-0427 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0428 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0429 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
@@ -441,34 +441,34 @@
 | REQ-0434 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0435 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0436 | §9.4 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
-| REQ-0437 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0438 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0439 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
+| REQ-0437 | §9.5 | BUILD | MVP | READ |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · رأس جدول؛ صفوفه متتبَّعة منفردة |
+| REQ-0438 | §9.5 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L939 |
+| REQ-0439 | §9.5 | BUILD | MVP | BLOCKED |  |  | MIXED→MVP: §12 L949 · لائحة إدارة الأملاك مسودة؛ تقارير المالك قوالب قابلة للتعديل عند إقرارها (12.R) |
 | REQ-0440 | §9.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0441 | §9.5 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
 | REQ-0442 | §9.5 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L972 |
-| REQ-0443 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
+| REQ-0443 | §9.5 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0444 | §9.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0445 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0446 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
 | REQ-0447 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
 | REQ-0448 | §9.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0449 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
-| REQ-0450 | §9.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0450 | §9.6 | BUILD | MVP | READ |  |  | رأس جدول؛ صفوفه متتبَّعة منفردة |
 | REQ-0451 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0452 | §9.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0453 | §9.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
-| REQ-0454 | §9.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0455 | §9.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0456 | §9.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0457 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0458 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
+| REQ-0454 | §9.6 | BUILD | MVP | OWNER |  |  | التزام/مهمة على صاحب المشروع (محامٍ، اتفاقيات) |
+| REQ-0455 | §9.6 | BUILD | MVP | SEE-§14 |  |  | القرار 12 |
+| REQ-0456 | §9.6 | BUILD | MVP | OWNER |  |  | التزام/مهمة على صاحب المشروع (محامٍ، اتفاقيات) |
+| REQ-0457 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L939 |
+| REQ-0458 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L939 |
 | REQ-0459 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/ManualEjarGateway.php, app/Leasing/LeasingService.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
-| REQ-0460 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
+| REQ-0460 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L939 |
 | REQ-0461 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/ManualEjarGateway.php, app/Leasing/LeasingService.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
 | REQ-0462 | §10.1 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L960 |
 | REQ-0463 | §10.1 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php | MIXED→MVP: §12 L939 |
-| REQ-0464 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0464 | §10.2 | BUILD | MVP | READ |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · رأس جدول؛ صفوفه متتبَّعة منفردة |
 | REQ-0465 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0466 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · البوابة الفعلية غير مختارة — BLOCKED للإنتاج |
 | REQ-0467 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
@@ -477,45 +477,45 @@
 | REQ-0470 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ §10.2 L782 = MVP · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
 | REQ-0471 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0472 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
-| REQ-0473 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L946 |
+| REQ-0473 | §10.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L946 · الطبقة جاهزة؛ النظام المحاسبي الفعلي حسب حساب المشترك |
 | REQ-0474 | §10.2 | BUILD | P3 | TODO |  |  | MIXED→P3: §10.2 L786؛ غائب عن §12.P3 — قرار Q7 |
 | REQ-0475 | §10.2 | BUILD | P3 | TODO |  |  | MIXED→P3: §10.2 L787؛ غائب عن §12.P3 — قرار Q7 |
-| REQ-0476 | §11 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0477 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0478 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0479 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0480 | §11.1 | BUILD | FOUNDATION | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
-| REQ-0481 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0482 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0483 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0476 | §11 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0477 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0478 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0479 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0480 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
+| REQ-0481 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | PostgreSQL مستخدمة؛ المُدارة لدى مزوّد السحابة عند اختيار الاستضافة (Q11) |
+| REQ-0482 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0483 | §11.1 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0484 | §11.1 | BUILD | FOUNDATION | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php | شرط المعالجة داخل المملكة أو بموافقة: القارئ معطّل حتى القرار |
-| REQ-0485 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0486 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0485 | §11.1 | BUILD | FOUNDATION | BLOCKED |  |  | Q11: مزوّد الاستضافة داخل المملكة |
+| REQ-0486 | §11.2 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0487 | §11.2 | BUILD | FOUNDATION | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
 | REQ-0488 | §11.2 | BUILD | FOUNDATION | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
 | REQ-0489 | §11.2 | BUILD | FOUNDATION | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0490 | §11.2 | BUILD | FOUNDATION | DONE | config/app.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/PlatformVersionsTest.php, tests/Feature/Foundation/PortalAccessTest.php |  |
-| REQ-0491 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0491 | §11.2 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0492 | §11.2 | BUILD | FOUNDATION | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0493 | §11.2 | BUILD | FOUNDATION | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
-| REQ-0494 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
-| REQ-0495 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0494 | §11.2 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
+| REQ-0495 | §11.2 | BUILD | FOUNDATION | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | يُختبر مبكراً على الآيفون يدوياً (خطة بديلة: تغليف للمتاجر) |
 | REQ-0496 | §11.2 | BUILD | FOUNDATION | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
-| REQ-0497 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
+| REQ-0497 | §11.2 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
 | REQ-0498 | §11.2 | BUILD | FOUNDATION | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
-| REQ-0499 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0499 | §11.3 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0500 | §11.3 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, composer.json, phpunit.xml, docs/OPERATIONS.md | tests/Feature/Foundation/OperationsTest.php |  |
 | REQ-0501 | §11.3 | BUILD | FOUNDATION | BLOCKED | docs/OPERATIONS.md |  | Q11: مزوّد الاستضافة/المراقبة |
 | REQ-0502 | §11.3 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, composer.json, phpunit.xml, docs/OPERATIONS.md | tests/Feature/Foundation/OperationsTest.php |  |
 | REQ-0503 | §11.3 | BUILD | FOUNDATION | BLOCKED | docs/OPERATIONS.md |  | Q11: مزوّد الاستضافة/المراقبة |
 | REQ-0504 | §11.3 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, composer.json, phpunit.xml, docs/OPERATIONS.md | tests/Feature/Foundation/OperationsTest.php |  |
 | REQ-0505 | §11.4 | BUILD | FOUNDATION | DONE | app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/PortalAccessTest.php |  |
-| REQ-0506 | §11.4 | BUILD | FOUNDATION | IN-PROGRESS | app/Http/Middleware/EnsureTwoFactorForRole.php | tests/Feature/Foundation/PortalAccessTest.php | المصادقة الثنائية وتشفير الأسرار منجزان؛ TLS عند النشر |
-| REQ-0507 | §11.4 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0506 | §11.4 | BUILD | FOUNDATION | DONE | app/Http/Middleware/EnsureTwoFactorForRole.php, app/Console/Commands/LaunchCheck.php | tests/Feature/Foundation/PortalAccessTest.php, tests/Feature/Foundation/OperationsTest.php | المصادقة الثنائية وتشفير الأسرار منجزان؛ TLS عند النشر · TLS يُفرض بفحص الإطلاق (https) |
+| REQ-0507 | §11.4 | BUILD | FOUNDATION | READ |  |  | مبدأ عمل مطبَّق (حمايات الإطار، وكيل يكتب الكود، معالجة البيئة عند الفشل) |
 | REQ-0508 | §11.4 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, composer.json, phpunit.xml, docs/OPERATIONS.md | tests/Feature/Foundation/OperationsTest.php |  |
-| REQ-0509 | §11.5 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0510 | §11.5 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0511 | §11.5 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0509 | §11.5 | BUILD | FOUNDATION | READ |  |  | مبدأ عمل مطبَّق (حمايات الإطار، وكيل يكتب الكود، معالجة البيئة عند الفشل) |
+| REQ-0510 | §11.5 | BUILD | FOUNDATION | OWNER |  |  | مراجع بشري/محاسب — طلب سحب لكل مرحلة |
+| REQ-0511 | §11.5 | BUILD | FOUNDATION | OWNER |  |  | مراجع بشري/محاسب — طلب سحب لكل مرحلة |
 | REQ-0512 | §11.5 | BUILD | FOUNDATION | DONE | CLAUDE.md, PROMPT.md, tools/ | tests/Feature/Foundation/PreflightGateTest.php |  |
 | REQ-0513 | §11.6 | BUILD | FOUNDATION | DONE | composer.lock | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0514 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
@@ -525,23 +525,23 @@
 | REQ-0518 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0519 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0520 | §11.6 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, .env.example | tests/Feature/Foundation/OperationsTest.php, tests/Feature/Foundation/PlatformVersionsTest.php |  |
-| REQ-0521 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0521 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0522 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0523 | §11.6 | BUILD | FOUNDATION | DONE | config/queue.php, config/cache.php, config/filesystems.php, .env.example | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0524 | §11.6 | BUILD | FOUNDATION | DONE | composer.lock | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0525 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0526 | §11.6 | BUILD | FOUNDATION | DONE | composer.json | tests/Feature/Foundation/PlatformVersionsTest.php | حُلّت الثلاثة معاً: Laravel 13.43.0 + Livewire 4.4.9 + Filament 5.12.0 |
-| REQ-0527 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0527 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0528 | §11.6 | BUILD | FOUNDATION | DONE | composer.json, composer.lock, package-lock.json | tests/Feature/Foundation/PlatformVersionsTest.php |  |
-| REQ-0529 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0530 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0531 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0532 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0533 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0529 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0530 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0531 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0532 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0533 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0534 | §11.6 | BUILD | FOUNDATION | DONE | config/queue.php, config/cache.php, config/filesystems.php, .env.example | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0535 | §11.6 | BUILD | FOUNDATION | DONE | config/queue.php, config/cache.php, config/filesystems.php, .env.example | tests/Feature/Foundation/PlatformVersionsTest.php |  |
-| REQ-0536 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0537 | §11.6 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0536 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
+| REQ-0537 | §11.6 | BUILD | FOUNDATION | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php |  |
 | REQ-0538 | §11.6 | BUILD | FOUNDATION | DONE | config/queue.php, config/cache.php, config/filesystems.php, .env.example | tests/Feature/Foundation/PlatformVersionsTest.php |  |
 | REQ-0539 | §11.7 | BUILD | FOUNDATION | DONE | .claude/settings.json, .claude/hooks/guard-preflight.php | tests/Feature/Foundation/PreflightGateTest.php |  |
 | REQ-0540 | §11.7 | BUILD | FOUNDATION | DONE | scripts/preflight.php | tests/Feature/Foundation/PreflightGateTest.php |  |
@@ -561,7 +561,7 @@
 | REQ-0554 | §11.7 | BUILD | FOUNDATION | DONE | .claude/settings.json, .claude/hooks/guard-preflight.php | tests/Feature/Foundation/PreflightGateTest.php |  |
 | REQ-0555 | §11.7 | BUILD | FOUNDATION | DONE | .claude/settings.json, .claude/hooks/guard-preflight.php | tests/Feature/Foundation/PreflightGateTest.php |  |
 | REQ-0556 | §11.7 | BUILD | FOUNDATION | DONE | .claude/settings.json, .claude/hooks/guard-preflight.php | tests/Feature/Foundation/PreflightGateTest.php |  |
-| REQ-0557 | §11.7 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0557 | §11.7 | BUILD | FOUNDATION | READ |  |  | مبدأ عمل مطبَّق (حمايات الإطار، وكيل يكتب الكود، معالجة البيئة عند الفشل) |
 | REQ-0558 | §11.7 | BUILD | FOUNDATION | DONE | composer.lock, package-lock.json, phpunit.xml | tests/Feature/Foundation/PlatformVersionsTest.php, tests/Feature/Foundation/PreflightGateTest.php | تأسيس + اختبارات فارغة ناجحة |
 | REQ-0559 | §12.P0 | OWNER | OWNER | OWNER |  |  |  |
 | REQ-0560 | §12.P0 | OWNER | OWNER | OWNER |  |  |  |

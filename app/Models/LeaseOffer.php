@@ -15,7 +15,7 @@ class LeaseOffer extends Model
 
     protected $attributes = ['status' => 'draft', 'escalations' => '[]', 'deposit_minor' => 0];
 
-    protected $fillable = ['leasable_unit_id', 'tenant_id', 'created_by', 'usage', 'starts_on', 'duration_unit', 'duration_count', 'annual_rent_minor', 'listed_annual_rent_minor', 'payment_frequency', 'deposit_minor', 'escalations', 'valid_until'];
+    protected $fillable = ['leasable_unit_id', 'tenant_id', 'created_by', 'usage', 'starts_on', 'duration_unit', 'duration_count', 'annual_rent_minor', 'listed_annual_rent_minor', 'payment_frequency', 'deposit_minor', 'escalations', 'valid_until', 'source_prospect_id'];
 
     protected function casts(): array
     {

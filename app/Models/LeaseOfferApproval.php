@@ -18,4 +18,9 @@ class LeaseOfferApproval extends Model
     {
         return ['decided_at' => 'datetime'];
     }
+
+    public function offer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(LeaseOffer::class, 'lease_offer_id');
+    }
 }

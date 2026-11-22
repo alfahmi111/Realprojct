@@ -17,4 +17,9 @@ class InventoryLine extends Model
     {
         return ['present' => 'boolean', 'added_during_count' => 'boolean'];
     }
+
+    public function count(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(InventoryCount::class, 'inventory_count_id');
+    }
 }
