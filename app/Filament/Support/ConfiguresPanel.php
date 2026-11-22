@@ -5,7 +5,6 @@ namespace App\Filament\Support;
 use App\Http\Middleware\ApplyUserPreferences;
 use App\Http\Middleware\EnsureTwoFactorForRole;
 use App\Theming\ThemeService;
-use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -47,7 +46,7 @@ trait ConfiguresPanel
             ->profile()
             ->darkMode(true)
             ->multiFactorAuthentication(
-                [AppAuthentication::make()->recoverable()],
+                [WithaqAppAuthentication::make()->recoverable()],
                 isRequired: true,
             )
             ->multiFactorAuthenticationRequiredMiddlewareName(EnsureTwoFactorForRole::class)

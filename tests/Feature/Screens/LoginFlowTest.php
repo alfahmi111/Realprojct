@@ -26,6 +26,25 @@ class LoginFlowTest extends TestCase
         $this->assertNotNull($t->get('userUndertakingMultiFactorAuthentication'));   // password accepted → 2FA step
     }
 
+    /** REQ-0487 — a wrong code or recovery code shows "invalid", never a server error, even with no recovery codes saved. */
+    public function test_req_0487_wrong_2fa_code_without_recovery_codes_is_a_validation_error_not_a_crash(): void
+    {
+        $s = $this->makeSubscriber();
+        $m = $this->makeUser($s, 'manager', ['email' => 'manager@withaq.test', 'password' => 'demo-password-123']);
+        $this->tenant()->set($s->id);
+        $m->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
+        $this->tenant()->clear();
+        Filament::setCurrentPanel(Filament::getPanel('manager'));
+        $t = Livewire::test(Login::class)->fillForm(['email' => 'manager@withaq.test', 'password' => 'demo-password-123'])->call('authenticate');
+        $t->set('data.multiFactor.app.useRecoveryCode', true)->set('data.multiFactor.app.recoveryCode', 'not-a-code')->call('authenticate');
+        $t->assertHasErrors();
+        $this->assertGuest();
+        $t2 = Livewire::test(Login::class)->fillForm(['email' => 'manager@withaq.test', 'password' => 'demo-password-123'])->call('authenticate');
+        $t2->set('data.multiFactor.app.code', '000000')->call('authenticate');
+        $t2->assertHasErrors();
+        $this->assertGuest();
+    }
+
     public function test_req_0505_tenant_without_2fa_signs_in_directly(): void
     {
         $s = $this->makeSubscriber();

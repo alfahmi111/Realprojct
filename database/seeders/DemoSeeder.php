@@ -27,6 +27,9 @@ use Illuminate\Database\Seeder;
  */
 class DemoSeeder extends Seeder
 {
+    /** Local demo only: recovery codes for the demo 2FA accounts (stored hashed). */
+    public const DEMO_RECOVERY_CODES = ['withaq-demo-0001', 'withaq-demo-0002', 'withaq-demo-0003', 'withaq-demo-0004'];
+
     public function run(): void
     {
         if (! app()->environment('local')) {
@@ -47,6 +50,7 @@ class DemoSeeder extends Seeder
         $ownerUser = $mk('owner', 'عبدالله الشهري', 'owner@withaq.test');
         foreach ([$manager, $ownerUser] as $u) {   // demo only: 2FA already set up (secret printed for an authenticator app)
             $u->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');   // well-known demo secret — local only
+            $u->saveAppAuthenticationRecoveryCodes(array_map(fn ($c) => \Illuminate\Support\Facades\Hash::make($c), self::DEMO_RECOVERY_CODES));
         }
 
         $w = app(BuildingWizard::class);
