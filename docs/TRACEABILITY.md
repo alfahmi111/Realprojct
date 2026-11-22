@@ -56,24 +56,24 @@
 | REQ-0049 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0050 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0051 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0052 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0053 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 9.2 (REQ-0425) المصنّف P2 §12 L967 — قرار Q5: يُنفَّذ مع P2 |
 | REQ-0054 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 6.7 (P2) و§12 L964 — قرار Q8: يُنفَّذ مع P2 |
 | REQ-0055 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0056 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0057 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0058 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0059 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0060 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0061 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0062 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0063 | §3 | BUILD | MVP | TODO |  |  |  |
+| REQ-0057 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0058 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0059 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0060 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0061 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0062 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0063 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0064 | §3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0065 | §3 | BUILD | MVP | TODO |  |  |  |
+| REQ-0065 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0066 | §3.1 | BUILD | MVP | TODO |  |  |  |
 | REQ-0067 | §3.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0068 | §3.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0069 | §3.1 | BUILD | MVP | TODO |  |  |  |
+| REQ-0068 | §3.1 | BUILD | MVP | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
+| REQ-0069 | §3.1 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0070 | §4.1 | BUILD | MVP | TODO |  |  |  |
 | REQ-0071 | §4.1 | BUILD | MVP | TODO |  |  |  |
 | REQ-0072 | §4.1 | BUILD | MVP | TODO |  |  |  |
@@ -169,11 +169,11 @@
 | REQ-0162 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0163 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0164 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0165 | §4.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0166 | §4.7 | BUILD | MVP | TODO |  |  |  |
+| REQ-0165 | §4.7 | BUILD | MVP | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
+| REQ-0166 | §4.7 | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0167 | §4.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0168 | §4.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0169 | §4.7 | BUILD | MVP | TODO |  |  |  |
+| REQ-0168 | §4.7 | BUILD | MVP | IN-PROGRESS | app/Support/Database/Rls.php (archiveOnly) | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على الجداول المالية والعقود عند إنشائها |
+| REQ-0169 | §4.7 | BUILD | MVP | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
 | REQ-0170 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0171 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0172 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
@@ -275,7 +275,7 @@
 | REQ-0268 | §6.7 | BUILD | P2 | TODO |  |  |  |
 | REQ-0269 | §6.7 | BUILD | P2 | TODO |  |  |  |
 | REQ-0270 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0271 | §7 | BUILD | MVP | TODO |  |  |  |
+| REQ-0271 | §7 | BUILD | MVP | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
 | REQ-0272 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948 |
 | REQ-0273 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948 |
 | REQ-0274 | §7.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L948؛ الدفع عبر سداد P2 §12 L962 |
@@ -325,38 +325,38 @@
 | REQ-0318 | §7.5 | BUILD | MVP | TODO |  |  |  |
 | REQ-0319 | §7.5 | BUILD | MVP | TODO |  |  |  |
 | REQ-0320 | §7.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0321 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0322 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0323 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0324 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0325 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0326 | §7.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0327 | §7.6أ | BUILD | MVP | TODO |  |  |  |
-| REQ-0328 | §7.6أ | BUILD | MVP | TODO |  |  |  |
-| REQ-0329 | §7.6أ | BUILD | MVP | TODO |  |  |  |
-| REQ-0330 | §7.6أ | BUILD | MVP | TODO |  |  |  |
-| REQ-0331 | §7.6أ | BUILD | MVP | TODO |  |  |  |
+| REQ-0321 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0322 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0323 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0324 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0325 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0326 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0327 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0328 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0329 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0330 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0331 | §7.6أ | BUILD | MVP | IN-PROGRESS | app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0332 | §7.6أ | BUILD | MVP | TODO |  |  |  |
 | REQ-0333 | §7.6أ | BUILD | MVP | TODO |  |  |  |
 | REQ-0334 | §7.6أ | BUILD | MVP | TODO |  |  |  |
 | REQ-0335 | §7.6أ | BUILD | MVP | TODO |  |  |  |
 | REQ-0336 | §7.6أ | BUILD | MVP | TODO |  |  |  |
 | REQ-0337 | §7.6أ | BUILD | MVP | TODO |  |  |  |
-| REQ-0338 | §7.6ب | BUILD | MVP | TODO |  |  |  |
-| REQ-0339 | §7.6ب | BUILD | MVP | TODO |  |  |  |
-| REQ-0340 | §7.6ب | BUILD | MVP | TODO |  |  |  |
+| REQ-0338 | §7.6ب | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0339 | §7.6ب | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0340 | §7.6ب | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0341 | §7.6ب | BUILD | MVP | TODO |  |  |  |
-| REQ-0342 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0343 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0344 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0345 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0346 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0347 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0348 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0349 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0350 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0351 | §7.6ج | BUILD | MVP | TODO |  |  |  |
-| REQ-0352 | §7.6ج | BUILD | MVP | TODO |  |  |  |
+| REQ-0342 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0343 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0344 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0345 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0346 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0347 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0348 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0349 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0350 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
+| REQ-0351 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
+| REQ-0352 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0353 | §7.6د | BUILD | MVP | TODO |  |  |  |
 | REQ-0354 | §7.6د | BUILD | MVP | TODO |  |  |  |
 | REQ-0355 | §7.6د | BUILD | MVP | TODO |  |  |  |
@@ -366,21 +366,21 @@
 | REQ-0359 | §7.6د | BUILD | MVP | TODO |  |  |  |
 | REQ-0360 | §7.6د | BUILD | MVP | TODO |  |  |  |
 | REQ-0361 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0362 | §7.6هـ | BUILD | MVP | TODO |  |  |  |
-| REQ-0363 | §7.6هـ | BUILD | MVP | TODO |  |  |  |
-| REQ-0364 | §7.6هـ | BUILD | MVP | TODO |  |  |  |
-| REQ-0365 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0366 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0367 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0368 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0369 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0370 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0371 | §7.6و | BUILD | MVP | TODO |  |  |  |
+| REQ-0362 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php |  |
+| REQ-0363 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
+| REQ-0364 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
+| REQ-0365 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0366 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0367 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0368 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0369 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0370 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0371 | §7.6و | BUILD | MVP | IN-PROGRESS | app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0372 | §7.6و | BUILD | MVP | TODO |  |  |  |
-| REQ-0373 | §7.6ز | BUILD | MVP | TODO |  |  |  |
-| REQ-0374 | §7.6ح | BUILD | MVP | TODO |  |  |  |
-| REQ-0375 | §7.6ح | BUILD | MVP | TODO |  |  |  |
-| REQ-0376 | §7.6ح | BUILD | MVP | TODO |  |  |  |
+| REQ-0373 | §7.6ز | BUILD | MVP | IN-PROGRESS | app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
+| REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0375 | §7.6ح | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0376 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0377 | §8.1 | BUILD | MVP | TODO |  |  |  |
 | REQ-0378 | §8.1 | BUILD | MVP | TODO |  |  |  |
 | REQ-0379 | §8.1 | BUILD | MVP | TODO |  |  |  |
@@ -484,24 +484,24 @@
 | REQ-0477 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0478 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0479 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0480 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0480 | §11.1 | BUILD | FOUNDATION | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
 | REQ-0481 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0482 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0483 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0484 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0485 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0486 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0487 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0488 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0487 | §11.2 | BUILD | FOUNDATION | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
+| REQ-0488 | §11.2 | BUILD | FOUNDATION | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
 | REQ-0489 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0490 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0490 | §11.2 | BUILD | FOUNDATION | DONE | config/app.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/PlatformVersionsTest.php, tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0491 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0492 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0493 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0494 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0492 | §11.2 | BUILD | FOUNDATION | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0493 | §11.2 | BUILD | FOUNDATION | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0494 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
 | REQ-0495 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0496 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0497 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0497 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
 | REQ-0498 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0499 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0500 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
@@ -509,8 +509,8 @@
 | REQ-0502 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0503 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0504 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0505 | §11.4 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0506 | §11.4 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0505 | §11.4 | BUILD | FOUNDATION | DONE | app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0506 | §11.4 | BUILD | FOUNDATION | IN-PROGRESS | app/Http/Middleware/EnsureTwoFactorForRole.php | tests/Feature/Foundation/PortalAccessTest.php | المصادقة الثنائية وتشفير الأسرار منجزان؛ TLS عند النشر |
 | REQ-0507 | §11.4 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0508 | §11.4 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0509 | §11.5 | BUILD | FOUNDATION | TODO |  |  |  |
@@ -656,11 +656,11 @@
 | REQ-0649 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0650 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0651 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
-| REQ-0652 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
+| REQ-0652 | §14 | DECISION | DECISIONS | SEE-§14 | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php | PENDING-D10: إلزامية من مكتب، اختيارية في مالك |
 | REQ-0653 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
-| REQ-0654 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
+| REQ-0654 | §14 | DECISION | DECISIONS | SEE-§14 | app/Theming/ThemeService.php, app/Console/Commands/LaunchCheck.php | tests/Feature/Foundation/ThemeTest.php | القرار 11: لا افتراضي في الكود؛ فحص الإطلاق يفشل حتى يُضبط |
 | REQ-0655 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
-| REQ-0656 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
+| REQ-0656 | §14 | DECISION | DECISIONS | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0657 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0658 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0659 | §15 | DECIDED | BINDING | BINDING |  |  |  |
