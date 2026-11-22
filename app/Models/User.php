@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Audit\Auditable;
+use App\Support\Database\Archivable;
 use App\Authorization\Role;
 use Database\Factories\UserFactory;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
@@ -22,7 +23,7 @@ use SensitiveParameter;
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasName
 {
     /** @use HasFactory<UserFactory> */
-    use Auditable, HasFactory, Notifiable;
+    use Archivable, Auditable, HasFactory, Notifiable;
 
     protected $fillable = ['subscriber_id', 'name', 'name_en', 'email', 'phone', 'role', 'password'];
 
