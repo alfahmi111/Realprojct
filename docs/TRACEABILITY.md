@@ -59,7 +59,7 @@
 | REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0053 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 9.2 (REQ-0425) المصنّف P2 §12 L967 — قرار Q5: يُنفَّذ مع P2 |
 | REQ-0054 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 6.7 (P2) و§12 L964 — قرار Q8: يُنفَّذ مع P2 |
-| REQ-0055 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0055 | §2.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0056 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0057 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0058 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
@@ -70,85 +70,85 @@
 | REQ-0063 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
 | REQ-0064 | §3 | BUILD | MVP | TODO |  |  |  |
 | REQ-0065 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
-| REQ-0066 | §3.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0067 | §3.1 | BUILD | MVP | TODO |  |  |  |
+| REQ-0066 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0067 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0068 | §3.1 | BUILD | MVP | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
 | REQ-0069 | §3.1 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
-| REQ-0070 | §4.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0071 | §4.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0072 | §4.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0073 | §4.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0074 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0075 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0076 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0077 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0078 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0079 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0080 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0081 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0082 | §4.2 | BUILD | MVP | TODO |  |  |  |
-| REQ-0083 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0084 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0085 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0086 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0087 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0088 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0089 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0090 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0091 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0092 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0093 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0094 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0095 | §4.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0096 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0097 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0098 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0099 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0100 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0101 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0102 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0103 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0104 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0105 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0106 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0107 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0108 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0109 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0110 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0111 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0112 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0113 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0114 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0115 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0116 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0117 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0118 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0119 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0120 | §4.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0121 | §4.5 | BUILD | MVP | TODO |  |  |  |
+| REQ-0070 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0071 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0072 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0073 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0074 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0075 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0076 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0077 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0078 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0079 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0080 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0081 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0082 | §4.2 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0083 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0084 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0085 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0086 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0087 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0088 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0089 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0090 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0091 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0092 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0093 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0094 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php | NEEDS-PRO-REVIEW (ملاحظة ضريبية يُؤكَّد مع مستشار) |
+| REQ-0095 | §4.3 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0096 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0097 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0098 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0099 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0100 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0101 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0102 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0103 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0104 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0105 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0106 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0107 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0108 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0109 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0110 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0111 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0112 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0113 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0114 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0115 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0116 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0117 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0118 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0119 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0120 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0121 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0122 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0123 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0124 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0125 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0126 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0127 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0128 | §4.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0129 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0130 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0131 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0132 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0133 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0134 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0135 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0136 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0137 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0138 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0123 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0124 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0125 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0126 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0127 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0128 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0129 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0130 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0131 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0132 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0133 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0134 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0135 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0136 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0137 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0138 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0139 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0140 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0141 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0142 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0143 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0144 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0144 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0145 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0146 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0147 | §4.6 | BUILD | MVP | TODO |  |  |  |
@@ -171,7 +171,7 @@
 | REQ-0164 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0165 | §4.7 | BUILD | MVP | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
 | REQ-0166 | §4.7 | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
-| REQ-0167 | §4.7 | BUILD | MVP | TODO |  |  |  |
+| REQ-0167 | §4.7 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0168 | §4.7 | BUILD | MVP | IN-PROGRESS | app/Support/Database/Rls.php (archiveOnly) | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على الجداول المالية والعقود عند إنشائها |
 | REQ-0169 | §4.7 | BUILD | MVP | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
 | REQ-0170 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
@@ -180,7 +180,7 @@
 | REQ-0173 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
 | REQ-0174 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0175 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0176 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: أ.8 D6: العلَم وشرط الترخيص جزء من نموذج الوحدة؛ فتح التأجير اليومي P3 §12 L971 — قرار Q1 |
+| REQ-0176 | §5.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php | MIXED→MVP: أ.8 D6: العلَم وشرط الترخيص جزء من نموذج الوحدة؛ فتح التأجير اليومي P3 §12 L971 — قرار Q1 |
 | REQ-0177 | §5.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 (سعر الشهر والسنة)؛ سعر اليوم/الأسبوع مع P3 §12 L971 |
 | REQ-0178 | §5.3 | BUILD | MVP | TODO |  |  |  |
 | REQ-0179 | §5.3 | BUILD | MVP | TODO |  |  |  |

@@ -48,9 +48,11 @@ class SettingsTest extends TestCase
         $s = $this->makeSubscriber();
         $this->tenant()->set($s->id);
         $this->assertSame(['emergency' => 2, 'urgent' => 24, 'normal' => 72], $this->settings()->get('maintenance.response_hours'));
-        $this->settings()->setProperty(7, 'maintenance.response_hours', ['emergency' => 1, 'urgent' => 12, 'normal' => 48]);
-        $this->assertSame(1, $this->settings()->get('maintenance.response_hours', null, 7)['emergency']);
-        $this->assertSame(2, $this->settings()->get('maintenance.response_hours', null, 8)['emergency']);
+        $pf = \App\Models\Portfolio::create(['name_ar' => 'م']);
+        $p7 = \App\Models\Property::create(['portfolio_id' => $pf->id, 'name_ar' => 'ع']);
+        $this->settings()->setProperty($p7->id, 'maintenance.response_hours', ['emergency' => 1, 'urgent' => 12, 'normal' => 48]);
+        $this->assertSame(1, $this->settings()->get('maintenance.response_hours', null, $p7->id)['emergency']);
+        $this->assertSame(2, $this->settings()->get('maintenance.response_hours', null, $p7->id + 1)['emergency']);
     }
 
     public function test_req_0321_a_locked_setting_cannot_be_changed_by_users(): void
