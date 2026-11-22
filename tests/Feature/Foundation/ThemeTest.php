@@ -27,7 +27,11 @@ class ThemeTest extends TestCase
 
     public function test_req_0328_three_ready_themes_with_light_and_dark_versions(): void
     {
-        $this->assertSame(['clay', 'ink', 'plum'], $this->themes()->presets());
+        // The owner's «وِثاق» identity (decision 11, 2026-11-22) first, then the three approved ready themes.
+        $this->assertSame(['withaq', 'clay', 'ink', 'plum'], $this->themes()->presets());
+        $this->assertSame('#0D8A7A', $this->themes()->preset('withaq')['light']['primary']);
+        $this->assertSame('Cairo', $this->themes()->preset('withaq')['font_heading']);
+        $this->assertSame('Tajawal', $this->themes()->preset('withaq')['font_body']);
         foreach ($this->themes()->presets() as $key) {
             $p = $this->themes()->preset($key);
             $this->assertArrayHasKey('light', $p);
@@ -107,15 +111,26 @@ class ThemeTest extends TestCase
         $this->themes()->assertReadable('#000000');
     }
 
-    public function test_req_0654_launch_check_fails_until_the_platform_default_theme_is_set(): void
+    /** Decision 11 settled by the owner (2026-11-22): «وِثاق» is the platform default; the platform admin can still change it. */
+    public function test_req_0654_platform_default_theme_is_withaq_and_can_be_changed(): void
     {
-        $this->assertNull($this->themes()->activePresetKey());
-        $this->assertSame(1, Artisan::call('platform:launch-check'));
+        $this->assertSame('withaq', $this->themes()->activePresetKey());
+        $this->assertSame([], $this->themes()->launchProblems());
+        $this->assertSame(1, Artisan::call('platform:launch-check'));   // still blocked by the penetration test
         app(Settings::class)->setPlatform('launch.penetration_test_passed', true);
-        $this->assertSame(1, Artisan::call('platform:launch-check'));   // theme still unset
-        app(Settings::class)->setPlatform('platform.default_theme', 'ink');
         $this->assertSame(0, Artisan::call('platform:launch-check'));
+        app(Settings::class)->setPlatform('platform.default_theme', 'ink');
         $this->assertSame('ink', $this->themes()->activePresetKey());
+    }
+
+    public function test_req_0654_withaq_identity_reaches_the_sign_in_page(): void
+    {
+        $html = $this->get('/manage/login')->assertOk()->getContent();
+        $this->assertStringContainsString('--color-primary: #0D8A7A;', $html);
+        $this->assertStringContainsString('brand/withaq-theme.css', $html);
+        $this->assertStringContainsString('fonts/fonts.css', $html);
+        $this->assertStringContainsString('wq-auth-aside', $html);
+        $this->assertStringNotContainsString('وزارة', $html);   // no third-party identity
     }
 
     public function test_req_0328_subscriber_preset_overrides_platform_default(): void

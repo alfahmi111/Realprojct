@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $page['building_ar'] }} — {{ $page['publisher_ar'] }}</title>
+    <link rel="stylesheet" href="{{ asset('fonts/fonts.css') }}"><style>{!! app(\App\Theming\ThemeService::class)->css() !!} body{font-family:'Tajawal','Cairo',sans-serif;background:var(--color-bg)!important;color:var(--color-ink)!important} h1,h2{font-family:'Cairo',sans-serif;color:var(--color-deep,var(--color-ink))} button{background:var(--color-primary);color:var(--color-on-primary,#fff);border:0;border-radius:10px;font-weight:700;cursor:pointer} .card{border-radius:14px!important;border-color:var(--color-line)!important;background:var(--color-surface)!important}</style>
     <style>
         body { font-family: system-ui, sans-serif; margin: 0; background: #FBF7F2; color: #2A1E17; }
         main { max-width: 720px; margin: 0 auto; padding: 16px; }

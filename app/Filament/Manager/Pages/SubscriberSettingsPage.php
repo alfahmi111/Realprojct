@@ -60,7 +60,7 @@ class SubscriberSettingsPage extends Page
     {
         return $schema->statePath('data')->components([
             Section::make('الهوية والسمة')->schema([
-                Select::make('theme__preset')->label('السمة الجاهزة')->options(['clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق']),
+                Select::make('theme__preset')->label('السمة الجاهزة')->options(['withaq' => 'وِثاق (الأساسية)', 'clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق']),
                 TextInput::make('theme__custom_primary')->label('اللون الأساسي المخصص (#RRGGBB)')->regex('/^#[0-9A-Fa-f]{6}$/'),
             ])->columns(2),
             Section::make('التاريخ')->schema([

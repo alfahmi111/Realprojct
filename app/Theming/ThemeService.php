@@ -80,6 +80,15 @@ class ThemeService
         return implode("\n", $out);
     }
 
+    /** Filament palette for the active theme (custom colour > subscriber preset > platform default). */
+    public function filamentColors(): array
+    {
+        auth()->user();   // signed-in users enter their subscriber context first
+        $key = $this->activePresetKey();
+        $primary = $this->settings->get('theme.custom_primary') ?? ($key ? $this->preset($key)['light']['primary'] : null);
+        return $primary ? ['primary' => \Filament\Support\Colors\Color::hex($primary)] : [];
+    }
+
     /** Printed documents and PDFs are always light, whatever the screen mode (REQ-0340). */
     public function documentCss(?string $presetKey = null): string
     {

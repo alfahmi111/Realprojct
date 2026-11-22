@@ -45,7 +45,7 @@ class PlatformSettingsPage extends Page
 
     public function form(Schema $schema): Schema
     {
-        $themes = ['clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق'];
+        $themes = ['withaq' => 'وِثاق (الأساسية)', 'clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق'];
         return $schema->statePath('data')->components([
             Select::make('default_theme')->label('السمة الافتراضية للمنصة (القرار 11)')->options($themes),
             CheckboxList::make('available_themes')->label('السمات المتاحة للمشتركين')->options($themes),

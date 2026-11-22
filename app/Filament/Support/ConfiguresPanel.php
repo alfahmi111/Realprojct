@@ -33,9 +33,14 @@ trait ConfiguresPanel
             ->id($id)
             ->path($path)
             ->brandName('وِثاق')
+            ->colors(fn () => app(ThemeService::class)->filamentColors())
             ->brandLogo(fn () => view('brand.logo'))
             ->brandLogoHeight('2rem')
             ->favicon(asset('brand/withaq-favicon.svg'))
+            // Identity fonts served locally (no external request): Tajawal for text, Cairo for headings.
+            ->font('Tajawal', url: asset('fonts/fonts.css'), provider: \Filament\FontProviders\LocalFontProvider::class)
+            ->renderHook(PanelsRenderHook::STYLES_AFTER, fn () => '<link rel="stylesheet" href="' . asset('brand/withaq-theme.css') . '">')
+            ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_START, fn () => view('brand.auth-aside'))
             ->login()
             ->passwordReset()
             ->profile()
@@ -61,6 +66,7 @@ trait ConfiguresPanel
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\ApplyTheme::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

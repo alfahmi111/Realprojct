@@ -24,10 +24,10 @@ final class SettingsRegistry
             // ب) Dark mode — REQ-0338
             'appearance.mode' => ['levels' => $u, 'type' => 'enum', 'options' => ['light', 'dark', 'auto'], 'default' => 'auto', 'req' => 'REQ-0338'],
             // أ) Themes — REQ-0327…REQ-0332, decision 11 (no platform default fixed in code)
-            'platform.default_theme' => ['levels' => ['platform'], 'type' => 'enum', 'options' => ['clay', 'ink', 'plum'], 'default' => null, 'req' => 'REQ-0328, REQ-0654'],
-            'platform.available_themes' => ['levels' => ['platform'], 'type' => 'list', 'options' => ['clay', 'ink', 'plum'], 'default' => ['clay', 'ink', 'plum'], 'req' => 'REQ-0323, REQ-0328'],
+            'platform.default_theme' => ['levels' => ['platform'], 'type' => 'enum', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => 'withaq', 'decision' => 'decision 11 settled by the owner 2026-11-22', 'req' => 'REQ-0328, REQ-0654'],
+            'platform.available_themes' => ['levels' => ['platform'], 'type' => 'list', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => ['withaq', 'clay', 'ink', 'plum'], 'req' => 'REQ-0323, REQ-0328'],
             'theme.min_contrast_ratio' => ['levels' => ['platform'], 'type' => 'ratio', 'default' => null, 'req' => 'REQ-0329'],
-            'theme.preset' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['clay', 'ink', 'plum'], 'default' => null, 'req' => 'REQ-0328'],
+            'theme.preset' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => null, 'req' => 'REQ-0328'],
             'theme.custom_primary' => ['levels' => ['subscriber'], 'type' => 'color', 'default' => null, 'req' => 'REQ-0329'],
             'theme.logo_light' => ['levels' => ['subscriber'], 'type' => 'string', 'default' => null, 'req' => 'REQ-0329'],
             'theme.logo_dark' => ['levels' => ['subscriber'], 'type' => 'string', 'default' => null, 'req' => 'REQ-0329, REQ-0341'],

@@ -149,7 +149,7 @@ class SettingsTest extends TestCase
         $this->assertSame(['emergency' => 2, 'urgent' => 24, 'normal' => 72], $d('maintenance.response_hours'));  // REQ-0368
         $this->assertSame(60, $d('waitlist.confirm_interval_days'));           // REQ-0369
         $this->assertSame(['start' => '22:00', 'end' => '08:00'], $d('notifications.quiet_hours'));  // REQ-0357
-        $this->assertNull($d('platform.default_theme'));                       // decision 11 — not fixed in code
+        $this->assertSame('withaq', $d('platform.default_theme'));             // decision 11 settled by the owner (2026-11-22)
         $this->assertNull($d('security.session_minutes'));                     // not in spec → question
     }
 }

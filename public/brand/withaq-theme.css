@@ -1,0 +1,113 @@
+/* =============================================================
+   وِثاق — the platform's default identity (owner decision 2026-11-22).
+   Colours, fonts and styles of the owner's design: teal #0D8A7A, petrol #0D4F5C, Cairo for headings, Tajawal for
+   text, radii 6/10/14/20, gradient backgrounds with soft circles, white cards, filled buttons.
+   Theme tokens come from ThemeService (--color-*); this sheet maps them onto Filament.
+   ============================================================= */
+
+:root {
+    --wq-radius-sm: 6px;
+    --wq-radius-md: 10px;
+    --wq-radius-lg: 14px;
+    --wq-radius-xl: 20px;
+    --wq-shadow-md: 0 2px 8px rgba(0, 0, 0, .08);
+    --wq-shadow-lg: 0 8px 24px rgba(0, 0, 0, .10);
+    --wq-shadow-xl: 0 20px 40px rgba(0, 0, 0, .12);
+}
+
+/* ---------- Typography ---------- */
+body, .fi-body { font-family: 'Tajawal', 'Cairo', 'Segoe UI', sans-serif; }
+h1, h2, h3, h4, .fi-header-heading, .fi-section-header-heading, .fi-simple-header-heading, .fi-modal-heading, .fi-sidebar-group-label, .fi-wi-stats-overview-stat-value {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+.fi-header-heading { color: var(--color-deep, inherit); font-weight: 700; }
+.dark .fi-header-heading { color: var(--color-deep, inherit); }
+
+/* ---------- Surfaces ---------- */
+.fi-body { background-color: var(--color-bg, #F3F4F6); }
+.fi-section, .fi-ta-ctn, .fi-wi-stats-overview-stat, .fi-modal-window, .fi-dropdown-panel {
+    border-radius: var(--wq-radius-lg) !important;
+    box-shadow: var(--wq-shadow-md);
+}
+.fi-input-wrp, .fi-select-input, .fi-fo-field-wrp input { border-radius: var(--wq-radius-md) !important; }
+.fi-input-wrp:focus-within { box-shadow: 0 0 0 4px var(--color-soft, #E8F5F3) !important; }
+.fi-btn { border-radius: var(--wq-radius-md) !important; font-weight: 700; transition: transform .15s, box-shadow .2s, background .2s; }
+/* Filled primary buttons: the exact identity teal with white text (not a derived lighter shade). */
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-btn-link) {
+    background-color: var(--color-primary, #0D8A7A) !important;
+    color: var(--color-on-primary, #FFFFFF) !important;
+}
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-btn-link) .fi-icon { color: inherit !important; }
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-btn-link):hover {
+    background-color: var(--color-primary-dark, #0A6E62) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--wq-shadow-lg);
+}
+.fi-badge { border-radius: var(--wq-radius-sm) !important; }
+
+/* ---------- Sidebar & topbar ---------- */
+.fi-sidebar { background-color: var(--color-surface, #FFFFFF); border-inline-start: 1px solid var(--color-line, #E5E7EB); }
+.fi-sidebar-item-active > .fi-sidebar-item-btn, .fi-sidebar-item.fi-active > a {
+    background-color: var(--color-soft, #E8F5F3) !important;
+    border-radius: var(--wq-radius-md);
+}
+.fi-sidebar-item-active .fi-sidebar-item-label, .fi-sidebar-item.fi-active .fi-sidebar-item-label { color: var(--color-deep, inherit) !important; font-weight: 700; }
+.fi-topbar > nav, .fi-topbar { background-color: var(--color-surface, #FFFFFF); }
+
+/* ---------- Sign-in pages: gradient + soft circles + identity panel + white card ---------- */
+.fi-simple-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;           /* RTL: the identity panel (first child) sits on the right, the card on the left */
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-primary, #0D8A7A) 0%, var(--color-secondary, #1A5F5A) 100%);
+}
+.fi-simple-layout::before, .fi-simple-layout::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.fi-simple-layout::before { width: 600px; height: 600px; background: rgba(255, 255, 255, .05); top: -300px; inset-inline-start: -200px; }
+.fi-simple-layout::after { width: 400px; height: 400px; background: rgba(255, 255, 255, .04); bottom: -200px; inset-inline-end: -100px; }
+.fi-simple-main-ctn { position: relative; z-index: 1; flex: 0 1 480px; }
+.fi-simple-main {
+    border-radius: var(--wq-radius-xl) !important;
+    box-shadow: var(--wq-shadow-xl) !important;
+    background: var(--color-surface, #FFFFFF) !important;
+    padding: 36px 32px !important;
+}
+.fi-simple-header .fi-logo { display: none; }   /* the identity panel carries the brand */
+.fi-simple-header-heading { color: var(--color-deep, #0D4F5C); text-align: start; }
+
+.wq-auth-aside { position: relative; z-index: 1; color: #fff; max-width: 440px; text-align: start; }
+.wq-auth-mark { width: 84px; height: 84px; color: #fff; margin-bottom: 18px; }
+.wq-auth-kicker { font-size: .92rem; font-weight: 700; opacity: .92; margin-bottom: 6px; }
+.wq-auth-title { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 3rem; line-height: 1.15; margin: 0 0 8px; }
+.wq-auth-sub { font-size: 1.05rem; opacity: .92; margin: 0 0 22px; }
+.wq-auth-today {
+    display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px;
+    padding: 12px 16px; border-radius: var(--wq-radius-lg);
+    background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .28);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: var(--wq-shadow-lg);
+}
+.wq-today-day { font-weight: 800; font-size: 1.05rem; }
+.wq-today-hijri { font-weight: 700; }
+.wq-today-greg { font-size: .86rem; opacity: .9; }
+.wq-today-greg::before { content: '·'; margin-inline-end: 10px; opacity: .8; }
+
+@media (max-width: 900px) {
+    .fi-simple-layout { flex-direction: column; gap: 24px; }
+    .wq-auth-aside { text-align: center; }
+    .wq-auth-mark { margin-inline: auto; width: 64px; height: 64px; }
+    .wq-auth-title { font-size: 2.2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-btn { transition: none; }
+}
