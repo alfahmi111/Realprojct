@@ -151,8 +151,8 @@
 | REQ-0144 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0145 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0146 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
-| REQ-0147 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0148 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0147 | §4.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0148 | §4.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0149 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0150 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0151 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
@@ -160,7 +160,7 @@
 | REQ-0153 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0154 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0155 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
-| REQ-0156 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0156 | §4.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0157 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0158 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0159 | §4.6 | BUILD | MVP | TODO |  |  |  |
@@ -297,13 +297,13 @@
 | REQ-0290 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
 | REQ-0291 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0292 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0293 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0293 | §7.2 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0294 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0295 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0296 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
 | REQ-0297 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
 | REQ-0298 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949؛ «المحتمل مغادرتهم» يعتمد على المؤشر P2 §12 L958 |
-| REQ-0299 | §7.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0299 | §7.2 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0300 | §7.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0301 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964، L966 |
 | REQ-0302 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
@@ -313,7 +313,7 @@
 | REQ-0306 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0307 | §7.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0308 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L959 |
-| REQ-0309 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0309 | §7.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0310 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0311 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964 — قرار Q4 |
 | REQ-0312 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
@@ -381,40 +381,40 @@
 | REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0375 | §7.6ح | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0376 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
-| REQ-0377 | §8.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0378 | §8.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0379 | §8.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0380 | §8.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0381 | §8.1 | BUILD | MVP | TODO |  |  |  |
+| REQ-0377 | §8.1 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0378 | §8.1 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0379 | §8.1 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0380 | §8.1 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0381 | §8.1 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0382 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0383 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961؛ أ.8 D3: لا رسوم |
 | REQ-0384 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0385 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0386 | §8.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L965؛ أ.8 D4 |
 | REQ-0387 | §8.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0388 | §8.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0389 | §8.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0388 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 · NEEDS-PRO-REVIEW: رأي قانوني قبل التفعيل (8.3) |
+| REQ-0389 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 · NEEDS-PRO-REVIEW: رأي قانوني قبل التفعيل (8.3) |
 | REQ-0390 | §8.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
-| REQ-0391 | §8.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0392 | §8.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0393 | §8.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0394 | §8.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0395 | §8.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0396 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0397 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0398 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0399 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0391 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 · NEEDS-PRO-REVIEW: رأي قانوني قبل التفعيل (8.3) |
+| REQ-0392 | §8.3 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
+| REQ-0393 | §8.4 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0394 | §8.4 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0395 | §8.4 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0396 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
+| REQ-0397 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
+| REQ-0398 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
+| REQ-0399 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0400 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L965 |
 | REQ-0401 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 (يعتمد على الاستطلاع والمؤشر) |
 | REQ-0402 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L965 |
 | REQ-0403 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L965 |
-| REQ-0404 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
-| REQ-0405 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0406 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0407 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0404 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
+| REQ-0405 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0406 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0407 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0408 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0409 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0410 | §8.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 (EXPECTED_VACANCY)؛ PROSPECT_MATCH وVIEWING_SLOT P2 §12 L965 |
+| REQ-0410 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 (EXPECTED_VACANCY)؛ PROSPECT_MATCH وVIEWING_SLOT P2 §12 L965 · EXPECTED_VACANCY منجز؛ PROSPECT_MATCH وVIEWING_SLOT في P2 |
 | REQ-0411 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0412 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0413 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
@@ -444,11 +444,11 @@
 | REQ-0437 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0438 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0439 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
-| REQ-0440 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
+| REQ-0440 | §9.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0441 | §9.5 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
 | REQ-0442 | §9.5 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L972 |
 | REQ-0443 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L940 |
-| REQ-0444 | §9.5 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0444 | §9.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0445 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0446 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
 | REQ-0447 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
@@ -456,8 +456,8 @@
 | REQ-0449 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0450 | §9.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0451 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
-| REQ-0452 | §9.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0453 | §9.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0452 | §9.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
+| REQ-0453 | §9.6 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php |  |
 | REQ-0454 | §9.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0455 | §9.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0456 | §9.6 | BUILD | MVP | TODO |  |  |  |
@@ -649,7 +649,7 @@
 | REQ-0642 | §13 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0643 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0644 | §14 | DECISION | DECISIONS | SEE-§14 | app/Integrations/ | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
-| REQ-0645 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
+| REQ-0645 | §14 | DECISION | DECISIONS | SEE-§14 | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | القرار 3: التسجيل مجاني، لا رسوم |
 | REQ-0646 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0647 | §14 | DECISION | DECISIONS | SEE-§14 | app/Integrations/ | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0648 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
