@@ -52,8 +52,8 @@
 | REQ-0045 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0046 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0047 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0048 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0049 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0048 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0049 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0050 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0051 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
@@ -143,9 +143,9 @@
 | REQ-0136 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0137 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0138 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0139 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0140 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0141 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0139 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0140 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0141 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0142 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0143 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0144 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -153,8 +153,8 @@
 | REQ-0146 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0147 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0148 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0149 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0150 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0149 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0150 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0151 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0152 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0153 | §4.6 | BUILD | MVP | TODO |  |  |  |
@@ -174,41 +174,41 @@
 | REQ-0167 | §4.7 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0168 | §4.7 | BUILD | MVP | IN-PROGRESS | app/Support/Database/Rls.php (archiveOnly) | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على الجداول المالية والعقود عند إنشائها |
 | REQ-0169 | §4.7 | BUILD | MVP | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
-| REQ-0170 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0171 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0172 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
-| REQ-0173 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 |
-| REQ-0174 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0175 | §5.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
+| REQ-0170 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
+| REQ-0171 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
+| REQ-0172 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 · P3: مرفوض حتى المرحلة 3 (اختبار REQ-0172) |
+| REQ-0173 | §5.1 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L971 · P3: مرفوض حتى المرحلة 3 (اختبار REQ-0172) |
+| REQ-0174 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
+| REQ-0175 | §5.1 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
 | REQ-0176 | §5.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php | MIXED→MVP: أ.8 D6: العلَم وشرط الترخيص جزء من نموذج الوحدة؛ فتح التأجير اليومي P3 §12 L971 — قرار Q1 |
-| REQ-0177 | §5.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 (سعر الشهر والسنة)؛ سعر اليوم/الأسبوع مع P3 §12 L971 |
-| REQ-0178 | §5.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0179 | §5.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0180 | §5.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0181 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0182 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0183 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0184 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0185 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0186 | §5.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0187 | §5.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0188 | §5.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0189 | §5.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0190 | §5.5 | BUILD | MVP | TODO |  |  |  |
-| REQ-0191 | §5.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0177 | §5.2 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 (سعر الشهر والسنة)؛ سعر اليوم/الأسبوع مع P3 §12 L971 |
+| REQ-0178 | §5.3 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0179 | §5.3 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0180 | §5.3 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0181 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0182 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0183 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0184 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0185 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0186 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0187 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0188 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0189 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0190 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0191 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0192 | §5.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
 | REQ-0193 | §5.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
-| REQ-0194 | §5.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ التصنيف حسب النية يعتمد على الاستطلاع P2 §12 L958 |
-| REQ-0195 | §5.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0196 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0197 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0198 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0199 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0200 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0201 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0202 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0203 | §5.7 | BUILD | MVP | TODO |  |  |  |
-| REQ-0204 | §5.7 | BUILD | MVP | TODO |  |  |  |
+| REQ-0194 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ التصنيف حسب النية يعتمد على الاستطلاع P2 §12 L958 |
+| REQ-0195 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) · NEEDS-PRO-REVIEW: الرموز تُطابَق مع النص الرسمي قبل الإطلاق |
+| REQ-0196 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0197 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | NEEDS-PRO-REVIEW: تاريخ الانتهاء محسوب 2030-09-24 (Q12) |
+| REQ-0198 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0199 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0200 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0201 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0202 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0203 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | المرجع النص الرسمي: التجميد يشمل القائمة والجديدة |
+| REQ-0204 | §5.7 | BUILD | MVP | DONE | app/Leasing/PolicyService.php | tests/Feature/Leasing/LeasingEngineTest.php | الجدول يدعم رسوم إيجار بتاريخ سريان؛ لا مبالغ في الوثيقة فلا صفوف |
 | REQ-0205 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
 | REQ-0206 | §5.8 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
 | REQ-0207 | §5.8 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
@@ -463,9 +463,9 @@
 | REQ-0456 | §9.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0457 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
 | REQ-0458 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0459 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
+| REQ-0459 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/ManualEjarGateway.php, app/Leasing/LeasingService.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
 | REQ-0460 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
-| REQ-0461 | §10.1 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L939 |
+| REQ-0461 | §10.1 | BUILD | MVP | DONE | app/Integrations/Ejar/ManualEjarGateway.php, app/Leasing/LeasingService.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939 |
 | REQ-0462 | §10.1 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L960 |
 | REQ-0463 | §10.1 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php | MIXED→MVP: §12 L939 |
 | REQ-0464 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
@@ -682,7 +682,7 @@
 | REQ-0675 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0676 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0677 | §15 | DECIDED | BINDING | BINDING |  |  |  |
-| REQ-0678 | §15 | DECIDED | BINDING | BINDING |  |  |  |
+| REQ-0678 | §15 | DECIDED | BINDING | BINDING | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0679 | §16 | SOURCE | SOURCES | READ |  |  |  |
 | REQ-0680 | §16 | SOURCE | SOURCES | READ |  |  |  |
 | REQ-0681 | §16 | SOURCE | SOURCES | READ |  |  |  |
