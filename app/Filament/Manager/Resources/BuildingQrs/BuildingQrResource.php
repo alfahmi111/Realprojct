@@ -62,12 +62,12 @@ class BuildingQrResource extends Resource
             ->headerActions([
                 Action::make('create')->label('باركود لمبنى')
                     ->schema([Select::make('building_id')->label('المبنى')->options(fn () => Building::whereNull('archived_at')->whereNotIn('id', BuildingQr::pluck('building_id'))->pluck('name_ar', 'id'))->required()])
-                    ->action(fn (array $d) => Ui::attempt(fn () => $svc()->create(Building::findOrFail($d['building_id'])), 'أُنشئ الرابط الثابت')),
+                    ->action(fn (array $data) => Ui::attempt(fn () => $svc()->create(Building::findOrFail($data['building_id'])), 'أُنشئ الرابط الثابت')),
             ])
             ->recordActions([
                 Action::make('license')->label('ترخيص الإعلان')
                     ->schema([TextInput::make('number')->label('رقم ترخيص الإعلان العقاري')->required(), DatePicker::make('expires')->label('ينتهي')->required()])
-                    ->action(fn (BuildingQr $r, array $d) => Ui::attempt(fn () => $svc()->setAdLicense($r, $d['number'], CarbonImmutable::parse($d['expires'])))),
+                    ->action(fn (BuildingQr $r, array $data) => Ui::attempt(fn () => $svc()->setAdLicense($r, $data['number'], CarbonImmutable::parse($data['expires'])))),
                 Action::make('pause')->label(fn (BuildingQr $r) => $r->paused ? 'إعادة التشغيل' : 'إيقاف مؤقت')
                     ->action(fn (BuildingQr $r) => Ui::attempt(fn () => $svc()->pause($r, ! $r->paused))),
                 Action::make('open')->label('فتح الصفحة')->url(fn (BuildingQr $r) => url('/b/' . $r->code), true),

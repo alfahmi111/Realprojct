@@ -59,7 +59,7 @@ class AddBuildingWizard extends Page
                 Step::make('بيانات العقار')->schema([
                     Select::make('portfolio_id')->label('المحفظة')->options(fn () => Portfolio::pluck('name_ar', 'id'))->required()
                         ->createOptionForm([TextInput::make('name_ar')->label('اسم المحفظة')->required()])
-                        ->createOptionUsing(fn (array $d) => Portfolio::create(['name_ar' => $d['name_ar']])->id),
+                        ->createOptionUsing(fn (array $data) => Portfolio::create(['name_ar' => $data['name_ar']])->id),
                     TextInput::make('name_ar')->label('اسم العقار')->required(),
                     TextInput::make('name_en')->label('الاسم بالإنجليزية'),
                     TextInput::make('deed_number')->label('رقم الصك'),

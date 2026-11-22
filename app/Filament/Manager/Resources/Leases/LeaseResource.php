@@ -112,8 +112,8 @@ class LeaseResource extends Resource
                     ->schema(fn (Lease $r) => [
                         Select::make('by')->label('من')->options(['tenant' => 'المستأجر', 'lessor' => 'المؤجر'])->required()->live(),
                         DatePicker::make('on')->label('تاريخ الإشعار')->required()->default(now()),
-                        Select::make('reason')->label('سبب الرفض (المؤجر)')->options(fn () => app(PolicyService::class)->nonRenewalReasons($r->unit->property, CarbonImmutable::now())->pluck('title_ar', 'code'))->visible(fn ($get) => $get('by') === 'lessor'),
-                        FileUpload::make('document')->label('المستند الداعم')->directory('subscribers/' . $r->subscriber_id . '/notices')->visible(fn ($get) => $get('by') === 'lessor'),
+                        Select::make('reason')->label('سبب الرفض (المؤجر)')->options(fn () => app(PolicyService::class)->nonRenewalReasons($r->unit->property, CarbonImmutable::now())->pluck('title_ar', 'code'))->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('by') === 'lessor'),
+                        FileUpload::make('document')->label('المستند الداعم')->directory('subscribers/' . $r->subscriber_id . '/notices')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('by') === 'lessor'),
                     ])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->giveNotice($r, $data['by'], CarbonImmutable::parse($data['on']), $data['reason'] ?? null, $data['document'] ?? null), 'سُجّل الإشعار')),
                 Action::make('renew')->label('تجديد')->visible(fn (Lease $r) => in_array($r->status, ['active', 'expired'], true))

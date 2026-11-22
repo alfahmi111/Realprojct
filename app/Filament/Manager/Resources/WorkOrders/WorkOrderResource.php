@@ -59,7 +59,7 @@ class WorkOrderResource extends Resource
         return $schema->components([
             Select::make('type')->label('النوع')->options(['corrective' => 'تصحيحية', 'emergency' => 'طارئة', 'unit_prep' => 'تجهيز وحدة', 'preventive' => 'وقائية'])->required(),
             Select::make('property_id')->label('العقار')->options(fn () => Property::whereNull('archived_at')->pluck('name_ar', 'id'))->required()->live(),
-            Select::make('asset_id')->label('الأصل')->options(fn ($get) => Asset::whereNull('archived_at')->whereHas('space', fn ($q) => $q->where('property_id', $get('property_id')))->pluck('name_ar', 'id'))->searchable(),
+            Select::make('asset_id')->label('الأصل')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => Asset::whereNull('archived_at')->whereHas('space', fn ($q) => $q->where('property_id', $get('property_id')))->pluck('name_ar', 'id'))->searchable(),
             Textarea::make('description')->label('الوصف')->required()->columnSpanFull(),
             FileUpload::make('photos_report')->label('الصور')->multiple()->image()->directory('work-orders')->columnSpanFull(),
         ])->columns(2);
@@ -96,22 +96,22 @@ class WorkOrderResource extends Resource
                 ViewAction::make(),
                 Action::make('triage')->label('فرز')->visible(fn (WorkOrder $r) => $r->status === 'reported')
                     ->schema([Select::make('priority')->label('الأولوية')->options(['emergency' => 'طارئ', 'urgent' => 'عاجل', 'normal' => 'عادي', 'scheduled' => 'مجدول'])->required()])
-                    ->action(fn (WorkOrder $r, array $d) => Ui::attempt(fn () => $svc()->triage($r, $d['priority']))),
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->triage($r, $data['priority']))),
                 Action::make('estimate')->label('تقدير التكلفة')->visible(fn (WorkOrder $r) => $r->status === 'triaged')
                     ->schema([Ui::money('cost', 'التكلفة التقديرية')->required()])
-                    ->action(fn (WorkOrder $r, array $d) => Ui::attempt(fn () => $svc()->estimate($r, Money::of((int) $d['cost'])))),
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->estimate($r, Money::of((int) $data['cost'])))),
                 Action::make('assign')->label('إسناد')->visible(fn (WorkOrder $r) => $r->status === 'estimated')
                     ->schema([
                         Select::make('technician')->label('فني داخلي')->options(fn () => User::where('role', 'technician')->whereNull('archived_at')->pluck('name', 'id')),
                         Select::make('vendor')->label('أو مورّد')->options(fn () => Vendor::whereNull('archived_at')->pluck('name_ar', 'id')),
                     ])
-                    ->action(fn (WorkOrder $r, array $d) => Ui::attempt(fn () => $svc()->assign($r, isset($d['technician']) ? User::find($d['technician']) : null, isset($d['vendor']) ? Vendor::find($d['vendor']) : null), 'أُسند')),
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->assign($r, isset($data['technician']) ? User::find($data['technician']) : null, isset($data['vendor']) ? Vendor::find($data['vendor']) : null), 'أُسند')),
                 Action::make('cost')->label('إضافة تكلفة')->visible(fn (WorkOrder $r) => in_array($r->status, ['assigned', 'in_progress', 'completed'], true))
                     ->schema([Select::make('kind')->label('النوع')->options(['labour' => 'عمالة', 'part' => 'قطع', 'vendor' => 'مورّد'])->required(), TextInput::make('description')->label('البند')->required(), TextInput::make('quantity')->label('الكمية')->integer()->minValue(1)->default(1)->required(), Ui::money('unit_cost', 'سعر الوحدة')->required()])
-                    ->action(fn (WorkOrder $r, array $d) => Ui::attempt(fn () => $svc()->addCost($r, $d['kind'], $d['description'], (int) $d['quantity'], Money::of((int) $d['unit_cost'])))),
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->addCost($r, $data['kind'], $data['description'], (int) $data['quantity'], Money::of((int) $data['unit_cost'])))),
                 Action::make('close')->label('إغلاق وتحويل التكلفة')->visible(fn (WorkOrder $r) => in_array($r->status, ['confirmed', 'completed'], true))
                     ->schema([FileUpload::make('tenant_caused')->label('موافقة موثّقة لتحميل التكلفة على المستأجر (اختياري)')->directory('work-orders/approvals')])
-                    ->action(fn (WorkOrder $r, array $d) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $d['tenant_caused'] ?? null), 'أُغلق؛ الصرف بانتظار المراجِع')),
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $data['tenant_caused'] ?? null), 'أُغلق؛ الصرف بانتظار المراجِع')),
             ]);
     }
 

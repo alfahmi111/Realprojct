@@ -56,8 +56,8 @@ class LeasableUnitResource extends Resource
         return $schema->components([
             TextInput::make('name_ar')->label('الاسم')->required(), TextInput::make('name_en')->label('الاسم بالإنجليزية'),
             Select::make('allowed_tracks')->label('المسارات المسموحة')->options(['long' => 'طويل فقط', 'short' => 'قصير فقط', 'both' => 'الاثنان'])->required()->live(),
-            TextInput::make('hospitality_license_no')->label('رقم ترخيص الضيافة')->required(fn ($get) => $get('allowed_tracks') !== 'long'),
-            DatePicker::make('hospitality_license_expires_on')->label('انتهاء الترخيص')->required(fn ($get) => $get('allowed_tracks') !== 'long'),
+            TextInput::make('hospitality_license_no')->label('رقم ترخيص الضيافة')->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('allowed_tracks') !== 'long'),
+            DatePicker::make('hospitality_license_expires_on')->label('انتهاء الترخيص')->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('allowed_tracks') !== 'long'),
         ])->columns(2);
     }
 

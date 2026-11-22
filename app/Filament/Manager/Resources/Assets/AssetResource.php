@@ -50,7 +50,7 @@ class AssetResource extends Resource
         return $schema->components([
                 Select::make('space_id')->label('الموقع في الشجرة')->options(fn () => \App\Models\Space::whereNull('archived_at')->orderBy('code')->get()->mapWithKeys(fn ($s) => [$s->id => $s->code . ' — ' . $s->name_ar]))->searchable()->required(),
                 Select::make('category')->label('الفئة')->options(collect(\App\Maintenance\AssetTaxonomy::CATEGORIES)->map(fn ($c) => $c['ar']))->live()->required(),
-                Select::make('type')->label('النوع')->options(fn ($get) => \App\Maintenance\AssetTaxonomy::CATEGORIES[$get('category')]['types'] ?? [])->required(),
+                Select::make('type')->label('النوع')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => \App\Maintenance\AssetTaxonomy::CATEGORIES[$get('category')]['types'] ?? [])->required(),
                 TextInput::make('qr_code')->label('رمز QR الداخلي')->required()->default(fn () => 'A-' . strtoupper(\Illuminate\Support\Str::random(10))),
                 TextInput::make('name_ar')->label('الاسم')->required(),
                 TextInput::make('brand')->label('الماركة'),

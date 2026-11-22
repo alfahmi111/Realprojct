@@ -60,11 +60,11 @@ class LeaseOfferResource extends Resource
             DatePicker::make('valid_until')->label('صالح حتى'),
             Repeater::make('escalations')->label('الزيادات المجدولة')->schema([
                 Select::make('kind')->label('النوع')->options(['percentage' => 'نسبة', 'amount' => 'مبلغ'])->required()->live(),
-                TextInput::make('percentage_bp')->label('النسبة (نقطة أساس، 500 = 5%)')->integer()->visible(fn ($get) => $get('kind') === 'percentage'),
-                Ui::money('amount_minor', 'المبلغ السنوي')->visible(fn ($get) => $get('kind') === 'amount'),
+                TextInput::make('percentage_bp')->label('النسبة (نقطة أساس، 500 = 5%)')->integer()->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'percentage'),
+                Ui::money('amount_minor', 'المبلغ السنوي')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'amount'),
                 TextInput::make('contract_year')->label('من سنة العقد')->integer()->minValue(2),
                 DatePicker::make('effective_on')->label('أو من تاريخ'),
-            ])->columns(3)->columnSpanFull(),
+            ])->columns(3)->defaultItems(0)->columnSpanFull(),
         ])->columns(2);
     }
 
