@@ -51,7 +51,7 @@
 | REQ-0044 | §2.3 | CONTEXT | CONTEXT | READ |  |  |  |
 | REQ-0045 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0046 | §2.4 | BUILD | MVP | TODO |  |  |  |
-| REQ-0047 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0047 | §2.4 | BUILD | MVP | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
 | REQ-0048 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0049 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0050 | §2.4 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
@@ -126,7 +126,7 @@
 | REQ-0119 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0120 | §4.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0121 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0122 | §4.5 | BUILD | MVP | TODO |  |  |  |
+| REQ-0122 | §4.5 | BUILD | MVP | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
 | REQ-0123 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0124 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0125 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -473,7 +473,7 @@
 | REQ-0466 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · البوابة الفعلية غير مختارة — BLOCKED للإنتاج |
 | REQ-0467 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0468 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: §12 L950 · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
-| REQ-0469 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L938 |
+| REQ-0469 | §10.2 | BUILD | MVP | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php | MIXED→MVP: §12 L938 · الطبقة جاهزة؛ مكان المعالجة قرار صاحب المشروع (REQ-0567) — BLOCKED للإنتاج |
 | REQ-0470 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ §10.2 L782 = MVP · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
 | REQ-0471 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0472 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
@@ -488,7 +488,7 @@
 | REQ-0481 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0482 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0483 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0484 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0484 | §11.1 | BUILD | FOUNDATION | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php | شرط المعالجة داخل المملكة أو بموافقة: القارئ معطّل حتى القرار |
 | REQ-0485 | §11.1 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0486 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0487 | §11.2 | BUILD | FOUNDATION | DONE | app/Support/Database/Rls.php, app/Tenancy/ | tests/Feature/Foundation/TenantIsolationTest.php |  |
@@ -502,7 +502,7 @@
 | REQ-0495 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0496 | §11.2 | BUILD | FOUNDATION | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0497 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
-| REQ-0498 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0498 | §11.2 | BUILD | FOUNDATION | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
 | REQ-0499 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0500 | §11.3 | BUILD | FOUNDATION | DONE | app/Console/Commands/LaunchCheck.php, composer.json, phpunit.xml, docs/OPERATIONS.md | tests/Feature/Foundation/OperationsTest.php |  |
 | REQ-0501 | §11.3 | BUILD | FOUNDATION | BLOCKED | docs/OPERATIONS.md |  | Q11: مزوّد الاستضافة/المراقبة |
@@ -667,7 +667,7 @@
 | REQ-0660 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0661 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0662 | §15 | DECIDED | BINDING | BINDING |  |  |  |
-| REQ-0663 | §15 | DECIDED | BINDING | BINDING |  |  |  |
+| REQ-0663 | §15 | DECIDED | BINDING | BINDING | app/Migration/ | tests/Feature/Migration/ImportExportTest.php |  |
 | REQ-0664 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0665 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0666 | §15 | DECIDED | BINDING | BINDING |  |  |  |
