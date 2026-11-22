@@ -22,3 +22,7 @@ Route::middleware(['web', 'auth'])->prefix('api/tech')->group(function () {
     Route::get('assets/{qr}', [\App\Http\Controllers\Api\TechnicianController::class, 'scan']);
     Route::post('sync', [\App\Http\Controllers\Api\TechnicianController::class, 'sync']);
 });
+
+// Public lease-offer acceptance link (REQ-0184).
+Route::get('/offer/{token}', [\App\Http\Controllers\OfferAcceptController::class, 'show'])->name('offer.accept');
+Route::post('/offer/{token}', [\App\Http\Controllers\OfferAcceptController::class, 'accept'])->middleware('throttle:10,1')->name('offer.accept.post');

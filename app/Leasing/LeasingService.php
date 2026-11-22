@@ -122,6 +122,7 @@ class LeasingService
             $this->occupy($offer->unit, $start, $end, 'hold', offerId: $offer->id);
             $token = Str::random(48);
             $offer->forceFill(['status' => 'sent', 'accept_token' => hash('sha256', $token)])->save();
+            DB::table('lease_offer_tokens')->insert(['token_hash' => hash('sha256', $token), 'subscriber_id' => $offer->subscriber_id]);
             return $token;
         });
     }
