@@ -42,7 +42,7 @@ trait ConfiguresPanel
             ->font('Tajawal', url: asset('fonts/fonts.css'), provider: \Filament\FontProviders\LocalFontProvider::class)
             ->renderHook(PanelsRenderHook::STYLES_AFTER, fn () => '<link rel="stylesheet" href="' . asset('brand/withaq-theme.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-home.css') . '">')
             ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_START, fn () => view('brand.auth-aside'))
-            ->login()
+            ->login(WithaqLogin::class)
             ->passwordReset()
             ->profile()
             ->darkMode(true)
