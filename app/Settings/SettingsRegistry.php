@@ -82,6 +82,8 @@ final class SettingsRegistry
             'security.session_minutes' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 5, 'max' => 10080, 'default' => null, 'req' => 'REQ-0370'],
             'security.password_policy' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0370'],
             'security.dual_approval' => ['levels' => ['subscriber'], 'type' => 'bool', 'default' => true, 'pending' => 'PENDING-D10', 'req' => 'REQ-0069, REQ-0370, REQ-0652'],
+            // Launch gates (REQ-0508 penetration test before launch).
+            'launch.penetration_test_passed' => ['levels' => ['platform'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0508'],
             'data.retention' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0371'],
         ];
     }

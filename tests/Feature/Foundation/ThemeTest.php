@@ -111,6 +111,8 @@ class ThemeTest extends TestCase
     {
         $this->assertNull($this->themes()->activePresetKey());
         $this->assertSame(1, Artisan::call('platform:launch-check'));
+        app(Settings::class)->setPlatform('launch.penetration_test_passed', true);
+        $this->assertSame(1, Artisan::call('platform:launch-check'));   // theme still unset
         app(Settings::class)->setPlatform('platform.default_theme', 'ink');
         $this->assertSame(0, Artisan::call('platform:launch-check'));
         $this->assertSame('ink', $this->themes()->activePresetKey());
