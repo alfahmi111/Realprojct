@@ -10,3 +10,10 @@
 | الأمان (REQ-0505…REQ-0508) | حمايات Laravel، تشفير، مصادقة ثنائية، فحص اختراق | حمايات Laravel مفعّلة، تشفير الجلسات وأسرار المصادقة الثنائية وبيانات التكاملات، مصادقة ثنائية إلزامية للمدير والمالك، فحص الإطلاق يمنع الإطلاق دون فحص اختراق | فحص الاختراق نفسه قبل الإطلاق؛ TLS على الاستضافة |
 
 فحص الإطلاق: `php artisan platform:launch-check --production-config`.
+
+## بيئة التطوير المحلية (AMPPS) — ضُبطت في 2026-11-22
+
+- Apache يحمّل PHP 8.4 من `C:/Program Files/Ampps/php84` (نسخة احتياطية من الإعداد السابق: `apache/conf/httpd.conf.backup-php82`).
+- `Alias /Newprojct` يشير إلى مجلد `public` مباشرة مع `FallbackResource /Newprojct/index.php`، ومجلد المشروع نفسه مرفوض الوصول (`Require all denied`) فلا تُكشف ملفات مثل `.env`.
+- `APP_URL=http://localhost/Newprojct` في `.env`؛ الاختبارات تستخدم `http://localhost` (phpunit.xml).
+- ملاحظة: إن غيّرت إصدار PHP من لوحة AMPPS فقد تعيد كتابة `httpd.conf`؛ عندها تُعاد هذه الأسطر.
