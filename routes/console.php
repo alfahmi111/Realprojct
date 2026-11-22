@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 
 // Nightly reconciliation and monthly revenue recognition (REQ-0434, REQ-0432).
 \Illuminate\Support\Facades\Schedule::command('finance:nightly')->dailyAt('02:00');
+\Illuminate\Support\Facades\Schedule::command('notifications:run')->everyFiveMinutes();
+\Illuminate\Support\Facades\Schedule::command('notifications:run --daily')->dailyAt('05:00');   // 08:00 Riyadh

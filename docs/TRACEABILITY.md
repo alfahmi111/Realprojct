@@ -54,7 +54,7 @@
 | REQ-0047 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0048 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0049 | §2.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
-| REQ-0050 | §2.4 | BUILD | MVP | TODO |  |  |  |
+| REQ-0050 | §2.4 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0051 | §2.4 | BUILD | MVP | TODO |  |  |  |
 | REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0053 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 9.2 (REQ-0425) المصنّف P2 §12 L967 — قرار Q5: يُنفَّذ مع P2 |
@@ -209,9 +209,9 @@
 | REQ-0202 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0203 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | المرجع النص الرسمي: التجميد يشمل القائمة والجديدة |
 | REQ-0204 | §5.7 | BUILD | MVP | DONE | app/Leasing/PolicyService.php | tests/Feature/Leasing/LeasingEngineTest.php | الجدول يدعم رسوم إيجار بتاريخ سريان؛ لا مبالغ في الوثيقة فلا صفوف |
-| REQ-0205 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
-| REQ-0206 | §5.8 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
-| REQ-0207 | §5.8 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
+| REQ-0205 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 · MIXED: السلّم MVP (تذكيرات/تصعيد)؛ ملف المتأخرات P2 |
+| REQ-0206 | §5.8 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: §12 L950 |
+| REQ-0207 | §5.8 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: §12 L950 |
 | REQ-0208 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
 | REQ-0209 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
 | REQ-0210 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
@@ -357,15 +357,15 @@
 | REQ-0350 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0351 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0352 | §7.6ج | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
-| REQ-0353 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0354 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0355 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0356 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0357 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0358 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0359 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0360 | §7.6د | BUILD | MVP | TODO |  |  |  |
-| REQ-0361 | §7.6د | BUILD | MVP | TODO |  |  |  |
+| REQ-0353 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0354 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0355 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0356 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0357 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0358 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0359 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0360 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
+| REQ-0361 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | العدّاد منجز؛ حصة الباقة غير محددة في الوثيقة |
 | REQ-0362 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php |  |
 | REQ-0363 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
 | REQ-0364 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
@@ -472,9 +472,9 @@
 | REQ-0465 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0466 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · البوابة الفعلية غير مختارة — BLOCKED للإنتاج |
 | REQ-0467 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
-| REQ-0468 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L950 |
+| REQ-0468 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: §12 L950 · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
 | REQ-0469 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L938 |
-| REQ-0470 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ §10.2 L782 = MVP |
+| REQ-0470 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ §10.2 L782 = MVP · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
 | REQ-0471 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
 | REQ-0472 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
 | REQ-0473 | §10.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L946 |
@@ -500,7 +500,7 @@
 | REQ-0493 | §11.2 | BUILD | FOUNDATION | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0494 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Providers/Filament/, app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
 | REQ-0495 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
-| REQ-0496 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
+| REQ-0496 | §11.2 | BUILD | FOUNDATION | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0497 | §11.2 | BUILD | FOUNDATION | IN-PROGRESS | app/Audit/, app/Support/Database/Rls.php | tests/Feature/Foundation/AuditLogTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
 | REQ-0498 | §11.2 | BUILD | FOUNDATION | TODO |  |  |  |
 | REQ-0499 | §11.3 | BUILD | FOUNDATION | TODO |  |  |  |
