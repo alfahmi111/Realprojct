@@ -25,6 +25,12 @@ use UnitEnum;
 /** Generated screen: الأصول الافتراضية لكل نوع (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
 class UnitTypeAssetTemplateResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('settings.subscriber');
+    }
     protected static ?string $model = UnitTypeAssetTemplate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;

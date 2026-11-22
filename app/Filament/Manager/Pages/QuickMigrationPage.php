@@ -26,6 +26,12 @@ use UnitEnum;
  */
 class QuickMigrationPage extends Page
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('properties.import');
+    }
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowUpTray;
 
     protected static string|UnitEnum|null $navigationGroup = 'العقارات';

@@ -31,6 +31,12 @@ use UnitEnum;
  */
 class LeasableUnitResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('properties.view');
+    }
     protected static ?string $model = LeasableUnit::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;

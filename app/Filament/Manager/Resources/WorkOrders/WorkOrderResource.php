@@ -32,6 +32,12 @@ use UnitEnum;
 /** Work orders through the lifecycle of spec §6.3 (REQ-0227…REQ-0230, REQ-0318: follow and assign). */
 class WorkOrderResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('maintenance.view');
+    }
     protected static ?string $model = WorkOrder::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrench;

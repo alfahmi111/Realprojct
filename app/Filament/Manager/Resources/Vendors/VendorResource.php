@@ -25,6 +25,12 @@ use UnitEnum;
 /** Generated screen: الموردون (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
 class VendorResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('maintenance.vendors');
+    }
     protected static ?string $model = Vendor::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;

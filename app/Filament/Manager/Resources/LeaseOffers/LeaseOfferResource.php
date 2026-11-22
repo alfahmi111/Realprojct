@@ -25,6 +25,12 @@ use UnitEnum;
 /** Lease offers (REQ-0184, REQ-0317): create → submit for approvals → approve/reject → send link → tenant accepts. */
 class LeaseOfferResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('leasing.view');
+    }
     protected static ?string $model = LeaseOffer::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentPlus;

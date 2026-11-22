@@ -26,6 +26,12 @@ use UnitEnum;
 /** Properties with their tree (spec §4.2). New properties are added through the wizard (§4.5). */
 class PropertyResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('properties.view');
+    }
     protected static ?string $model = Property::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Manager\Pages\HomeDashboard;
 use App\Filament\Support\ConfiguresPanel;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -18,6 +19,6 @@ class ManagerPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Manager/Resources'), for: 'App\Filament\Manager\Resources')
             ->discoverPages(in: app_path('Filament/Manager/Pages'), for: 'App\Filament\Manager\Pages')
             ->discoverWidgets(in: app_path('Filament/Manager/Widgets'), for: 'App\Filament\Manager\Widgets')
-            ->pages([Dashboard::class]);
+            ->pages([HomeDashboard::class]);
     }
 }

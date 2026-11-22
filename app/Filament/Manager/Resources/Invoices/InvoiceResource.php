@@ -24,6 +24,12 @@ use UnitEnum;
 /** Invoices with their tax-treatment code per line (REQ-0420, REQ-0424); cancellation through maker/checker (REQ-0069). */
 class InvoiceResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.view');
+    }
     protected static ?string $model = Invoice::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;

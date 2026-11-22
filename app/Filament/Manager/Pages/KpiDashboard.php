@@ -7,6 +7,12 @@ use App\Models\Property;
 
 class KpiDashboard extends KpiPage
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('reports.view');
+    }
     protected static ?string $slug = 'kpis';
 
     protected function propertyIds(): array

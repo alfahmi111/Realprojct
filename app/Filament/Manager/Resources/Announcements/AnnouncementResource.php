@@ -25,6 +25,12 @@ use UnitEnum;
 /** Generated screen: إعلانات للمستأجرين (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
 class AnnouncementResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('leasing.announcements');
+    }
     protected static ?string $model = Announcement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;

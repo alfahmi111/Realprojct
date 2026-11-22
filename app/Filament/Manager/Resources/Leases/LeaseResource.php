@@ -32,6 +32,12 @@ use UnitEnum;
 /** Leases and their lifecycle (spec §5.4, §10.1 manual-assisted Ejar). Leases come from accepted offers or imports. */
 class LeaseResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('leasing.view');
+    }
     protected static ?string $model = Lease::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;

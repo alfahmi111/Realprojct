@@ -26,3 +26,15 @@ Route::middleware(['web', 'auth'])->prefix('api/tech')->group(function () {
 // Public lease-offer acceptance link (REQ-0184).
 Route::get('/offer/{token}', [\App\Http\Controllers\OfferAcceptController::class, 'show'])->name('offer.accept');
 Route::post('/offer/{token}', [\App\Http\Controllers\OfferAcceptController::class, 'accept'])->middleware('throttle:10,1')->name('offer.accept.post');
+
+// LOCAL DEVELOPMENT ONLY — single-use login links from `php artisan dev:login-link` (never registered elsewhere).
+if (app()->environment('local')) {
+    Route::get('/dev-login/{token}', function (string $token) {
+        $data = \Illuminate\Support\Facades\Cache::pull('dev-login:' . hash('sha256', $token)) ?? abort(404);
+        app(\App\Tenancy\TenantContext::class)->setUserId($data['id']);
+        $user = \App\Models\User::findOrFail($data['id']);
+        \Illuminate\Support\Facades\Auth::login($user);
+        session()->put('filament.multi_factor_authenticated', true);
+        return redirect($data['path']);
+    })->middleware('web');
+}

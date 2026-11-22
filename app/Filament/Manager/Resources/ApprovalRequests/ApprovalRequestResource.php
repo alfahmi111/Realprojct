@@ -19,6 +19,12 @@ use UnitEnum;
 /** Maker/checker queue (REQ-0069, REQ-0315): another user with higher authority approves; nobody approves their own entry. */
 class ApprovalRequestResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.view');
+    }
     protected static ?string $model = ApprovalRequest::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckBadge;

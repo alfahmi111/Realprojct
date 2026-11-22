@@ -22,6 +22,12 @@ use UnitEnum;
 /** Record a payment and issue a receipt (REQ-0316); money goes to the manager or owner, never the platform (REQ-0436). */
 class PaymentResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.view');
+    }
     protected static ?string $model = Payment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;

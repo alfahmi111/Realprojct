@@ -20,6 +20,12 @@ use UnitEnum;
 /** Due schedule lines → rent invoices (REQ-0300, REQ-0574); only for registered/active leases (REQ-0185). */
 class BillingScheduleLineResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.view');
+    }
     protected static ?string $model = BillingScheduleLine::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;

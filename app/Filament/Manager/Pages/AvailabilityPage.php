@@ -14,6 +14,12 @@ use UnitEnum;
 /** Availability grid of a property's units on a time axis (REQ-0178, REQ-0180): leased, vacant, held, maintenance, vacating. */
 class AvailabilityPage extends Page
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('leasing.view');
+    }
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTableCells;
 
     protected static string|UnitEnum|null $navigationGroup = 'التأجير';

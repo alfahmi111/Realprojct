@@ -25,6 +25,12 @@ use UnitEnum;
 /** Generated screen: الصيانة الوقائية (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
 class PpmPlanResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('maintenance.ppm');
+    }
     protected static ?string $model = PpmPlan::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;

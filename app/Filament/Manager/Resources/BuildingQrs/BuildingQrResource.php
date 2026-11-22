@@ -23,6 +23,12 @@ use UnitEnum;
 /** Building QR, free version (spec §8): permanent link, ad licence, pause, scans, waitlist length. */
 class BuildingQrResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('prospects.view');
+    }
     protected static ?string $model = BuildingQr::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQrCode;

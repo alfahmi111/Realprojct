@@ -22,6 +22,12 @@ use UnitEnum;
 /** Compliance work queue from the nightly reconciliation and the Ejar CSV match (REQ-0434, REQ-0435, REQ-0014). */
 class ReconciliationIssueResource extends Resource
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.view');
+    }
     protected static ?string $model = ReconciliationIssue::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;

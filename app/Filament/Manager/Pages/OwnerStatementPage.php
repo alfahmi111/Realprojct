@@ -21,6 +21,12 @@ use UnitEnum;
 /** Owner monthly statement (REQ-0305, REQ-0431): collected − fee (with %) − maintenance per work order − margin = net. */
 class OwnerStatementPage extends Page
 {
+
+    /** Role permission gate (REQ-0494): hidden from the menu and forbidden by URL without it. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission('finance.statements');
+    }
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
     protected static string|UnitEnum|null $navigationGroup = 'المالية';
