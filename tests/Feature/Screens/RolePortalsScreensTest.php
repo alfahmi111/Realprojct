@@ -123,4 +123,12 @@ class RolePortalsScreensTest extends TestCase
         $this->actingAs($this->tech)->get('/tenant/my-unit')->assertForbidden();
         $this->actingAs($this->tenantUser)->get('/platform/subscribers')->assertForbidden();
     }
+
+    /** REQ-0271 — opening an interface (and signing in) lands on that role's own home, never an empty dashboard. */
+    public function test_req_0271_interface_root_opens_the_role_home(): void
+    {
+        $this->actingAs($this->ownerUser)->get('/owner')->assertRedirect(url('/owner/statement'));
+        $this->actingAs($this->tenantUser)->get('/tenant')->assertRedirect(url('/tenant/my-unit'));
+        $this->actingAs($this->tech)->get('/tech')->assertRedirect(url('/tech/tasks'));
+    }
 }

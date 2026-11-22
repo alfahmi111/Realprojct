@@ -29,6 +29,8 @@ class TechnicianHome extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
+    protected static ?int $navigationSort = -10;   // the role home opens first (the panel root redirects here)
+
     protected static ?string $navigationLabel = 'مهامي';
 
     protected static ?string $title = 'مهامي';
@@ -58,6 +60,7 @@ class TechnicianHome extends Page
         $tech = auth()->user();
         $openCount = InventoryCount::where('performed_by', $tech->id)->where('status', 'open')->first();
         return [
+            'header' => app(\App\Dashboards\HomeOverview::class)->header($tech, CarbonImmutable::now()),
             'orders' => app(TechnicianApp::class)->assigned($tech),
             'count' => $openCount,
             'expected' => $openCount ? app(FoundingInventory::class)->expected($openCount) : [],

@@ -1,0 +1,116 @@
+/* =============================================================
+   وِثاق — role homes for owner, tenant and technician.
+   Shares the greeting band and panels of withaq-home.css; adds
+   one signature element per role:
+     owner      → the statement "waterfall" (rent flowing down to net)
+     tenant     → the lease timeline with the notice deadline marked
+     technician → task cards with a priority edge, thumb-sized controls
+   ============================================================= */
+.wq-portal { display: grid; gap: 20px; }
+.wq-portal .fi-header { display: none; }
+:where(.wq-portal) a { text-decoration: none; color: inherit; }
+.wq-portal :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; border-radius: 8px; }
+.wq-portal, .wq-portal .fi-page-content, .wq-portal section, .wq-grid > * { min-width: 0; }
+
+.wq-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; }
+.wq-body { padding: 18px 22px; display: grid; gap: 14px; }
+.wq-muted { color: var(--color-muted); font-size: .9rem; }
+.wq-empty { padding: 26px 22px; color: var(--color-muted); text-align: center; }
+
+/* Form controls inside portal panels (native inputs styled to the theme) */
+.wq-field { display: grid; gap: 6px; }
+.wq-field > span { font-size: .85rem; font-weight: 700; color: var(--color-muted); }
+.wq-input, .wq-portal select.wq-input, .wq-portal textarea.wq-input {
+    width: 100%; min-height: 44px; padding: 10px 14px; border-radius: var(--wq-radius-md);
+    border: 1px solid var(--color-line); background: var(--color-surface); color: var(--color-ink); font: inherit;
+}
+.wq-portal textarea.wq-input { min-height: 96px; resize: vertical; }
+.wq-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-soft); }
+.wq-row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+.wq-row > .wq-field { flex: 1 1 140px; }
+.wq-check { display: inline-flex; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; }
+.wq-check input { width: 20px; height: 20px; accent-color: var(--color-primary); }
+
+/* File picker: the native control is hidden behind a labelled drop zone */
+.wq-file { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 14px;
+    border: 1.5px dashed var(--color-line); border-radius: var(--wq-radius-md); color: var(--color-muted); cursor: pointer; }
+.wq-file:hover, .wq-file:focus-within { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-soft); }
+.wq-file input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.wq-file svg { width: 22px; height: 22px; flex: none; }
+
+/* Status chips (same five fixed colours as the facade) */
+.wq-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700;
+    background: var(--bg, var(--color-soft)); color: var(--fg, var(--color-deep)); white-space: nowrap; }
+
+/* ---------- Owner: statement waterfall ---------- */
+.wq-month { display: flex; gap: 10px; align-items: end; }
+.wq-month .wq-input { width: auto; }
+.wq-fall { list-style: none; margin: 0; padding: 6px 22px 20px; display: grid; gap: 4px; }
+.wq-fall li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--color-line); }
+.wq-fall-label { font-size: .95rem; color: var(--color-ink); }
+.wq-fall-label small { display: block; color: var(--color-muted); font-size: .8rem; }
+.wq-fall-amt { font-variant-numeric: tabular-nums; font-weight: 700; direction: ltr; text-align: end; }
+.wq-fall-minus .wq-fall-amt { color: var(--status-late-fg); }
+.wq-fall-bar { grid-column: 1 / -1; height: 6px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
+.wq-fall-bar span { display: block; height: 100%; width: var(--p); border-radius: inherit; background: var(--status-late-fg); opacity: .55; }
+.wq-fall-in .wq-fall-bar span { background: var(--color-primary); opacity: 1; }
+.wq-fall-net { border-bottom: 0 !important; margin-top: 6px; padding: 16px 18px !important; border-radius: var(--wq-radius-lg);
+    background: linear-gradient(120deg, var(--color-soft), transparent); border: 1px solid var(--color-line) !important; }
+.wq-fall-net .wq-fall-label { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.05rem; }
+.wq-fall-net .wq-fall-amt { font-family: 'Cairo', sans-serif; font-size: 1.6rem; color: var(--color-primary); }
+
+.wq-ask { display: grid; gap: 10px; padding: 16px 22px; border-bottom: 1px solid var(--color-line); }
+.wq-ask:last-child { border-bottom: 0; }
+.wq-ask-top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.wq-ask-num { font-weight: 700; color: var(--color-muted); font-size: .82rem; direction: ltr; }
+.wq-ask-cost { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.15rem; }
+.wq-ask-actions { display: flex; gap: 8px; }
+
+/* ---------- Tenant: lease timeline ---------- */
+.wq-unit-hero { display: flex; gap: 16px; align-items: center; }
+.wq-unit-badge { width: 64px; height: 64px; border-radius: var(--wq-radius-lg); display: grid; place-items: center; flex: none;
+    background: var(--color-soft); color: var(--color-deep); font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.15rem; direction: ltr; }
+.wq-timeline { position: relative; height: 10px; border-radius: 999px; background: var(--color-bg); margin: 30px 4px 34px; }
+.wq-timeline-done { position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--p); border-radius: inherit; background: var(--color-primary); }
+.wq-timeline-mark { position: absolute; top: 50%; inset-inline-start: var(--p); width: 14px; height: 14px; border-radius: 50%;
+    transform: translate(50%, -50%); background: var(--color-surface); border: 3px solid var(--fg, var(--color-primary)); }
+[dir=ltr] .wq-timeline-mark { transform: translate(-50%, -50%); }
+.wq-timeline-mark span { position: absolute; top: 18px; inset-inline-start: 50%; transform: translateX(50%); white-space: nowrap; font-size: .78rem; font-weight: 700; color: var(--fg, var(--color-ink)); }
+.wq-timeline-mark.wq-up span { top: auto; bottom: 18px; }
+.wq-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.wq-fact { padding: 12px 14px; border-radius: var(--wq-radius-md); background: var(--color-bg); }
+.wq-fact span { display: block; font-size: .8rem; color: var(--color-muted); }
+.wq-fact strong { font-family: 'Cairo', sans-serif; font-size: 1.02rem; }
+.wq-bill { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px 16px; padding: 14px 22px; border-bottom: 1px solid var(--color-line); }
+.wq-bill > .fi-btn { grid-column: 1 / -1; }
+.wq-bill:last-child { border-bottom: 0; }
+.wq-bill-amt { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.1rem; }
+.wq-stars { display: inline-flex; gap: 2px; direction: ltr; }
+.wq-stars button { width: 34px; height: 34px; border: 0; background: none; cursor: pointer; color: var(--status-vacant-fg); font-size: 1.3rem; line-height: 1; border-radius: 8px; }
+.wq-stars button:hover { background: var(--color-soft); }
+.wq-list { list-style: none; margin: 0; padding: 0; }
+.wq-list li { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; padding: 12px 22px; border-bottom: 1px solid var(--color-line); }
+.wq-list li:last-child { border-bottom: 0; }
+.wq-note { padding: 14px 18px; border-radius: var(--wq-radius-md); background: var(--color-soft); color: var(--color-deep); line-height: 1.8; }
+
+/* ---------- Technician: task cards ---------- */
+.wq-task-card { position: relative; display: grid; gap: 12px; padding: 16px 18px 16px 18px; border-bottom: 1px solid var(--color-line);
+    border-inline-start: 5px solid var(--fg, var(--color-line)); }
+.wq-task-card:last-child { border-bottom: 0; }
+.wq-p-emergency { --bg: var(--status-late-bg); --fg: var(--status-late-fg); }
+.wq-p-urgent { --bg: var(--status-vacant-bg); --fg: var(--status-vacant-fg); }
+.wq-p-normal { --bg: var(--status-paid-bg); --fg: var(--status-paid-fg); }
+.wq-p-scheduled { --bg: var(--status-soon-bg); --fg: var(--status-soon-fg); }
+.wq-task-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wq-task-desc { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.08rem; margin: 0; }
+.wq-step { display: grid; gap: 10px; padding: 12px; border-radius: var(--wq-radius-md); background: var(--color-bg); }
+.wq-step > b { font-size: .85rem; color: var(--color-muted); }
+.wq-portal .fi-btn { min-height: 44px; }
+.wq-checklist { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 1000px) { .wq-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+    .wq-body, .wq-ask, .wq-bill, .wq-list li { padding-inline: 16px; }
+    .wq-fall { padding-inline: 16px; }
+    .wq-month { flex-wrap: wrap; }
+}

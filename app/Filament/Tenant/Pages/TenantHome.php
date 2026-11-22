@@ -23,6 +23,8 @@ class TenantHome extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHome;
 
+    protected static ?int $navigationSort = -10;   // the role home opens first (the panel root redirects here)
+
     protected static ?string $navigationLabel = 'وحدتي';
 
     protected static ?string $title = 'وحدتي';
@@ -43,11 +45,32 @@ class TenantHome extends Page
     {
         $p = app(TenantPortal::class);
         $u = auth()->user();
+        $header = app(\App\Dashboards\HomeOverview::class)->header($u, \Carbon\CarbonImmutable::now());
         try {
-            return ['unit' => $p->myUnit($u), 'lease' => $p->myLease($u), 'invoices' => $p->myInvoices($u), 'reports' => $p->myReports($u), 'announcements' => $p->announcements($u), 'guidance' => $p->meterTransferGuidance()];
+            $lease = $p->myLease($u);
+            return ['header' => $header, 'unit' => $p->myUnit($u), 'lease' => $lease, 'timeline' => $this->timeline($lease), 'invoices' => $p->myInvoices($u), 'reports' => $p->myReports($u), 'announcements' => $p->announcements($u), 'guidance' => $p->meterTransferGuidance()];
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return ['unit' => null, 'lease' => null, 'invoices' => [], 'reports' => [], 'announcements' => [], 'guidance' => $p->meterTransferGuidance()];
+            return ['header' => $header, 'unit' => null, 'lease' => null, 'timeline' => null, 'invoices' => [], 'reports' => [], 'announcements' => [], 'guidance' => $p->meterTransferGuidance()];
         }
+    }
+
+    /** Positions (0–100 %) of today and the notice deadline on the lease span, plus days left — display only. */
+    private function timeline(?array $lease): ?array
+    {
+        if (! $lease || empty($lease['starts_on']) || empty($lease['ends_on'])) {
+            return null;
+        }
+        $start = \Carbon\CarbonImmutable::parse($lease['starts_on']);
+        $end = \Carbon\CarbonImmutable::parse($lease['ends_on']);
+        $span = max(1, $start->diffInDays($end));
+        $at = fn ($d) => max(0, min(100, round($start->diffInDays(\Carbon\CarbonImmutable::parse($d), false) * 100 / $span, 1)));
+        $today = \Carbon\CarbonImmutable::today();
+        return [
+            'today' => $at($today),
+            'notice' => empty($lease['notice_deadline']) ? null : $at($lease['notice_deadline']),
+            'days_to_notice' => empty($lease['notice_deadline']) ? null : (int) $today->diffInDays(\Carbon\CarbonImmutable::parse($lease['notice_deadline']), false),
+            'days_to_end' => (int) $today->diffInDays($end, false),
+        ];
     }
 
     public function report(): void

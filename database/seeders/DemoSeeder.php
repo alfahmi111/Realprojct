@@ -70,7 +70,7 @@ class DemoSeeder extends Seeder
 
         $ls = app(LeasingService::class);
         $today = CarbonImmutable::today();
-        $names = ['محمد السبيعي', 'فهد الحربي', 'نورة الدوسري', 'ريم الغامدي', 'تركي المطيري', 'هند الزهراني', 'سلطان العنزي', 'منى الشمري', 'بندر الرشيدي', 'لمى القرني', 'ماجد البقمي'];
+        $names = ['محمد السبيعي', 'تركي المطيري', 'نورة الدوسري', 'ريم الغامدي', 'تركي المطيري', 'هند الزهراني', 'سلطان العنزي', 'منى الشمري', 'بندر الرشيدي', 'لمى القرني', 'ماجد البقمي'];
         $codes = ['1', '2', '3', '101', '102', '103', '201', '202', '204', '301', '303'];
         $leases = [];
         foreach ($codes as $i => $code) {
@@ -115,6 +115,18 @@ class DemoSeeder extends Seeder
         $m->triage($wo3, 'normal');
         $m->estimate($wo3, Money::parse('180'));
         $m->assign($wo3, $tech);
+        // A tenant account linked to the lease on unit 102 (which has the AC asset), to try the tenant interface.
+        self::linkDemoTenant($s);
         $this->command?->info('Demo office ready: manager@withaq.test / demo-password-123');
+    }
+
+    /** Local demo only: tenant@withaq.test sees the lease on unit 102. Safe to run again on an existing demo office. */
+    public static function linkDemoTenant(\App\Models\Subscriber $s): void
+    {
+        $user = User::where('email', 'tenant@withaq.test')->first()
+            ?? User::create(['subscriber_id' => $s->id, 'name' => 'تركي المطيري', 'email' => 'tenant@withaq.test', 'password' => 'demo-password-123', 'role' => 'tenant']);
+        $lease = \App\Models\Lease::whereHas('unit', fn ($q) => $q->where('code', '102'))->whereIn('status', ['active', 'notice_given'])->first()
+            ?? \App\Models\Lease::whereIn('status', ['active'])->orderBy('id')->first();
+        $lease?->tenant->forceFill(['user_id' => $user->id])->save();
     }
 }

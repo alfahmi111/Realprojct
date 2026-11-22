@@ -22,6 +22,8 @@ class OwnerHome extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
+    protected static ?int $navigationSort = -10;   // the role home opens first (the panel root redirects here)
+
     protected static ?string $navigationLabel = 'كشف الحساب والموافقات';
 
     protected static ?string $title = 'كشف الحساب والموافقات';
@@ -53,6 +55,9 @@ class OwnerHome extends Page
         }
         $propertyIds = $owner ? OwnershipShare::where('owner_id', $owner->id)->pluck('property_id') : collect();
         return [
+            'header' => app(\App\Dashboards\HomeOverview::class)->header(auth()->user(), CarbonImmutable::now()),
+            'monthLabel' => \IntlDateFormatter::formatObject($month, 'MMMM y', 'ar-u-ca-gregory-nu-latn'),
+            'months' => collect(range(0, 23))->mapWithKeys(fn ($i) => [($m = CarbonImmutable::now()->startOfMonth()->subMonths($i))->format('Y-m') => \IntlDateFormatter::formatObject($m, 'MMMM y', 'ar-u-ca-gregory-nu-latn')])->all(),
             'month' => $month->format('Y-m'), 'statement' => $statement, 'error' => $error,
             'pending' => WorkOrder::whereIn('property_id', $propertyIds)->where('status', 'awaiting_owner_approval')->get(),
         ];
