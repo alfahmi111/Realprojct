@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
+ * REQ-0387 (feature subscription as add-on), REQ-0443 (ZATCA: VAT + e-invoicing), REQ-0438 (Ejar contract number on invoices).
  * Spec §9 finance — mandatory automated tests for every financial calculation (REQ-0502, REQ-0510).
  * Covered IDs: REQ-0412, REQ-0413, REQ-0414, REQ-0415, REQ-0416, REQ-0417, REQ-0418, REQ-0419, REQ-0420 (VAT),
  * REQ-0421, REQ-0422, REQ-0423, REQ-0424 (e-invoicing via provider), REQ-0427, REQ-0428, REQ-0429, REQ-0430,

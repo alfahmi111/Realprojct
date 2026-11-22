@@ -32,6 +32,7 @@ use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
+ * REQ-0408 (avoided vacancy days indicator).
  * Spec §7 portals. Covered IDs:
  * REQ-0281, REQ-0282, REQ-0283, REQ-0284, REQ-0285, REQ-0286, REQ-0287, REQ-0288, REQ-0289, REQ-0291, REQ-0292 (KPIs),
  * REQ-0296, REQ-0297, REQ-0298, REQ-0304, REQ-0272, REQ-0273, REQ-0274, REQ-0275, REQ-0278, REQ-0280 (tenant portal),

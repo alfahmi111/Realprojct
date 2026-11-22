@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
+ * REQ-0438, REQ-0457, REQ-0458, REQ-0460 (Ejar: no public API, manual-assisted plan via EjarGateway).
  * Spec §5 leasing engine. Covered IDs:
  * REQ-0170, REQ-0171, REQ-0172, REQ-0173, REQ-0174, REQ-0175 (duration units and tracks), REQ-0177 (rate plans),
  * REQ-0178, REQ-0179, REQ-0180 (availability, no overlap), REQ-0181, REQ-0182, REQ-0183, REQ-0184, REQ-0185, REQ-0186 (lifecycle, offer),

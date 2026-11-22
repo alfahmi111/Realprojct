@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
+ * REQ-0064 (prospect: anyone who scanned the building QR).
  * Spec §8 building QR, free version. Covered IDs:
  * REQ-0377, REQ-0378, REQ-0379, REQ-0380, REQ-0381, REQ-0388, REQ-0389, REQ-0391, REQ-0392, REQ-0393, REQ-0394, REQ-0395,
  * REQ-0396, REQ-0397, REQ-0398, REQ-0399, REQ-0404, REQ-0405, REQ-0406, REQ-0407, REQ-0410, REQ-0147, REQ-0148, REQ-0156,
