@@ -66,9 +66,9 @@ enum Role: string
         return match ($this) {
             self::PlatformAdmin => ['platform.subscribers', 'platform.plans', 'platform.qr_boards', 'platform.settings'],
             // REQ-0058: dashboard, statement, approve maintenance above the cap, see the manager's fee.
-            self::Owner => ['owner.dashboard', 'owner.statement', 'maintenance.approve_above_cap', 'owner.manager_fee', 'owner.budget'],
+            self::Owner => ['owner.dashboard', 'owner.statement', 'owner.approve_above_cap', 'owner.manager_fee', 'owner.budget'],
             // REQ-0059: self-managed ("ذاتي") agreement — full operations for its own team.
-            self::InstitutionalOwner => array_merge(self::Manager->permissions(), ['owner.dashboard', 'owner.statement', 'owner.budget', 'maintenance.approve_above_cap']),
+            self::InstitutionalOwner => array_merge(self::Manager->permissions(), ['owner.dashboard', 'owner.statement', 'owner.budget', 'owner.approve_above_cap']),
             // REQ-0060: everything operational within the management agreement.
             self::Manager => ['properties.*', 'leasing.*', 'finance.*', 'maintenance.*', 'assets.*', 'prospects.*', 'reports.*', 'settings.subscriber', 'users.manage', 'approvals.decide'],
             // REQ-0061: staff permissions by role.

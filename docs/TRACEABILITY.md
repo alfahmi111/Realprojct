@@ -149,17 +149,17 @@
 | REQ-0142 | §4.6 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0143 | §4.6 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0144 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0145 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0146 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0145 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0146 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0147 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0148 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0149 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0150 | §4.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
-| REQ-0151 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0152 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0153 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0151 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0152 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0153 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0154 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0155 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0155 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0156 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0157 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0158 | §4.6 | BUILD | MVP | TODO |  |  |  |
@@ -168,7 +168,7 @@
 | REQ-0161 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0162 | §4.6 | BUILD | MVP | TODO |  |  |  |
 | REQ-0163 | §4.6 | BUILD | MVP | TODO |  |  |  |
-| REQ-0164 | §4.6 | BUILD | MVP | TODO |  |  |  |
+| REQ-0164 | §4.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0165 | §4.7 | BUILD | MVP | DONE | app/Support/Money/ | tests/Unit/MoneyTest.php |  |
 | REQ-0166 | §4.7 | BUILD | MVP | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
 | REQ-0167 | §4.7 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -215,50 +215,50 @@
 | REQ-0208 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
 | REQ-0209 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
 | REQ-0210 | §5.8 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L966 |
-| REQ-0211 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0212 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0213 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0214 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0215 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0216 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0217 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0218 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0219 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0220 | §6.1 | BUILD | MVP | TODO |  |  |  |
-| REQ-0221 | §6.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942، L943 |
-| REQ-0222 | §6.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0223 | §6.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L943 |
+| REQ-0211 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0212 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0213 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0214 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0215 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0216 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0217 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0218 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0219 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0220 | §6.1 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0221 | §6.2 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942، L943 |
+| REQ-0222 | §6.2 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0223 | §6.2 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L943 |
 | REQ-0224 | §6.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L964 (يعتمد على خزنة المستندات) |
-| REQ-0225 | §6.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0226 | §6.2 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0227 | §6.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0228 | §6.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0229 | §6.3 | BUILD | MVP | TODO |  |  |  |
-| REQ-0230 | §6.3 | BUILD | MVP | TODO |  |  |  |
+| REQ-0225 | §6.2 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0226 | §6.2 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0227 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0228 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0229 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0230 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0231 | §6.4 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
-| REQ-0232 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0233 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0232 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0233 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0234 | §6.4 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
-| REQ-0235 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L943 |
+| REQ-0235 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L943 |
 | REQ-0236 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0237 | §6.4 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
+| REQ-0237 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · إرشاد فقط؛ لا ادعاء شهادة |
 | REQ-0238 | §6.5 | BUILD | P2 | TODO |  |  |  |
 | REQ-0239 | §6.5 | BUILD | P2 | TODO |  |  |  |
-| REQ-0240 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0241 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0242 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0243 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
+| REQ-0240 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0241 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0242 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0243 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
 | REQ-0244 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963، L957 |
 | REQ-0245 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0246 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0247 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0248 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q2 |
-| REQ-0249 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0250 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0251 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0252 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0253 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
-| REQ-0254 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
+| REQ-0249 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0250 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0251 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0252 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0253 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
+| REQ-0254 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
 | REQ-0255 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0256 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0257 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
@@ -266,8 +266,8 @@
 | REQ-0259 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0260 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
 | REQ-0261 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L942 يحصر MVP في «جرد التأسيس»، والجرد الدوري P2 §12 L963 — قرار Q3 |
-| REQ-0262 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0263 | §6.6 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L942 |
+| REQ-0262 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · جزئي: نسبة اكتمال جرد التأسيس؛ منحنيات الحالة والمفقودات مع جرود P2 |
+| REQ-0263 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
 | REQ-0264 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
 | REQ-0265 | §6.7 | BUILD | P2 | TODO |  |  |  |
 | REQ-0266 | §6.7 | BUILD | P2 | TODO |  |  |  |
@@ -311,7 +311,7 @@
 | REQ-0304 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
 | REQ-0305 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L941، L949 |
 | REQ-0306 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L949 |
-| REQ-0307 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L949 |
+| REQ-0307 | §7.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0308 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L959 |
 | REQ-0309 | §7.3 | BUILD | MVP | TODO |  |  | MIXED→MVP: §12 L951 |
 | REQ-0310 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |

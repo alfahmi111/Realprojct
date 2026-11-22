@@ -39,7 +39,7 @@ class PortalAccessTest extends TestCase
         $this->assertTrue(Role::Manager->can('leasing.offer.create'));     // REQ-0060
         $this->assertTrue(Role::Accountant->can('finance.payments'));      // REQ-0061
         $this->assertFalse(Role::Accountant->can('maintenance.assign'));
-        $this->assertTrue(Role::Owner->can('maintenance.approve_above_cap'));   // REQ-0058
+        $this->assertTrue(Role::Owner->can('owner.approve_above_cap'));   // REQ-0058
         $this->assertTrue(Role::InstitutionalOwner->can('maintenance.assign')); // REQ-0059
         $this->assertTrue(Role::PlatformAdmin->can('platform.subscribers'));   // REQ-0065
         $this->assertFalse(Role::PlatformAdmin->can('finance.view'));
