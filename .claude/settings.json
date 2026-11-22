@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php",
+            "args": ["${CLAUDE_PROJECT_DIR}/scripts/preflight.php", "--hook"]
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-preflight.php"],
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}

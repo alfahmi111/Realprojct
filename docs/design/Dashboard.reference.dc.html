@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>لوحة المدير — مع معاينة السمات</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Noto+Kufi+Arabic:wght@500;600&amp;family=Readex+Pro:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:.8}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 100vh; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.font}}; font-size: 15px">
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding: 10px 24px; background: {{t.soft}}; border-bottom: 1px solid {{t.line}}; font-size: 13px">
+<span style="font-weight: 500">معاينة — في النظام الفعلي هذه الخيارات في صفحة الإعدادات:</span>
+<div style="display: flex; gap: 6px; align-items: center"><span style="color: {{t.muted}}">السمة</span>
+<sc-for list="{{themeBtns}}" as="b" hint-placeholder-count="3"><button type="button" onClick="{{b.pick}}" style="{{b.style}}">{{b.label}}</button></sc-for>
+</div>
+<div style="display: flex; gap: 6px; align-items: center"><span style="color: {{t.muted}}">الوضع</span>
+<sc-for list="{{modeBtns}}" as="b" hint-placeholder-count="2"><button type="button" onClick="{{b.pick}}" style="{{b.style}}">{{b.label}}</button></sc-for>
+</div>
+<div style="display: flex; gap: 6px; align-items: center"><span style="color: {{t.muted}}">التاريخ</span>
+<sc-for list="{{dateBtns}}" as="b" hint-placeholder-count="3"><button type="button" onClick="{{b.pick}}" style="{{b.style}}">{{b.label}}</button></sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="القائمة الرئيسية" style="flex: 1 1 230px; max-width: 100%; box-sizing: border-box; background: {{t.side}}; border-left: 1px solid {{t.line}}; padding: 22px 16px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><rect x="5" y="5" width="30" height="30" fill="none" stroke="{{t.ink}}" stroke-width="2.5"></rect><line x1="5" y1="17" x2="35" y2="17" stroke="{{t.ink}}" stroke-width="2"></line><line x1="5" y1="27" x2="35" y2="27" stroke="{{t.ink}}" stroke-width="2"></line><rect x="16" y="17" width="10" height="10" fill="{{t.accent}}"></rect></svg>
+<span style="font-family: {{t.head}}; font-size: 18px; font-weight: 600">[اسم المنصة]</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<a href="#" style="padding: 10px 12px; border-radius: {{t.radius}}; background: {{t.surface}}; border: 1px solid {{t.line}}; font-weight: 600; text-decoration: none">الرئيسية</a>
+<a href="#" style="padding: 10px 12px; text-decoration: none">مركز المهام <span style="float: left; padding: 0 8px; border-radius: 999px; background: {{t.primary}}; color: {{t.onPrimary}}; font-size: 12px">6</span></a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; color: {{t.muted}}; padding: 0 12px 4px">التأجير</span>
+<a href="#" style="padding: 8px 12px; text-decoration: none">العقارات والوحدات</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">العقود والعروض</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">قائمة الانتظار</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; color: {{t.muted}}; padding: 0 12px 4px">المالية</span>
+<a href="#" style="padding: 8px 12px; text-decoration: none">الفواتير والدفعات</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">كشوف الملاك</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">المتأخرات</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; color: {{t.muted}}; padding: 0 12px 4px">التشغيل</span>
+<a href="#" style="padding: 8px 12px; text-decoration: none">أوامر العمل</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">الصيانة الوقائية</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">الأصول والجرد</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">الموردون</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a href="#" style="padding: 8px 12px; text-decoration: none">التقارير</a>
+<a href="#" style="padding: 8px 12px; text-decoration: none">الإعدادات</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 22px 28px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: {{t.head}}; font-size: 26px; font-weight: 600">صباح الخير، سعد</h1>
+<span style="color: {{t.muted}}; font-size: 14px">{{todayLabel}} · كل المحفظة: 6 عقارات، 248 وحدة</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">بحث</label>
+<input id="q" type="search" placeholder="ابحث عن وحدة أو مستأجر أو عقد" style="width: 280px; max-width: 100%; height: 44px; box-sizing: border-box; padding: 0 14px; border-radius: {{t.radius}}; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit; font-size: 14px">
+<button type="button" aria-label="الإشعارات، 5 جديدة" style="position: relative; width: 44px; height: 44px; border-radius: {{t.radius}}; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: -6px; left: -6px; min-width: 20px; height: 20px; border-radius: 999px; background: {{t.lateFg}}; color: {{t.bg}}; font-size: 12px; line-height: 20px">5</span>
+</button>
+<button type="button" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: {{t.radius}}; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit">
+<span style="width: 30px; height: 30px; border-radius: 999px; background: {{t.soft}}; color: {{t.ink}}; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">سع</span>
+<span style="font-size: 13px; text-align: right">سعد العتيبي<br><span style="color: {{t.muted}}">مدير المكتب</span></span>
+</button>
+</div>
+</div>
+
+<section aria-labelledby="att" style="display: flex; flex-direction: column; gap: 12px">
+<h2 id="att" style="margin: 0; font-family: {{t.head}}; font-size: 18px; font-weight: 600">يحتاج انتباهك</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px">
+<sc-for list="{{attention}}" as="a" hint-placeholder-count="4">
+<div style="background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; gap: 8px"><span style="{{a.numStyle}}">{{a.n}}</span><span style="font-weight: 500">{{a.label}}</span></div>
+<span style="font-size: 13px; color: {{t.muted}}">{{a.sub}}</span>
+<button type="button" style="align-self: flex-start; height: 44px; padding: 0 14px; border-radius: {{t.radius}}; border: 1px solid {{t.line}}; background: transparent; color: {{t.ink}}; font-family: inherit; font-size: 14px">{{a.action}}</button>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div style="background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: {{t.muted}}">{{k.label}}</span>
+<span style="{{k.valStyle}}">{{k.val}}</span>
+<div style="height: 6px; border-radius: 999px; background: {{t.soft}}; overflow: hidden"><div style="{{k.barStyle}}"></div></div>
+<span style="font-size: 13px; color: {{t.muted}}">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
+<section aria-labelledby="map" style="flex: 2 1 420px; min-width: 0; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center">
+<h2 id="map" style="margin: 0; font-family: {{t.head}}; font-size: 18px; font-weight: 600">خريطة المباني</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{legend}}" as="l" hint-placeholder-count="5"><span style="{{l.style}}">{{l.label}}</span></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 22px">
+<sc-for list="{{buildings}}" as="bd" hint-placeholder-count="2">
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<span style="font-weight: 600">{{bd.name}}</span>
+<div style="border: 2px solid {{t.ink}}; border-radius: 0; display: flex; flex-direction: column">
+<sc-for list="{{bd.floors}}" as="f" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid {{t.line}}">
+<sc-for list="{{f.units}}" as="u" hint-placeholder-count="4"><div style="{{u.cell}}">{{u.label}}</div></sc-for>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: {{t.muted}}">{{bd.summary}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="mnt" style="flex: 1 1 280px; min-width: 0; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 id="mnt" style="margin: 0 0 4px; font-family: {{t.head}}; font-size: 18px; font-weight: 600">صيانة اليوم</h2>
+<sc-for list="{{maint}}" as="m" hint-placeholder-count="3">
+<div style="border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span style="font-weight: 500">{{m.title}}</span><span style="{{m.badge}}">{{m.pri}}</span></div>
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: {{t.muted}}"><span>{{m.who}}</span><span>{{m.sla}}</span></div>
+</div>
+</sc-for>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
+<section aria-labelledby="due" style="flex: 2 1 420px; min-width: 0; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 18px">
+<h2 id="due" style="margin: 0 0 12px; font-family: {{t.head}}; font-size: 18px; font-weight: 600">الدفعات القادمة والمتأخرة</h2>
+<div style="overflow-x: auto">
+<div style="min-width: 560px">
+<div style="display: grid; grid-template-columns: 1.4fr 1.3fr 0.9fr 1.6fr 1.1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid {{t.line}}; font-size: 13px; color: {{t.muted}}"><span>الوحدة</span><span>المستأجر</span><span>المبلغ</span><span>الاستحقاق</span><span>الحالة</span></div>
+<sc-for list="{{dues}}" as="d" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 1.4fr 1.3fr 0.9fr 1.6fr 1.1fr; gap: 10px; padding: 11px 0; border-bottom: 1px solid {{t.line}}; align-items: center; font-size: 14px"><span>{{d.unit}}</span><span>{{d.tenant}}</span><span style="font-weight: 500">{{d.amount}}</span><span>{{d.due}}</span><span><span style="{{d.badge}}">{{d.status}}</span></span></div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="soon" style="flex: 1 1 280px; min-width: 0; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 id="soon" style="margin: 0; font-family: {{t.head}}; font-size: 18px; font-weight: 600">سيشغر قريبًا</h2>
+<span style="font-size: 13px; color: {{t.muted}}">مطابقة تلقائية مع قائمة الانتظار</span>
+<sc-for list="{{soon}}" as="s" hint-placeholder-count="3">
+<div style="border: 1px solid {{t.line}}; border-radius: {{t.radius}}; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span style="font-weight: 500">{{s.unit}}</span><span style="{{s.badge}}">{{s.conf}}</span></div>
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: {{t.muted}}"><span>{{s.when}}</span><span style="{{s.matchStyle}}">{{s.matches}}</span></div>
+</div>
+</sc-for>
+</section>
+</div>
+
+<section aria-labelledby="qa" style="display: flex; flex-direction: column; gap: 12px">
+<h2 id="qa" style="margin: 0; font-family: {{t.head}}; font-size: 18px; font-weight: 600">إجراءات سريعة</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" style="height: 48px; padding: 0 20px; border: none; border-radius: {{t.radius}}; background: {{t.primary}}; color: {{t.onPrimary}}; font-family: inherit; font-size: 15px; font-weight: 500">تسجيل دفعة</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit; font-size: 15px">عرض تأجير جديد</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit; font-size: 15px">بلاغ صيانة</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit; font-size: 15px">استيراد عقود من إيجار</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 1px solid {{t.line}}; border-radius: {{t.radius}}; background: {{t.surface}}; color: {{t.ink}}; font-family: inherit; font-size: 15px">بدء جرد</button>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { theme: 'ink', mode: 'light', date: 'both' };
+}
+renderVals() {
+const T = {
+clay: { light: { primary: '#9A3F22', soft: '#F4E4D9', ink: '#2A1E17', muted: '#6B5A4E', bg: '#FBF7F2', surface: '#FFFFFF', line: '#E8DDD2', side: '#F5EDE4', onPrimary: '#FFFFFF' },
+dark: { primary: '#E08A63', soft: '#3A2419', ink: '#F3E9E1', muted: '#BFAE9F', bg: '#17110D', surface: '#211913', line: '#3A2C22', side: '#1C1510', onPrimary: '#1A0F0A' },
+font: "'IBM Plex Sans Arabic', sans-serif", head: "'IBM Plex Sans Arabic', sans-serif", radius: '10px' },
+ink: { light: { primary: '#1F2328', accent: '#94531F', soft: '#F3E6DA', ink: '#1F2328', muted: '#5E6168', bg: '#F5F4F1', surface: '#FFFFFF', line: '#E2E0DB', side: '#EDECE8', onPrimary: '#FFFFFF' },
+dark: { primary: '#E9E6E0', accent: '#D9965C', soft: '#3A2A1C', ink: '#ECEAE6', muted: '#A3A6AD', bg: '#121417', surface: '#1B1E22', line: '#2E3238', side: '#16181B', onPrimary: '#121417' },
+font: "'IBM Plex Sans Arabic', sans-serif", head: "'Noto Kufi Arabic', sans-serif", radius: '4px' },
+plum: { light: { primary: '#5A2D82', soft: '#EFE8F7', ink: '#1E1726', muted: '#625A6B', bg: '#FAF8FC', surface: '#FFFFFF', line: '#E6E0EE', side: '#F3EEF9', onPrimary: '#FFFFFF' },
+dark: { primary: '#B99AE0', soft: '#2E2140', ink: '#EEE8F5', muted: '#B1A7BE', bg: '#141019', surface: '#1D1724', line: '#33293F', side: '#18131E', onPrimary: '#16101C' },
+font: "'Readex Pro', sans-serif", head: "'Readex Pro', sans-serif", radius: '16px' }
+};
+const S = {
+light: { paid: ['#E3F0E0', '#2D5A28'], late: ['#F8E0DD', '#962A1D'], vacant: ['#FBEED3', '#734F0E'], maint: ['#ECE8E3', '#55473C'], soon: ['#E5E2F2', '#463C7A'] },
+dark: { paid: ['#1E3320', '#9FD49A'], late: ['#3D1D19', '#F2A397'], vacant: ['#3A2E12', '#EAC57A'], maint: ['#2E2A26', '#CFC3B8'], soon: ['#26223D', '#B9B0EC'] }
+};
+const th = T[this.state.theme];
+const c = th[this.state.mode];
+const st = S[this.state.mode];
+const t = Object.assign({}, c, { accent: c.accent || c.primary, font: th.font, head: th.head, radius: th.radius, lateFg: st.late[1] });
+const badge = (k) => 'display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; background: ' + st[k][0] + '; color: ' + st[k][1];
+const pill = (on) => 'height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; cursor: pointer; border: 1px solid ' + (on ? t.primary : t.line) + '; background: ' + (on ? t.primary : t.surface) + '; color: ' + (on ? t.onPrimary : t.ink);
+const mk = (key, opts) => opts.map((o) => ({ label: o[1], style: pill(this.state[key] === o[0]), pick: () => this.setState({ [key]: o[0] }) }));
+const D = this.state.date;
+const dt = (h, g) => D === 'hijri' ? h + ' هـ' : D === 'greg' ? g : h + ' هـ · ' + g;
+const legendKeys = [['paid', 'مؤجرة ومسددة'], ['late', 'متأخرة'], ['vacant', 'شاغرة'], ['maint', 'تحت الصيانة'], ['soon', 'ستشغر']];
+const cell = (k) => 'padding: 10px 4px; text-align: center; font-size: 12px; font-weight: 500; border-left: 1px solid ' + t.line + '; background: ' + st[k][0] + '; color: ' + st[k][1];
+const fl = (arr) => ({ units: arr.map((u) => ({ label: u[0], cell: cell(u[1]) })) });
+const toneNum = (k) => 'font-size: 30px; font-weight: 600; color: ' + (k ? st[k][1] : t.accent);
+return {
+t,
+themeBtns: mk('theme', [['clay', 'طين نجدي'], ['ink', 'حبر ونحاس'], ['plum', 'برقوق']]),
+modeBtns: mk('mode', [['light', 'فاتح'], ['dark', 'داكن']]),
+dateBtns: mk('date', [['hijri', 'هجري'], ['greg', 'ميلادي'], ['both', 'كلاهما']]),
+todayLabel: 'الجمعة ' + dt('11 جمادى الآخرة 1448', '20 نوفمبر 2026'),
+attention: [
+{ n: '12', label: 'دفعة متأخرة', sub: 'بإجمالي 48,500 ﷼', action: 'عرض المتأخرات', numStyle: toneNum('late') },
+{ n: '3', label: 'اعتمادات تنتظرك', sub: 'عرض تأجير وطلبا صرف', action: 'مراجعة', numStyle: toneNum(null) },
+{ n: '1', label: 'بلاغ طارئ', sub: 'تسريب مياه · شقة 102', action: 'متابعة', numStyle: toneNum('late') },
+{ n: '2', label: 'مستندات تنتهي هذا الشهر', sub: 'شهادة الدفاع المدني · وثيقة التأمين', action: 'تجديد', numStyle: toneNum('vacant') }
+],
+kpis: [
+{ label: 'الإشغال', val: '91%', sub: '226 من 248 وحدة', pct: 91 },
+{ label: 'الإشغال المالي', val: '87%', sub: 'من الإيجار المحتمل', pct: 87 },
+{ label: 'التحصيل هذا الشهر', val: '84%', sub: '412,000 من 490,000 ﷼', pct: 84 },
+{ label: 'سيشغر خلال 60 يومًا', val: '5', sub: '3 منها لها مهتمون في القائمة', pct: 60 }
+].map((k) => Object.assign(k, { valStyle: 'font-size: 28px; font-weight: 600', barStyle: 'height: 6px; width: ' + k.pct + '%; background: ' + t.accent })),
+legend: legendKeys.map((l) => ({ label: l[1], style: badge(l[0]) })),
+buildings: [
+{ name: 'عمارة النخيل', summary: '12 وحدة · 10 مؤجرة · محل شاغر · شقة ستشغر', floors: [
+fl([['201', 'paid'], ['202', 'late'], ['203', 'paid'], ['204', 'soon']]),
+fl([['101', 'paid'], ['102', 'maint'], ['103', 'paid'], ['104', 'paid']]),
+fl([['محل 1', 'paid'], ['محل 2', 'vacant'], ['محل 3', 'paid'], ['محل 4', 'late']])
+] },
+{ name: 'برج الأعمال', summary: '12 مكتبًا · 11 مؤجرة · مكتب سيشغر', floors: [
+fl([['301', 'paid'], ['302', 'soon'], ['303', 'paid'], ['304', 'paid']]),
+fl([['201', 'paid'], ['202', 'paid'], ['203', 'late'], ['204', 'paid']]),
+fl([['101', 'paid'], ['102', 'paid'], ['103', 'paid'], ['104', 'paid']])
+] }
+],
+maint: [
+{ title: 'تسريب مياه — شقة 102', who: 'الفني: ماجد', sla: 'متبقٍ ساعة و20 دقيقة', pri: 'طارئ', badge: badge('late') },
+{ title: 'فحص المصاعد الدوري — برج الأعمال', who: 'المورّد: شركة الرفع', sla: 'اليوم 2:00 م', pri: 'نظامية', badge: badge('maint') },
+{ title: 'جرد دوري — شقة 305', who: 'الفني: علي', sla: 'اليوم 4:00 م', pri: 'جرد', badge: badge('soon') }
+],
+dues: [
+{ unit: 'شقة 202 · النخيل', tenant: 'سارة القحطاني', amount: '4,500 ﷼', due: dt('26 جمادى الأولى 1448', '5 نوفمبر 2026'), status: 'متأخرة 15 يومًا', badge: badge('late') },
+{ unit: 'محل 4 · النخيل', tenant: 'مؤسسة الريان', amount: '9,000 ﷼', due: dt('1 جمادى الآخرة 1448', '10 نوفمبر 2026'), status: 'متأخرة 10 أيام', badge: badge('late') },
+{ unit: 'مكتب 203 · الأعمال', tenant: 'شركة أفق', amount: '12,500 ﷼', due: dt('22 جمادى الآخرة 1448', '1 ديسمبر 2026'), status: 'بعد 11 يومًا', badge: badge('vacant') },
+{ unit: 'شقة 101 · النخيل', tenant: 'محمد العتيبي', amount: '4,500 ﷼', due: dt('22 جمادى الآخرة 1448', '1 ديسمبر 2026'), status: 'بعد 11 يومًا', badge: badge('vacant') },
+{ unit: 'شقة 203 · النخيل', tenant: 'خالد الشهري', amount: '4,800 ﷼', due: dt('10 جمادى الآخرة 1448', '19 نوفمبر 2026'), status: 'مسددة', badge: badge('paid') }
+],
+soon: [
+{ unit: 'شقة 204 · النخيل', when: 'خلال 42 يومًا', conf: 'مؤكد', matches: '3 مهتمين مطابقين', badge: badge('soon'), matchStyle: 'color: ' + t.accent + '; font-weight: 500' },
+{ unit: 'مكتب 302 · الأعمال', when: 'خلال 58 يومًا', conf: 'مرجّح', matches: 'مهتم واحد مطابق', badge: badge('maint'), matchStyle: 'color: ' + t.accent + '; font-weight: 500' },
+{ unit: 'شقة 401 · الروضة', when: 'خلال 60 يومًا', conf: 'مرجّح', matches: 'لا مطابقات بعد', badge: badge('maint'), matchStyle: 'color: ' + t.muted }
+]
+};
+}
+}
+</script>
+</body>
+</html>
