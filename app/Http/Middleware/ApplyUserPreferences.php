@@ -28,6 +28,13 @@ class ApplyUserPreferences
                 FilamentColor::register(['primary' => Color::hex($primary)]);
             }
         }
+        // Landing page chosen by the user (REQ-0373): only when opening the interface root.
+        if ($user && ($panel = filament()->getCurrentPanel()) && trim($request->path(), '/') === trim($panel->getPath(), '/')) {
+            $landing = $this->settings->get('a11y.landing_page', $user->id);
+            if ($landing && preg_match('/^[a-z0-9-]+$/', $landing)) {
+                return redirect($panel->getUrl() . '/' . $landing);
+            }
+        }
         return $next($request);
     }
 

@@ -15,7 +15,8 @@ trait Auditable
         static::created(fn (Model $m) => AuditLogger::record('created', $m, null, $m->auditSnapshot($m->getAttributes())));
         static::updated(function (Model $m) {
             $changed = array_keys($m->getChanges());
-            $changed = array_values(array_diff($changed, ['updated_at']));
+            // Ignore timestamps and secrets (e.g. remember_token on logout): nothing auditable changed.
+            $changed = array_values(array_diff($changed, ['updated_at'], $m->auditHiddenAttributes()));
             if (! $changed) {
                 return;
             }
@@ -31,6 +32,11 @@ trait Auditable
     protected function auditHidden(): array
     {
         return ['password', 'remember_token', 'app_authentication_secret', 'app_authentication_recovery_codes'];
+    }
+
+    public function auditHiddenAttributes(): array
+    {
+        return $this->auditHidden();
     }
 
     public function auditSnapshot(array $attributes): array

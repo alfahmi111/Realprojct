@@ -335,7 +335,7 @@
 | REQ-0328 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0329 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0330 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
-| REQ-0331 | §7.6أ | BUILD | MVP | IN-PROGRESS | app/Http/Controllers/ManifestController.php | tests/Feature/Foundation/PortalAccessTest.php |  |
+| REQ-0331 | §7.6أ | BUILD | MVP | DONE | app/Http/Controllers/ManifestController.php, app/Theming/Customization.php | tests/Feature/Screens/BrandingAndPreferencesTest.php, tests/Feature/Foundation/CustomizationTest.php |  |
 | REQ-0332 | §7.6أ | BUILD | MVP | DONE | app/Theming/Customization.php | tests/Feature/Foundation/CustomizationTest.php |  |
 | REQ-0333 | §7.6أ | BUILD | MVP | DONE | app/Theming/Customization.php | tests/Feature/Foundation/CustomizationTest.php |  |
 | REQ-0334 | §7.6أ | BUILD | MVP | DONE | app/Theming/Customization.php | tests/Feature/Foundation/CustomizationTest.php |  |
@@ -377,7 +377,7 @@
 | REQ-0370 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0371 | §7.6و | BUILD | MVP | IN-PROGRESS | app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0372 | §7.6و | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
-| REQ-0373 | §7.6ز | BUILD | MVP | IN-PROGRESS | app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
+| REQ-0373 | §7.6ز | BUILD | MVP | DONE | app/Filament/Support/MyPreferencesPage.php, resources/views/brand/preferences.blade.php, app/Http/Middleware/ApplyUserPreferences.php | tests/Feature/Screens/BrandingAndPreferencesTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0375 | §7.6ح | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0376 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |

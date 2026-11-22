@@ -32,6 +32,10 @@ trait ConfiguresPanel
         return $panel
             ->id($id)
             ->path($path)
+            ->brandName('وِثاق')
+            ->brandLogo(fn () => view('brand.logo'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('brand/withaq-favicon.svg'))
             ->login()
             ->passwordReset()
             ->profile()
@@ -45,6 +49,8 @@ trait ConfiguresPanel
                 '<style id="theme-tokens">{!! $css !!}</style><link rel="manifest" href="{{ url(\'/manifest.webmanifest\') }}">',
                 ['css' => app(ThemeService::class)->css()],
             ))
+            ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('brand.preferences'))
+            ->pages([MyPreferencesPage::class])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
