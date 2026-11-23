@@ -13,4 +13,9 @@ class EditAsset extends EditRecord
     {
         return [\App\Filament\Support\Ui::archive()];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return AssetResource::prepareDepreciation($data, $this->data ?? []);
+    }
 }

@@ -56,6 +56,7 @@ class HomeDashboard extends Dashboard
             'buildings' => $buildings,
             'buildingId' => $buildingId,
             'facade' => $buildingId ? $svc->facade($buildingId, $today) : null,
+            'outlook' => $buildingId ? $svc->buildingOutlook($buildingId, $today) : null,
             'attention' => $svc->attention($user, $ids, $today),
             'actions' => array_values(array_filter(self::quickActions(), fn ($a) => $user->hasPermission($a['perm']))),
             'renewals' => $user->hasPermission('leasing.view') ? $svc->renewals($ids, $today) : [],

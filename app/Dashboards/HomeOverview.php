@@ -91,6 +91,55 @@ class HomeOverview
         return ['rows' => $rows, 'counts' => $counts];
     }
 
+    /** Windows for the building outlook, in days (owner decision 2026-11-23: 90, 60 and 30). */
+    public const OUTLOOK_WINDOWS = [90, 60, 30];
+
+    /**
+     * Building outlook (owner request 2026-11-23; REQ-0397 confidence grades, REQ-0262): occupancy today, and for each
+     * window how many leased units stay leased and how many will be vacated (notice given or an expected vacancy
+     * graded confirmed/likely falling inside the window), plus maintenance spend and the yearly depreciation of assets.
+     */
+    public function buildingOutlook(int $buildingId, CarbonImmutable $today): array
+    {
+        $b = Building::find($buildingId);
+        $spaceIds = Space::where('building_id', $buildingId)->pluck('id');
+        $units = LeasableUnit::whereNull('archived_at')->where('is_composite', false)
+            ->whereHas('spaces', fn ($q) => $q->whereIn('spaces.id', $spaceIds))->get();
+        // same statuses as the facade and the occupancy vital, so the three figures agree
+        $active = Lease::whereIn('leasable_unit_id', $units->pluck('id'))->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
+            ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->get()->keyBy('leasable_unit_id');
+        $expected = \App\Models\ExpectedVacancy::whereIn('leasable_unit_id', $active->keys())->whereIn('confidence', ['confirmed', 'probable'])->get()->keyBy('leasable_unit_id');
+        $total = $units->count();
+        $leased = $active->count();
+        $windows = [];
+        foreach (self::OUTLOOK_WINDOWS as $days) {
+            $until = $today->addDays($days);
+            $vacating = $active->filter(function (Lease $l) use ($expected, $until) {
+                $ends = CarbonImmutable::parse($l->ends_on);
+                if ($l->status === 'notice_given') {
+                    return $ends <= $until;
+                }
+                $ev = $expected[$l->leasable_unit_id] ?? null;
+                return $ev && CarbonImmutable::parse($ev->month . '-01') <= $until;
+            })->count();
+            $renewing = $active->filter(fn (Lease $l) => $l->status !== 'notice_given' && CarbonImmutable::parse($l->ends_on) <= $until && ! isset($expected[$l->leasable_unit_id]))->count();
+            $staying = $leased - $vacating;
+            $windows[$days] = [
+                'staying' => $staying, 'vacating' => $vacating, 'renewing' => $renewing,
+                'staying_bp' => $total ? intdiv($staying * 10000, $total) : 0,
+                'vacating_bp' => $total ? intdiv($vacating * 10000, $total) : 0,
+            ];
+        }
+        $valuation = app(\App\Maintenance\AssetValuation::class)->building($buildingId, (int) $b->property_id, $today);
+        return [
+            'name' => $b->name_ar, 'property' => $b->property?->name_ar, 'photo' => $b->property?->photoUrl(),
+            'total' => $total, 'leased' => $leased, 'occupancy_bp' => $total ? intdiv($leased * 10000, $total) : 0,
+            'windows' => $windows,
+            'spend_year' => $valuation['totals']['spend_year'], 'spend_all' => $valuation['totals']['spend_all'],
+            'assets_yearly' => $valuation['totals']['yearly'], 'assets_book' => $valuation['totals']['book'], 'assets_near' => $valuation['totals']['near'] + $valuation['totals']['ended'],
+        ];
+    }
+
     public function buildings(array $propertyIds): array
     {
         return Building::whereIn('property_id', $propertyIds)->whereNull('archived_at')->with('property')->orderBy('id')->get()

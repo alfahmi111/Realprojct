@@ -15,7 +15,13 @@ class Property extends Model
 {
     use Archivable, Auditable, BelongsToSubscriber;
 
-    protected $fillable = ['portfolio_id', 'name_ar', 'name_en', 'template', 'deed_number', 'ejar_property_number', 'real_estate_registry_number', 'national_address', 'region', 'city', 'within_urban_boundary', 'latitude', 'longitude'];
+    protected $fillable = ['portfolio_id', 'name_ar', 'name_en', 'template', 'deed_number', 'ejar_property_number', 'real_estate_registry_number', 'national_address', 'region', 'city', 'within_urban_boundary', 'latitude', 'longitude', 'photo_path'];
+
+    /** URL of the optional photo, served through RLS (owner request 2026-11-23). */
+    public function photoUrl(): ?string
+    {
+        return $this->photo_path ? route('property.photo', ['id' => $this->id, 'v' => substr(md5($this->photo_path), 0, 8)]) : null;
+    }
 
     protected function casts(): array
     {

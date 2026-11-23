@@ -136,6 +136,46 @@
         </section>
     </div>
 
+    {{-- Building outlook: occupancy now and over the next 90 / 60 / 30 days, and what the building costs to keep --}}
+    @if ($outlook && $outlook['total'])
+        <section class="wq-panel wq-outlook" aria-labelledby="outlook-h">
+            <header class="wq-panel-head">
+                <div class="wq-outlook-title">
+                    @if ($outlook['photo'])<span class="wq-outlook-photo" style="background-image:url('{{ $outlook['photo'] }}')" aria-hidden="true"></span>@endif
+                    <h2 id="outlook-h">نظرة على {{ $outlook['property'] }}</h2>
+                </div>
+                <span class="wq-panel-meta">{{ $outlook['leased'] }} من {{ $outlook['total'] }} وحدة مؤجرة اليوم</span>
+            </header>
+            <div class="wq-outlook-body">
+                <div class="wq-outlook-now">
+                    <span class="wq-outlook-big">{{ $pct($outlook['occupancy_bp']) }}<small>%</small></span>
+                    <span class="wq-outlook-cap">نسبة الإشغال الحالية</span>
+                </div>
+                <ol class="wq-outlook-windows">
+                    @foreach ($outlook['windows'] as $days => $w)
+                        @php($vacantBp = max(0, 10000 - $w['staying_bp'] - $w['vacating_bp']))
+                        <li>
+                            <strong class="wq-outlook-days">خلال {{ $days }} يوماً</strong>
+                            <span class="wq-stack" role="img" aria-label="يستمر {{ $pct($w['staying_bp']) }}%، سيشغر {{ $pct($w['vacating_bp']) }}%">
+                                <span class="wq-stack-stay" style="--p: {{ $pct($w['staying_bp']) }}%"></span><span class="wq-stack-go" style="--p: {{ $pct($w['vacating_bp']) }}%"></span>
+                            </span>
+                            <span class="wq-outlook-figs">
+                                <span><b class="wq-c-stay">{{ $pct($w['staying_bp']) }}%</b> يستمر إشغاله</span>
+                                <span><b class="wq-c-go">{{ $pct($w['vacating_bp']) }}%</b> سيشغر ({{ $w['vacating'] }} {{ $w['vacating'] === 1 ? 'وحدة' : ($w['vacating'] === 2 ? 'وحدتان' : 'وحدات') }})</span>
+                                @if ($w['renewing'])<span class="wq-outlook-renew">{{ $w['renewing'] }} {{ $w['renewing'] === 1 ? 'عقد ينتهي ويتجدد' : 'عقود تنتهي وتتجدد' }} تلقائياً ما لم يُشعر أحد</span>@endif
+                            </span>
+                        </li>
+                    @endforeach
+                </ol>
+            </div>
+            <dl class="wq-outlook-money">
+                <div><dt>صُرف على صيانته هذا العام</dt><dd>{{ $money($outlook['spend_year']) }}</dd><small>منذ البداية {{ $money($outlook['spend_all']) }}</small></div>
+                <div><dt>إهلاك أصوله السنوي</dt><dd>{{ $money($outlook['assets_yearly']) }}</dd><small>القيمة الحالية للأصول {{ $money($outlook['assets_book']) }}</small></div>
+                <div><dt>أصول تقترب من الاستبدال</dt><dd>{{ $outlook['assets_near'] }}</dd>@if (auth()->user()->hasPermission('assets.view'))<small><a class="wq-link" href="{{ $base }}/building-contents?building={{ $buildingId }}">محتوى المبنى والجرد</a></small>@endif</div>
+            </dl>
+        </section>
+    @endif
+
     @if (count($actions))
         <section class="wq-panel" aria-label="إجراءات سريعة">
             <header class="wq-panel-head"><h2>إجراءات سريعة</h2></header>

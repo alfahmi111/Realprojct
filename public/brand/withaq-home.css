@@ -166,6 +166,41 @@
 .wq-home, .wq-home .fi-page-content, .wq-home .fi-page-main, .wq-home section, .wq-split > *, .wq-vitals > * { min-width: 0; }
 .wq-home .fi-page-content { max-width: 100%; }
 
+/* Building outlook (2026-11-23): occupancy now, then 90 / 60 / 30 days, then upkeep */
+.wq-outlook-title { display: flex; align-items: center; gap: 12px; }
+.wq-outlook-photo { width: 40px; height: 40px; border-radius: 10px; background: var(--color-soft) center / cover no-repeat; border: 1px solid var(--color-line); }
+.wq-outlook-body { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 20px 22px; align-items: center; }
+.wq-outlook-now { display: grid; gap: 4px; justify-items: start; padding-inline-end: 24px; border-inline-end: 1px solid var(--color-line); }
+.wq-outlook-big { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 3rem; line-height: 1; color: var(--color-primary); font-variant-numeric: tabular-nums; }
+.wq-outlook-big small { font-size: 1.3rem; }
+.wq-outlook-cap { font-size: .85rem; color: var(--color-muted); font-weight: 700; }
+.wq-outlook-windows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.wq-outlook-windows li { display: grid; grid-template-columns: 110px minmax(120px, 1fr) minmax(0, 1.3fr); gap: 16px; align-items: center; }
+.wq-outlook-days { font-family: 'Cairo', sans-serif; font-size: .95rem; color: var(--color-ink); }
+.wq-stack { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--status-vacant-bg); border: 1px solid var(--color-line); }
+.wq-stack > span { display: block; flex: 0 0 var(--p); height: 100%; }
+.wq-stack-stay { background: var(--status-paid-fg); }
+.wq-stack-go { background: var(--status-soon-fg); }
+.wq-outlook-figs { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .85rem; color: var(--color-muted); }
+.wq-outlook-figs b { font-family: 'Cairo', sans-serif; font-variant-numeric: tabular-nums; }
+.wq-c-stay { color: var(--status-paid-fg); }
+.wq-c-go { color: var(--status-soon-fg); }
+.wq-outlook-renew { flex-basis: 100%; font-size: .78rem; }
+.wq-outlook-money { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--color-line); }
+.wq-outlook-money > div { padding: 14px 22px; display: grid; gap: 2px; border-inline-start: 1px solid var(--color-line); }
+.wq-outlook-money > div:first-child { border-inline-start: 0; }
+.wq-outlook-money dt { font-size: .82rem; font-weight: 700; color: var(--color-muted); }
+.wq-outlook-money dd { margin: 0; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.wq-outlook-money small { font-size: .78rem; color: var(--color-muted); }
+.wq-link { color: var(--color-primary) !important; font-weight: 700; }
+@media (max-width: 900px) {
+    .wq-outlook-body { grid-template-columns: 1fr; }
+    .wq-outlook-now { border-inline-end: 0; padding-inline-end: 0; }
+    .wq-outlook-windows li { grid-template-columns: 1fr; gap: 6px; }
+    .wq-outlook-money { grid-template-columns: 1fr; }
+    .wq-outlook-money > div { border-inline-start: 0; border-top: 1px solid var(--color-line); }
+}
+
 /* First-run setup steps */
 .wq-setup { border-inline-start: 4px solid var(--color-secondary, var(--color-primary)); }
 .wq-setup-bar { height: 6px; margin: 0 20px; border-radius: 999px; background: var(--color-line); overflow: hidden; }

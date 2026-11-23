@@ -39,7 +39,7 @@ trait ConfiguresPanel
             ->favicon(asset('brand/withaq-favicon.svg'))
             // Identity fonts served locally (no external request): Tajawal for text, Cairo for headings.
             ->font('Tajawal', url: asset('fonts/fonts.css'), provider: \Filament\FontProviders\LocalFontProvider::class)
-            ->renderHook(PanelsRenderHook::STYLES_AFTER, fn () => '<link rel="stylesheet" href="' . asset('brand/withaq-theme.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-home.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-portal.css') . '">')
+            ->renderHook(PanelsRenderHook::STYLES_AFTER, fn () => '<link rel="stylesheet" href="' . asset('brand/withaq-theme.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-home.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-portal.css') . '"><link rel="stylesheet" href="' . asset('brand/withaq-pages.css') . '?v=' . @filemtime(public_path('brand/withaq-pages.css')) . '">')
             ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_START, fn () => view('brand.auth-aside'))
             ->login(WithaqLogin::class)
             ->passwordReset()
