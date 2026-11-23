@@ -78,12 +78,21 @@ class WorkOrderResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Select::make('type')->label('النوع')->options(['corrective' => 'تصحيحية', 'emergency' => 'طارئة', 'unit_prep' => 'تجهيز وحدة', 'preventive' => 'وقائية'])->required(),
-            Select::make('property_id')->label('العقار')->options(fn () => Property::whereNull('archived_at')->pluck('name_ar', 'id'))->required()->live(),
-            Select::make('asset_id')->label('الأصل')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => Asset::whereNull('archived_at')->whereHas('space', fn ($q) => $q->where('property_id', $get('property_id')))->pluck('name_ar', 'id'))->searchable(),
-            Textarea::make('description')->label('الوصف')->required()->columnSpanFull(),
-            FileUpload::make('photos_report')->label('الصور')->multiple()->image()->directory('work-orders')->columnSpanFull(),
-        ])->columns(2);
+            Section::make('ما المشكلة؟')->description('صف المشكلة كما يراها من أبلغ عنها. الطارئ (انقطاع كهرباء، تسريب) يصل فوراً للمشرف.')->schema([
+                \Filament\Forms\Components\ToggleButtons::make('type')->label('النوع')->options(['corrective' => 'تصحيحية', 'emergency' => 'طارئة', 'unit_prep' => 'تجهيز وحدة', 'preventive' => 'وقائية'])
+                    ->icons(['corrective' => 'heroicon-o-wrench', 'emergency' => 'heroicon-o-bolt', 'unit_prep' => 'heroicon-o-sparkles', 'preventive' => 'heroicon-o-calendar'])
+                    ->colors(['emergency' => 'danger'])->inline()->required()->default('corrective'),
+                Textarea::make('description')->label('الوصف')->required()->rows(3)->placeholder('مثال: المكيف في الصالة لا يبرد منذ أمس'),
+            ]),
+            Section::make('أين؟')->schema([
+                Select::make('property_id')->label('العقار')->options(fn () => Property::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->required()->live(),
+                Select::make('asset_id')->label('الأصل (اختياري)')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => Asset::whereNull('archived_at')->whereHas('space', fn ($q) => $q->where('property_id', $get('property_id')))->with('space')->get()->mapWithKeys(fn ($a) => [$a->id => $a->name_ar . ($a->space ? '، ' . $a->space->name_ar : '')]))->searchable()
+                    ->helperText('إن كان الأصل تحت الضمان يُوجَّه البلاغ لجهة الضمان.'),
+            ])->columns(2),
+            Section::make('صور')->collapsible()->schema([
+                FileUpload::make('photos_report')->label('صور المشكلة')->multiple()->image()->directory('work-orders')->maxFiles(6),
+            ]),
+        ])->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema

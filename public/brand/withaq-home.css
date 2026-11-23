@@ -137,13 +137,13 @@
 .wq-table tr:last-child td { border-bottom: 0; }
 .wq-table td a { color: var(--color-primary); font-weight: 700; }
 .wq-col-bar { width: 260px; }
-.wq-bar { display: inline-block; vertical-align: middle; width: 160px; height: 8px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
-.wq-bar span { display: block; height: 100%; width: var(--p); border-radius: inherit; background: var(--color-primary); }
-.wq-bar.wq-near span { background: var(--status-vacant-fg); }
-.wq-bar.wq-urgent span { background: var(--status-late-fg); }
+:is(.wq-home, .wq-page) .wq-bar { display: inline-block; vertical-align: middle; width: 160px; height: 8px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
+:is(.wq-home, .wq-page) .wq-bar span { display: block; height: 100%; width: var(--p); border-radius: inherit; background: var(--color-primary); }
+:is(.wq-home, .wq-page) .wq-bar.wq-near span { background: var(--status-vacant-fg); }
+:is(.wq-home, .wq-page) .wq-bar.wq-urgent span { background: var(--status-late-fg); }
 .wq-bar-text { margin-inline-start: 10px; font-size: .82rem; color: var(--color-muted); font-variant-numeric: tabular-nums; }
-.wq-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--bg); color: var(--fg); font-size: .8rem; font-weight: 700; }
-.wq-empty { padding: 28px 22px; display: grid; gap: 12px; justify-items: start; color: var(--color-muted); }
+:is(.wq-home, .wq-page) .wq-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--bg); color: var(--fg); font-size: .8rem; font-weight: 700; }
+:is(.wq-home, .wq-page) .wq-empty { padding: 28px 22px; display: grid; gap: 12px; justify-items: start; color: var(--color-muted); }
 .wq-btn { display: inline-block; padding: 9px 18px; border-radius: var(--wq-radius-md); background: var(--color-primary); color: #fff !important; font-weight: 700; }
 
 /* Responsive */
@@ -177,11 +177,11 @@
 .wq-outlook-windows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 .wq-outlook-windows li { display: grid; grid-template-columns: 110px minmax(120px, 1fr) minmax(0, 1.3fr); gap: 16px; align-items: center; }
 .wq-outlook-days { font-family: 'Cairo', sans-serif; font-size: .95rem; color: var(--color-ink); }
-.wq-stack { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--status-vacant-bg); border: 1px solid var(--color-line); }
-.wq-outlook .wq-stack { display: flex; }
-.wq-stack > span { display: block; flex: 0 0 var(--p); height: 12px; }
-.wq-stack-stay { background: var(--status-paid-fg); }
-.wq-stack-go { background: var(--status-soon-fg); }
+.wq-occbar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--status-vacant-bg); border: 1px solid var(--color-line); }
+.wq-outlook .wq-occbar { display: flex; }
+.wq-occbar > span { display: block; flex: 0 0 var(--p); height: 12px; }
+.wq-occbar-stay { background: var(--status-paid-fg); }
+.wq-occbar-go { background: var(--status-soon-fg); }
 .wq-outlook-figs { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .85rem; color: var(--color-muted); }
 .wq-outlook-figs b { font-family: 'Cairo', sans-serif; font-variant-numeric: tabular-nums; }
 .wq-c-stay { color: var(--status-paid-fg); }

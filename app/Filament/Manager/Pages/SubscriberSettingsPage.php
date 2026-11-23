@@ -59,13 +59,14 @@ class SubscriberSettingsPage extends Page
         }
         $sub = $this->subscriber();
         foreach (self::OFFICE_FIELDS as $f) {
-            $values["office__$f"] = $sub?->$f;
+            $v = $sub?->$f;
+            $values["office__$f"] = $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v;
         }
         $this->form->fill($values);
     }
 
     /** The office's own record — the same row the platform admin sees (one source of truth). */
-    private const OFFICE_FIELDS = ['commercial_registration', 'vat_number', 'city', 'contact_name', 'contact_phone', 'contact_email'];
+    private const OFFICE_FIELDS = ['commercial_registration', 'vat_number', 'city', 'contact_name', 'contact_phone', 'contact_email', 'license_kind', 'license_no', 'license_expires_on'];
 
     private function subscriber(): ?Subscriber
     {
@@ -108,6 +109,16 @@ class SubscriberSettingsPage extends Page
                     TextInput::make('office__contact_phone')->label('جوال التواصل')->tel()->maxLength(30),
                     TextInput::make('office__contact_email')->label('بريد التواصل')->email(),
                 ])->columns(3),
+            Section::make('رخصة المكتب')
+                ->description('رخصتك من الهيئة العامة للعقار. ينبّهك النظام قبل انتهائها بثلاثين يوماً ثم بسبعة أيام.')
+                ->schema([
+                    \Filament\Forms\Components\Select::make('office__license_kind')->label('نوع الرخصة')->options(\App\Compliance\ExpiryAlerts::LICENSE_KIND_AR),
+                    TextInput::make('office__license_no')->label('رقم الرخصة')->maxLength(60),
+                    \Filament\Forms\Components\DatePicker::make('office__license_expires_on')->label('تاريخ الانتهاء'),
+                ])->columns(3),
+            Section::make('التكاملات')
+                ->description('حالة الربط بكل جهة خارجية. المزوّد الفعلي يُختار ويُربط بقرار من إدارة المنصة.')
+                ->schema([\Filament\Schemas\Components\View::make('filament.manager.integrations-status')->viewData(fn () => ['rows' => \App\Integrations\IntegrationStatus::all()])]),
             Section::make('الهوية والسمة')->schema([
                 Select::make('theme__preset')->label('السمة الجاهزة')->options(['withaq' => 'وِثاق (الأساسية)', 'clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق']),
                 TextInput::make('theme__custom_primary')->label('اللون الأساسي المخصص (#RRGGBB)')->regex('/^#[0-9A-Fa-f]{6}$/'),

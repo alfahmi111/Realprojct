@@ -20,11 +20,12 @@ class Subscriber extends Model
     public const CYCLES = ['monthly' => 'شهري', 'annual' => 'سنوي'];
 
     protected $fillable = ['name_ar', 'name_en', 'plan', 'status', 'commercial_registration', 'vat_number', 'city', 'contact_name', 'contact_phone', 'contact_email',
-        'billing_cycle', 'subscription_starts_on', 'subscription_ends_on', 'price_minor', 'addons', 'notes', 'grace_days'];
+        'billing_cycle', 'subscription_starts_on', 'subscription_ends_on', 'price_minor', 'addons', 'notes', 'grace_days', 'license_kind', 'license_no', 'license_expires_on'];
 
     protected function casts(): array
     {
         return [
+            'license_expires_on' => 'date',
             'archived_at' => 'datetime', 'suspended_at' => 'datetime',
             'subscription_starts_on' => 'date', 'subscription_ends_on' => 'date',
             'price_minor' => MoneyCast::class, 'addons' => 'array',

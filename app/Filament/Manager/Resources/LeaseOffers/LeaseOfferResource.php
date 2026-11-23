@@ -55,19 +55,25 @@ class LeaseOfferResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Select::make('leasable_unit_id')->label('الوحدة')->options(fn () => LeasableUnit::whereNull('archived_at')->orderBy('code')->get()->mapWithKeys(fn ($u) => [$u->id => $u->code . ' — ' . $u->name_ar]))->searchable()->required(),
-            Select::make('tenant_id')->label('المستأجر')->options(fn () => Tenant::whereNull('archived_at')->pluck('name_ar', 'id'))->searchable()->required(),
-            Select::make('usage')->label('الاستخدام')->options(['residential' => 'سكني', 'commercial' => 'تجاري'])->required(),
-            DatePicker::make('starts_on')->label('البداية')->required(),
-            Select::make('duration_unit')->label('وحدة المدة')->options(['month' => 'شهر', 'year' => 'سنة'])->required(),
-            TextInput::make('duration_count')->label('العدد')->integer()->minValue(1)->required(),
-            Ui::money('annual_rent_minor', 'الإيجار السنوي')->required(),
-            Select::make('payment_frequency')->label('الدفعات')->options(['monthly' => 'شهرية', 'quarterly' => 'ربع سنوية', 'semiannual' => 'نصف سنوية', 'annual' => 'سنوية', 'single' => 'دفعة واحدة'])->required(),
-            Ui::money('deposit_minor', 'التأمين'),
-            DatePicker::make('valid_until')->label('صالح حتى'),
+            \Filament\Schemas\Components\Section::make('الوحدة والمستأجر')->description('اختر الوحدة ثم المستأجر. إن لم يكن مسجّلاً بعد فأضفه من «المستأجرون».')->schema([
+                Select::make('leasable_unit_id')->label('الوحدة')->options(fn () => LeasableUnit::whereNull('archived_at')->with('property')->orderBy('code')->get()->mapWithKeys(fn ($u) => [$u->id => $u->code . ' — ' . $u->name_ar . ($u->property ? '، ' . $u->property->name_ar : '')]))->searchable()->required(),
+                Select::make('tenant_id')->label('المستأجر')->options(fn () => Tenant::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->searchable()->required(),
+                \Filament\Forms\Components\ToggleButtons::make('usage')->label('الغرض')->options(['residential' => 'سكني', 'commercial' => 'تجاري'])->inline()->required()->helperText('التجاري تُحتسب عليه ضريبة 15% إن كان المؤجر مسجّلاً.'),
+            ])->columns(3)->columnSpanFull(),
+            \Filament\Schemas\Components\Section::make('المدة')->schema([
+                DatePicker::make('starts_on')->label('تاريخ البداية')->required(),
+                TextInput::make('duration_count')->label('المدة')->integer()->minValue(1)->required()->default(1),
+                \Filament\Forms\Components\ToggleButtons::make('duration_unit')->label('بالـ')->options(['month' => 'أشهر', 'year' => 'سنوات'])->inline()->required()->default('year'),
+                DatePicker::make('valid_until')->label('العرض صالح حتى')->helperText('بعده لا يستطيع المستأجر قبول العرض.'),
+            ])->columns(4)->columnSpanFull(),
+            \Filament\Schemas\Components\Section::make('المبلغ والدفعات')->description('إن كان في الإيجار خصم عن السعر المطلوب يتجاوز قواعد الاعتماد، رُفع العرض للاعتماد.')->schema([
+                Ui::money('annual_rent_minor', 'الإيجار السنوي')->required(),
+                Select::make('payment_frequency')->label('دورة السداد')->options(['monthly' => 'شهرية', 'quarterly' => 'ربع سنوية', 'semiannual' => 'نصف سنوية', 'annual' => 'سنوية', 'single' => 'دفعة واحدة'])->required(),
+                Ui::money('deposit_minor', 'مبلغ الضمان')->helperText('لا يدخل في قيمة العقد، ويُسجَّل التزاماً حتى يُرد.'),
+            ])->columns(3)->columnSpanFull(),
             Repeater::make('escalations')->label('الزيادات المجدولة')->schema([
                 Select::make('kind')->label('النوع')->options(['percentage' => 'نسبة', 'amount' => 'مبلغ'])->required()->live(),
-                TextInput::make('percentage_bp')->label('النسبة (نقطة أساس، 500 = 5%)')->integer()->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'percentage'),
+                TextInput::make('percentage')->label('النسبة %')->numeric()->minValue(0)->maxValue(100)->step(0.01)->suffix('%')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'percentage'),
                 Ui::money('amount_minor', 'المبلغ السنوي')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'amount'),
                 TextInput::make('contract_year')->label('من سنة العقد')->integer()->minValue(2),
                 DatePicker::make('effective_on')->label('أو من تاريخ'),
