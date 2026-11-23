@@ -55,7 +55,7 @@ class OperationsTest extends TestCase
         $stub->method('get')->willReturnMap([['launch.penetration_test_passed', null, null, true], ['platform.default_theme', null, null, 'clay'], ['theme.preset', null, null, null]]);
         $this->app->instance(Settings::class, $stub);
         $this->app->forgetInstance(\App\Theming\ThemeService::class);
-        config(['app.debug' => false, 'queue.default' => 'redis', 'cache.default' => 'redis', 'filesystems.default' => 's3', 'app.url' => 'https://app.example.sa']);
+        config(['app.debug' => false, 'queue.default' => 'redis', 'cache.default' => 'redis', 'filesystems.default' => 's3', 'app.url' => 'https://app.example.sa', 'session.secure' => true, 'session.encrypt' => true]);
         $this->assertSame(0, Artisan::call('platform:launch-check', ['--production-config' => true]));
     }
 }
