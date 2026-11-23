@@ -27,6 +27,33 @@
         </div>
     </section>
 
+    {{-- First-run setup: shown until every step the user may do is done --}}
+    @php($setupDone = collect($setup)->where('done', true)->count())
+    @if (count($setup) && $setupDone < count($setup))
+        <section class="wq-panel wq-setup" aria-labelledby="setup-h">
+            <header class="wq-panel-head">
+                <h2 id="setup-h">جهّز مكتبك للعمل</h2>
+                <span class="wq-panel-meta">{{ $setupDone }} من {{ count($setup) }} خطوات</span>
+            </header>
+            <div class="wq-setup-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ count($setup) }}" aria-valuenow="{{ $setupDone }}" aria-label="تقدّم الإعداد"><span style="--p: {{ intdiv($setupDone * 100, count($setup)) }}%"></span></div>
+            <ol class="wq-setup-list">
+                @foreach ($setup as $step)
+                    <li class="wq-setup-step {{ $step['done'] ? 'is-done' : '' }}">
+                        <span class="wq-setup-mark" aria-hidden="true">@if ($step['done'])<x-filament::icon icon="heroicon-m-check" class="wq-setup-check" />@else{{ $loop->iteration }}@endif</span>
+                        <span class="wq-setup-text">
+                            @if ($step['done'])
+                                <strong>{{ $step['label'] }}</strong><span class="wq-sr"> (منجزة)</span>
+                            @else
+                                <a href="{{ $base }}/{{ $step['url'] }}"><strong>{{ $step['label'] }}</strong></a>
+                            @endif
+                            <small>{{ $step['hint'] }}</small>
+                        </span>
+                    </li>
+                @endforeach
+            </ol>
+        </section>
+    @endif
+
     {{-- Vitals --}}
     <section class="wq-vitals" aria-label="مؤشرات المحفظة">
         <a class="wq-vital wq-tone-teal" href="{{ $base }}/kpis">

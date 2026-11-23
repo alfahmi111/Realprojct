@@ -76,6 +76,11 @@ class OwnerResource extends Resource
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }
 
+    public static function getRelations(): array
+    {
+        return [RelationManagers\AgreementsRelationManager::class];
+    }
+
     public static function getPages(): array
     {
         return [

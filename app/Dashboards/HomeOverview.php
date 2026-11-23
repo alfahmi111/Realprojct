@@ -178,4 +178,28 @@ class HomeOverview
     {
         return DB::table('space_occupancies')->whereIn('space_id', $u->spaces->pluck('id'))->where('kind', $kind)->whereRaw('period @> ?::date', [$on->toDateString()])->exists();
     }
+    /**
+     * First-run setup steps for a new office, each checked against real data (not a flag), shown on the manager home
+     * until done. Only the steps the user's role may perform are listed.
+     *
+     * @return list<array{key:string,label:string,hint:string,url:string,done:bool}>
+     */
+    public function setupSteps(User $user): array
+    {
+        $steps = [
+            ['key' => 'settings', 'perm' => 'settings.subscriber', 'url' => 'subscriber-settings', 'label' => 'راجع إعدادات المكتب', 'hint' => 'التسجيل الضريبي وطريقة تحصيل الأتعاب والتقويم',
+                'done' => DB::table('subscriber_settings')->exists()],
+            ['key' => 'owner', 'perm' => 'properties.create', 'url' => 'owners/create', 'label' => 'أضف أول مالك', 'hint' => 'فرد أو ورثة أو شركة',
+                'done' => \App\Models\Owner::exists()],
+            ['key' => 'property', 'perm' => 'properties.create', 'url' => 'add-building', 'label' => 'أضف أول عقار', 'hint' => 'المعالج يبني الأدوار والوحدات والأسعار',
+                'done' => Property::exists()],
+            ['key' => 'agreement', 'perm' => 'properties.view', 'url' => 'owners', 'label' => 'سجّل عقد الإدارة مع المالك', 'hint' => 'من صفحة المالك ← عقود الإدارة؛ يلزم لكشف الحساب والأتعاب',
+                'done' => \App\Models\ManagementAgreement::whereNull('archived_at')->exists()],
+            ['key' => 'team', 'perm' => 'users.manage', 'url' => 'users/create', 'label' => 'أضف فريق العمل', 'hint' => 'المحاسب والمشرف والفني، كلٌّ بصلاحياته',
+                'done' => User::whereNotNull('subscriber_id')->count() > 1],
+            ['key' => 'lease', 'perm' => 'properties.import', 'url' => 'quick-migration', 'label' => 'انقل عقودك القائمة', 'hint' => 'من ملف إيجار أو صورة العقد، ولا يُحفظ شيء قبل تأكيدك',
+                'done' => Lease::exists()],
+        ];
+        return array_values(array_map(fn ($s) => array_diff_key($s, ['perm' => 1]), array_filter($steps, fn ($s) => $user->hasPermission($s['perm']))));
+    }
 }

@@ -31,4 +31,9 @@ class Owner extends Model
     {
         return $this->hasMany(OwnershipShare::class);
     }
+
+    public function agreements(): HasMany
+    {
+        return $this->hasMany(ManagementAgreement::class);
+    }
 }

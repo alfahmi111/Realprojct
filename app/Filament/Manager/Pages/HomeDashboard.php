@@ -51,6 +51,7 @@ class HomeDashboard extends Dashboard
         $buildingId = collect($buildings)->firstWhere('id', $this->building)['id'] ?? ($buildings[0]['id'] ?? null);
         return [
             'header' => $svc->header($user, CarbonImmutable::now()),
+            'setup' => $svc->setupSteps($user),
             'vitals' => $svc->vitals($ids, $today),
             'buildings' => $buildings,
             'buildingId' => $buildingId,

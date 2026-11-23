@@ -366,7 +366,7 @@
 | REQ-0359 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0360 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0361 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | العدّاد منجز؛ حصة الباقة غير محددة في الوثيقة |
-| REQ-0362 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php |  |
+| REQ-0362 | §7.6هـ | BUILD | MVP | IN-PROGRESS | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php | أُعيد فتحه 2026-11-23: الإعداد يبدّل لغة Filament فقط، وتسميات شاشاتنا مكتوبة بالعربية في الكود؛ تبقى ترجمة الواجهة إلى الإنجليزية |
 | REQ-0363 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
 | REQ-0364 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
 | REQ-0365 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
@@ -375,7 +375,7 @@
 | REQ-0368 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0369 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0370 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
-| REQ-0371 | §7.6و | BUILD | MVP | IN-PROGRESS | app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
+| REQ-0371 | §7.6و | BUILD | MVP | DONE | app/Privacy/DataRetention.php, app/Console/Commands/ApplyDataRetention.php, app/Filament/Manager/Pages/SubscriberSettingsPage.php, app/Migration/DataExport.php | tests/Feature/Foundation/DataRetentionTest.php | مدة لكل نوع يحددها المكتب، الفارغ = احتفاظ؛ لا مدد نظامية مخترعة؛ المالية والعقود والتدقيق لا تُحذف |
 | REQ-0372 | §7.6و | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0373 | §7.6ز | BUILD | MVP | DONE | app/Filament/Support/MyPreferencesPage.php, resources/views/brand/preferences.blade.php, app/Http/Middleware/ApplyUserPreferences.php | tests/Feature/Screens/BrandingAndPreferencesTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |

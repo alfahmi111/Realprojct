@@ -54,6 +54,9 @@ class SubscriberSettingsPage extends Page
         foreach (self::KEYS as $k) {
             data_set($values, str_replace('.', '__', $k), $s->get($k));
         }
+        foreach (app(\App\Privacy\DataRetention::class)->periods() as $type => $months) {
+            $values['retention'][$type] = $months;
+        }
         $this->form->fill($values);
     }
 
@@ -92,6 +95,10 @@ class SubscriberSettingsPage extends Page
                 TextInput::make('notifications__quiet_hours.start')->label('بداية ساعات الهدوء (HH:MM)')->regex('/^([01]\d|2[0-3]):[0-5]\d$/'),
                 TextInput::make('notifications__quiet_hours.end')->label('نهاية ساعات الهدوء (HH:MM)')->regex('/^([01]\d|2[0-3]):[0-5]\d$/'),
             ])->columns(3),
+            Section::make('مدد الاحتفاظ بالبيانات')
+                ->description('مكتبك هو المتحكم في البيانات وفق نظام حماية البيانات الشخصية، فتحدد هنا مدة الاحتفاظ بكل نوع بالأشهر. الحقل الفارغ يعني الاحتفاظ دون حذف. السجلات المالية والعقود وسجل التدقيق لا تُحذف أبداً، وبيانات المهتمين تُحذف تلقائياً حين يتوقفون عن تأكيد اهتمامهم.')
+                ->schema(collect(\App\Privacy\DataRetention::TYPES)->map(fn ($t, $type) => TextInput::make("retention.$type")->label($t[0] . ' (شهر)')->integer()->minValue(1)->maxValue(600)->helperText('يُحذف: ' . $t[1]))->values()->all())
+                ->columns(2),
         ]);
     }
 
@@ -125,6 +132,7 @@ class SubscriberSettingsPage extends Page
                     default => $settings->setSubscriber($k, $v),
                 };
             }
+            app(\App\Privacy\DataRetention::class)->save(array_map(fn ($v) => $v === '' ? null : $v, (array) ($d['retention'] ?? [])));
         }, 'حُفظت الإعدادات');
     }
 }
