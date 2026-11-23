@@ -27,7 +27,27 @@ class WorkOrder extends Model
         return $this->belongsTo(Property::class);
     }
 
-    public function costLines():\Illuminate\Database\Eloquent\Relations\HasMany
+    public function space(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Space::class);
+    }
+
+    public function asset(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Asset::class);
+    }
+
+    public function vendor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function assignee(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assignee_user_id');
+    }
+
+    public function costLines(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CostLine::class);
     }

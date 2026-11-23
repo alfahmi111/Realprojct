@@ -58,6 +58,7 @@ class BuildingQrResource extends Resource
     {
         $svc = fn () => app(BuildingQrService::class);
         return $table
+            ->emptyStateHeading('لا باركود للمباني بعد')->emptyStateDescription('ولّد باركوداً للوحة المبنى؛ يمسحه المهتم فيرى الوحدات المتاحة ويسجّل في قائمة الانتظار دون اتصال بك.')
             ->columns([
                 TextColumn::make('building_id')->label('المبنى')->formatStateUsing(fn ($state) => Building::find($state)?->name_ar),
                 TextColumn::make('code')->label('الرابط الثابت')->formatStateUsing(fn ($state) => url('/b/' . $state))->copyable(),

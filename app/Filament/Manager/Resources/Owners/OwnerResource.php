@@ -43,6 +43,8 @@ class OwnerResource extends Resource
 
     protected static ?string $pluralModelLabel = 'الملاك';
 
+    public const KIND_AR = ['individual' => 'فرد', 'heirs' => 'ورثة', 'company' => 'شركة'];
+
     public static function canDelete(Model $record): bool
     {
         return false;
@@ -69,12 +71,29 @@ class OwnerResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+        $money = fn ($v) => \App\Support\Dates\NumberFormatter::money($v);
+        $agreement = fn (\App\Models\Owner $o) => $o->agreements->filter(fn ($a) => $a->starts_on <= now() && ($a->ends_on === null || $a->ends_on >= now()))->sortByDesc('starts_on')->first();
+        $net = function (\App\Models\Owner $o) {
+            static $cache = [];
+            return $cache[$o->id] ??= rescue(fn () => app(\App\Finance\TrustAccounting::class)->statement($o, \Carbon\CarbonImmutable::today()->subMonthNoOverflow()->startOfMonth())['net_to_owner'], null, false);
+        };
+        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with(['shares.property', 'agreements'])->orderBy('name_ar'))
             ->columns([
-                TextColumn::make('name_ar')->label('الاسم')->searchable(),
-                TextColumn::make('kind')->label('النوع'),
-                IconColumn::make('vat_registered')->label('مسجّل ضريبياً')->boolean(),
+                TextColumn::make('name_ar')->label('المالك')->searchable(['name_ar', 'national_id', 'commercial_registration'])->weight('bold')
+                    ->description(fn (\App\Models\Owner $o) => self::KIND_AR[$o->kind] ?? $o->kind),
+                TextColumn::make('properties')->label('عقاراته وحصصه')->wrap()->placeholder('لم يُربط بعقار')
+                    ->state(fn (\App\Models\Owner $o) => $o->shares->map(fn ($s) => $s->property?->name_ar . ($s->share_numerator == $s->share_denominator ? '' : ' (' . $s->share_numerator . '/' . $s->share_denominator . ')'))->filter()->implode('، ') ?: null),
+                TextColumn::make('fee')->label('أتعاب الإدارة')->placeholder('لا عقد إدارة ساري')
+                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->fee_type === 'percentage' ? rtrim(rtrim(number_format($a->fee_percentage_bp / 100, 2), '0'), '.') . '%' : $money($a->fee_fixed_minor)) : null)
+                    ->description(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->collector === 'manager' ? 'المكتب يحصّل' : 'المالك يحصّل') : null),
+                TextColumn::make('cap')->label('سقف الصرف دون موافقته')->placeholder('—')
+                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) && $a->spend_cap_minor ? $money($a->spend_cap_minor) : null),
+                TextColumn::make('net')->label('صافي الشهر الماضي')->placeholder('—')
+                    ->state(fn (\App\Models\Owner $o) => ($n = $net($o)) ? $money($n) : null)
+                    ->url(fn () => \App\Filament\Manager\Pages\OwnerStatementPage::getUrl()),
+                IconColumn::make('vat_registered')->label('مسجّل ضريبياً')->boolean()->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filters([\Filament\Tables\Filters\SelectFilter::make('kind')->label('النوع')->options(self::KIND_AR)])
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }
 

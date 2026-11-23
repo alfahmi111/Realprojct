@@ -93,6 +93,7 @@ class AnnouncementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->defaultSort('published_at', 'desc')
+            ->emptyStateHeading('لا إعلانات بعد')->emptyStateDescription('أعلن للمستأجرين عن انقطاع مياه أو صيانة مصعد، لمبنى أو أكثر، وحدّد متى يختفي الإعلان.')
             ->columns([
                 TextColumn::make('title_ar')->label('الإعلان')->searchable()->weight('bold')
                     ->description(fn (Announcement $r) => \Illuminate\Support\Str::limit($r->body_ar, 90)),

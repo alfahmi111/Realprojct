@@ -128,6 +128,34 @@ class TreesAndContractViewTest extends TestCase
         $this->assertStringNotContainsString('>individual<', $this->get('/manage/tenants')->getContent());
     }
 
+    /** M13 (owner request 2026-11-23): remaining screens in Arabic, no raw enum values or JSON shown. */
+    public function test_req_0227_m13_screens_render_in_arabic(): void
+    {
+        $wo = app(\App\Maintenance\MaintenanceService::class)->report('corrective', $this->p->id, 'المكيف لا يبرد', 'tenant');
+        $this->actingAs($this->manager);
+        $pages = [
+            '/manage/work-orders' => ['المفتوحة', 'بانتظار الفرز', 'المكيف لا يبرد', 'تصحيحية', 'لم يُسند'],
+            '/manage/work-orders/' . $wo->id => ['مراحل أمر العمل', 'تم الفرز', 'البلاغ', 'التنفيذ', 'التكلفة'],
+            '/manage/owners' => ['سعد المالك', 'عمارة السلام', 'أتعاب الإدارة', '5%'],
+            '/manage/lease-offers' => ['خالد المستأجر', 'الوحدة 101', 'سنة', 'قَبِله المستأجر'],
+            '/manage/properties/' . $this->p->id => ['عمارة السلام', 'واجهة العقار اليوم', 'أوامر عمل مفتوحة', 'المكيف لا يبرد'],
+            '/manage/warranties' => ['لا ضمانات ولا عقود صيانة بعد'],
+            '/manage/approval-requests' => ['لا قيود تنتظر المراجعة'],
+        ];
+        $missing = [];
+        foreach ($pages as $url => $needles) {
+            $html = $this->get($url)->assertOk()->getContent();
+            foreach ($needles as $n) {
+                if (! str_contains($html, $n)) {
+                    $missing[] = $url . ' : ' . $n;
+                }
+            }
+        }
+        $this->assertSame([], $missing);
+        $this->assertSame('المالك: سعد المالك، المبلغ: ' . \App\Support\Dates\NumberFormatter::money(150000),
+            \App\Filament\Support\Ui::details(['owner_id' => Owner::first()->id, 'amount_minor' => 150000]));
+    }
+
     public function test_owner_request_scheduled_payments_show_property_and_tenant(): void
     {
         $html = $this->actingAs($this->manager)->get('/manage/billing-schedule-lines')->assertOk()->getContent();

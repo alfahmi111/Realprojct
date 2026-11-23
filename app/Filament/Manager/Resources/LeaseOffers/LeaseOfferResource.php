@@ -40,6 +40,7 @@ class LeaseOfferResource extends Resource
     protected static ?string $modelLabel = 'عرض تأجير';
 
     protected static ?string $pluralModelLabel = 'عروض التأجير';
+    public const STATUS_AR = ['draft' => 'مسودة', 'pending_approval' => 'بانتظار الاعتماد', 'approved' => 'معتمد', 'sent' => 'أُرسل للمستأجر', 'accepted' => 'قَبِله المستأجر', 'rejected' => 'مرفوض', 'expired' => 'انتهى'];
 
     public static function canEdit(Model $record): bool
     {
@@ -76,13 +77,44 @@ class LeaseOfferResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->with('unit')->latest())
+        $step = function (LeaseOffer $r) {
+            if ($r->status !== 'pending_approval') {
+                return null;
+            }
+            $all = $r->approvals->sortBy('step');
+            $cur = $all->firstWhere('decision', null);
+            return $cur ? 'الخطوة ' . $cur->step . ' من ' . $all->count() . '، بانتظار ' . (\App\Authorization\Role::tryFrom($cur->approver_role)?->labelAr() ?? $cur->approver_role) : null;
+        };
+        return $table->modifyQueryUsing(fn ($query) => $query->with(['unit.property', 'tenant', 'approvals'])->latest())
             ->columns([
-                TextColumn::make('id')->label('#'), TextColumn::make('unit.code')->label('الوحدة'),
+                TextColumn::make('tenant.name_ar')->label('العرض')->searchable()->weight('bold')
+                    ->description(fn (LeaseOffer $r) => 'الوحدة ' . $r->unit?->code . '، ' . $r->unit?->property?->name_ar),
+                TextColumn::make('term')->label('المدة')->state(fn (LeaseOffer $r) => $r->duration_unit === 'year'
+                        ? [1 => 'سنة', 2 => 'سنتان'][$r->duration_count] ?? $r->duration_count . ' سنوات'
+                        : [1 => 'شهر', 2 => 'شهران'][$r->duration_count] ?? $r->duration_count . ($r->duration_count <= 10 ? ' أشهر' : ' شهراً'))
+                    ->description(fn (LeaseOffer $r) => 'تبدأ ' . $r->starts_on?->format('Y-m-d')),
                 Ui::moneyColumn('annual_rent_minor', 'الإيجار السنوي'),
-                TextColumn::make('status')->label('الحالة')->badge(),
-                TextColumn::make('starts_on')->label('البداية')->date(),
+                TextColumn::make('discount')->label('عن السعر المطلوب')->placeholder('—')
+                    ->state(function (LeaseOffer $r) {
+                        $listed = $r->listed_annual_rent_minor?->minor();
+                        $rent = $r->annual_rent_minor->minor();
+                        if (! $listed || $listed === $rent) {
+                            return $listed ? 'بالسعر نفسه' : null;
+                        }
+                        $pct = round(abs($listed - $rent) * 100 / $listed, 1);
+                        return ($rent < $listed ? 'خصم ' : 'زيادة ') . $pct . '%';
+                    })
+                    ->color(fn ($state) => str_starts_with((string) $state, 'خصم') ? 'warning' : 'gray'),
+                TextColumn::make('status')->label('الحالة')->badge()
+                    ->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)
+                    ->color(fn ($state) => ['draft' => 'gray', 'pending_approval' => 'warning', 'approved' => 'info', 'sent' => 'info', 'accepted' => 'success', 'rejected' => 'danger', 'expired' => 'gray'][$state] ?? 'gray')
+                    ->description($step),
+                TextColumn::make('valid_until')->label('صالح حتى')->placeholder('—')
+                    ->state(fn (LeaseOffer $r) => in_array($r->status, ['draft', 'pending_approval', 'approved', 'sent'], true) ? $r->valid_until : null)
+                    ->formatStateUsing(fn ($state) => ($d = (int) now()->startOfDay()->diffInDays($state, false)) < 0 ? 'انتهت صلاحيته' : ($d === 0 ? 'اليوم' : 'باقٍ ' . $d . ' يوماً'))
+                    ->description(fn (LeaseOffer $r) => $r->valid_until?->format('Y-m-d')),
             ])
+            ->filters([\Filament\Tables\Filters\SelectFilter::make('status')->label('الحالة')->options(self::STATUS_AR)])
             ->recordActions([
                 Action::make('submit')->label('رفع للاعتماد')->visible(fn (LeaseOffer $r) => $r->status === 'draft')
                     ->action(fn (LeaseOffer $r) => Ui::attempt(fn () => app(LeasingService::class)->submitOffer($r))),

@@ -66,10 +66,11 @@ class VendorResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+            ->emptyStateHeading('لا موردين بعد')->emptyStateDescription('أضف السبّاك والكهربائي وشركات الصيانة لتسند إليهم أوامر العمل وتقارن تقييماتهم وتكاليفهم.')
             ->columns([
                 TextColumn::make('name_ar')->label('الاسم')->searchable(),
                 TextColumn::make('commercial_registration')->label('السجل'),
-                TextColumn::make('rating')->label('التقييم'),
+                TextColumn::make('rating')->label('التقييم')->formatStateUsing(fn ($state) => $state ? str_repeat('★', (int) round($state)) . str_repeat('☆', 5 - (int) round($state)) . ' ' . $state : 'لم يُقيَّم')->placeholder('لم يُقيَّم'),
             ])
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }

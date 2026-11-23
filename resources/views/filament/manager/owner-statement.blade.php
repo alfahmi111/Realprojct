@@ -37,19 +37,19 @@
             </header>
 
             {{-- Waterfall: from collected down to net, each deduction as its own step --}}
-            <ol class="wq-fall" aria-label="من المحصّل إلى الصافي">
-                <li class="is-in"><span class="wq-fall-label">الإيجار المحصّل</span><span class="wq-fall-track"><span style="--w: 100%"></span></span><b>{{ $s['collected'] }}</b></li>
+            <ol class="wq-cascade" aria-label="من المحصّل إلى الصافي">
+                <li class="is-in"><span class="wq-cascade-label">الإيجار المحصّل</span><span class="wq-cascade-track"><span style="--w: 100%"></span></span><b>{{ $s['collected'] }}</b></li>
                 @if ($s['fee_deducted'])
-                    <li class="is-out"><span class="wq-fall-label">أتعاب الإدارة {{ $s['fee_pct'] }}% من {{ $s['fee_basis'] }}</span><span class="wq-fall-track"><span style="{{ $step($r['fee']) }}"></span></span><b>− {{ $s['fee'] }}</b></li>
-                    <li class="is-out"><span class="wq-fall-label">ضريبة الأتعاب</span><span class="wq-fall-track"><span style="{{ $step($r['vat']) }}"></span></span><b>− {{ $s['fee_vat'] }}</b></li>
+                    <li class="is-out"><span class="wq-cascade-label">أتعاب الإدارة {{ $s['fee_pct'] }}% من {{ $s['fee_basis'] }}</span><span class="wq-cascade-track"><span style="{{ $step($r['fee']) }}"></span></span><b>− {{ $s['fee'] }}</b></li>
+                    <li class="is-out"><span class="wq-cascade-label">ضريبة الأتعاب</span><span class="wq-cascade-track"><span style="{{ $step($r['vat']) }}"></span></span><b>− {{ $s['fee_vat'] }}</b></li>
                 @endif
                 @foreach ($s['maintenance'] as $m)
-                    <li class="is-out"><span class="wq-fall-label">صيانة: {{ $m['description'] }}<small>{{ $m['date'] }}@if ($m['work_order'])، {{ $m['work_order'] }}@endif</small></span><span class="wq-fall-track"><span style="{{ $step($m['minor']) }}"></span></span><b>− {{ $m['amount'] }}</b></li>
+                    <li class="is-out"><span class="wq-cascade-label">صيانة: {{ $m['description'] }}<small>{{ $m['date'] }}@if ($m['work_order'])، {{ $m['work_order'] }}@endif</small></span><span class="wq-cascade-track"><span style="{{ $step($m['minor']) }}"></span></span><b>− {{ $m['amount'] }}</b></li>
                 @endforeach
                 @if ($r['margin'])
-                    <li class="is-out"><span class="wq-fall-label">هامش المدير على فواتير الموردين</span><span class="wq-fall-track"><span style="{{ $step($r['margin']) }}"></span></span><b>− {{ $s['margin_total'] }}</b></li>
+                    <li class="is-out"><span class="wq-cascade-label">هامش المدير على فواتير الموردين</span><span class="wq-cascade-track"><span style="{{ $step($r['margin']) }}"></span></span><b>− {{ $s['margin_total'] }}</b></li>
                 @endif
-                <li class="is-net"><span class="wq-fall-label">صافي المحوَّل للمالك</span><span class="wq-fall-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
+                <li class="is-net"><span class="wq-cascade-label">صافي المحوَّل للمالك</span><span class="wq-cascade-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
             </ol>
 
             @unless ($s['fee_deducted'])

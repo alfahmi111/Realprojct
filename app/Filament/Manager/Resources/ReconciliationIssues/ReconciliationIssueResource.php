@@ -58,10 +58,11 @@ class ReconciliationIssueResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->latest('detected_on'))
+            ->emptyStateHeading('لا فروقات مفتوحة')->emptyStateDescription('التسوية تقارن العقود بالفواتير والدفعات وبملف إيجار، وتُظهر هنا كل فرق يحتاج تصحيحاً. شغّلها من الزر أعلاه.')
             ->columns([
                 TextColumn::make('kind')->label('الفرق')->formatStateUsing(fn ($state) => self::KINDS_AR[$state] ?? $state)->badge(),
-                TextColumn::make('details')->label('التفاصيل')->formatStateUsing(fn ($state) => json_encode($state, JSON_UNESCAPED_UNICODE))->limit(90),
-                TextColumn::make('detected_on')->label('اكتُشف')->date(), TextColumn::make('status')->label('الحالة')->badge(),
+                TextColumn::make('details')->label('التفاصيل')->formatStateUsing(fn ($state) => \App\Filament\Support\Ui::details((array) $state))->wrap(),
+                TextColumn::make('detected_on')->label('اكتُشف')->date('Y-m-d'), TextColumn::make('status')->label('الحالة')->badge()->formatStateUsing(fn ($state) => ['open' => 'مفتوح', 'resolved' => 'حُلّ'][$state] ?? $state)->color(fn ($state) => $state === 'open' ? 'danger' : 'success'),
             ])
             ->filters([SelectFilter::make('status')->label('الحالة')->options(['open' => 'مفتوح', 'resolved' => 'محلول'])->default('open')])
             ->headerActions([

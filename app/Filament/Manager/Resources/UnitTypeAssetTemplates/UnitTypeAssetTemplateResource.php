@@ -64,8 +64,9 @@ class UnitTypeAssetTemplateResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('لا أصول افتراضية بعد')->emptyStateDescription('حدّد ما تحويه كل شقة أو محل عادةً (مكيفات، سخان...) فيُضاف تلقائياً عند إنشاء المبنى بالمعالج.')
             ->columns([
-                TextColumn::make('unit_type')->label('النوع'),
+                TextColumn::make('unit_type')->label('نوع الوحدة')->formatStateUsing(fn ($state) => \App\Properties\UnitTypes::TYPES[$state]['ar'] ?? $state),
                 TextColumn::make('name_ar')->label('الأصل'),
                 TextColumn::make('quantity')->label('العدد'),
             ])
