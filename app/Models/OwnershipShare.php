@@ -14,6 +14,11 @@ class OwnershipShare extends Model
 
     protected $fillable = ['property_id', 'owner_id', 'share_numerator', 'share_denominator'];
 
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(Owner::class);
