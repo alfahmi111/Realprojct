@@ -45,6 +45,13 @@ class AppServiceProvider extends ServiceProvider
             default => throw new IntegrationNotConfigured('Automatic Ejar integration is blocked by decision 12.'),
         });
         $this->app->singleton(Simulators::class);
+        // Identity layer and SADAD (Q30): one simulator for local trials, otherwise refuse until a provider is contracted.
+        $this->app->singleton(\App\Integrations\Identity\IdentitySimulator::class);
+        foreach ([\App\Integrations\Identity\IdentityGateway::class => ['nafath', 'yaqeen', 'wathq'], \App\Integrations\Sadad\SadadGateway::class => ['sadad']] as $contract => $keys) {
+            $this->app->singleton($contract, fn ($app) => collect($keys)->contains(fn ($k) => config("integrations.$k") === 'simulator')
+                ? $app->make(\App\Integrations\Identity\IdentitySimulator::class)
+                : new \App\Integrations\Identity\UnconfiguredIdentity());
+        }
         foreach ([
             'einvoicing' => EInvoicingGateway::class, 'payments' => PaymentGateway::class, 'whatsapp' => WhatsAppGateway::class,
             'sms' => SmsGateway::class, 'accounting' => AccountingGateway::class, 'document_reader' => DocumentReaderGateway::class,

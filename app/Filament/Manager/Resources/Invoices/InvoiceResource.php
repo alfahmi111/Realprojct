@@ -86,7 +86,7 @@ class InvoiceResource extends Resource
         return $table->modifyQueryUsing(fn ($query) => $query->with(['tenant', 'property'])->latest('issue_date')->latest('id'))
             ->columns([
                 TextColumn::make('number')->label('الفاتورة')->searchable()->weight('bold')
-                    ->description(fn (Invoice $r) => self::KIND_AR[$r->kind] ?? $r->kind),
+                    ->description(fn (Invoice $r) => (self::KIND_AR[$r->kind] ?? $r->kind) . ($r->sadad_bill_number ? '، سداد ' . $r->sadad_bill_number : '')),
                 TextColumn::make('tenant.name_ar')->label('العميل')->searchable()->placeholder('—')
                     // implode, not trim(): trim() works on bytes and cuts Arabic letters that share a lead byte with «،»
                     ->description(fn (Invoice $r) => implode('، ', array_filter([$r->unit_code ? 'الوحدة ' . $r->unit_code : null, $r->property?->name_ar]))),
@@ -109,6 +109,10 @@ class InvoiceResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
+                Action::make('sadad')->label('رقم سداد')->icon(\Filament\Support\Icons\Heroicon::OutlinedBanknotes)->color('gray')
+                    ->visible(fn (Invoice $r) => $r->status === 'issued' && ! $r->sadad_bill_number && app(\App\Finance\SadadBilling::class)->available() && app(InvoiceService::class)->outstanding($r)->isPositive())
+                    ->requiresConfirmation()->modalDescription('يصل للمستأجر رقم يدفع به من تطبيق بنكه، ويذهب المبلغ إلى حساب المفوتر الخاص بالمكتب أو المالك.')
+                    ->action(fn (Invoice $r) => Ui::attempt(fn () => app(\App\Finance\SadadBilling::class)->issue($r), 'صدر رقم سداد')),
                 Action::make('cancel')->label('طلب إلغاء')->color('danger')->visible(fn (Invoice $r) => $r->status === 'issued')
                     ->schema([TextInput::make('reason')->label('السبب')->required()])
                     ->action(fn (Invoice $r, array $data) => Ui::attempt(fn () => app(InvoiceService::class)->requestCancellation($r, auth()->user(), $data['reason']), 'رُفع طلب الإلغاء للمراجِع')),

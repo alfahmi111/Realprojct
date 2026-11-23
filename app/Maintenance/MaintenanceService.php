@@ -55,6 +55,24 @@ class MaintenanceService
         return $wo;
     }
 
+    /**
+     * Statutory work order from the document vault (REQ-0270, 6.2): a certificate (civil defence, lift inspection,
+     * insurance) is about to expire. Reported by the system, scheduled priority. The only way to create this type.
+     */
+    public function reportStatutory(\App\Models\Document $doc): WorkOrder
+    {
+        if ($doc->property_id === null) {
+            throw new MaintenanceException('A statutory work order needs the document\'s property.');
+        }
+        $now = CarbonImmutable::now();
+        return WorkOrder::create([
+            'number' => $this->numbering->next('work_order', (int) $now->format('Y')), 'type' => 'statutory', 'priority' => 'scheduled',
+            'property_id' => $doc->property_id, 'reported_by_type' => 'system',
+            'description' => 'تجديد ' . $doc->title_ar . ' قبل انتهائه في ' . $doc->expires_on?->format('Y-m-d'),
+            'photos_report' => [], 'reported_at' => $now,
+        ]);
+    }
+
     public function triage(WorkOrder $wo, string $priority): WorkOrder
     {
         $this->expect($wo, ['reported']);

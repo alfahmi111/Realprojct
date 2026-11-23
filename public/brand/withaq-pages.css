@@ -405,3 +405,9 @@
     .wq-years { height: 190px; gap: 6px; }
     .wq-idband-photo { width: 64px; height: 64px; }
 }
+
+/* Vault log modal */
+.wq-doclog { display: grid; gap: 8px; font-size: .9rem; line-height: 1.8; }
+.wq-doclog h3 { margin: 6px 0 0; font-family: 'Cairo', sans-serif; font-size: .95rem; color: var(--color-deep, var(--color-ink)); }
+.wq-doclog ul { margin: 0; padding-inline-start: 18px; color: var(--color-ink); }
+.wq-doclog a { color: var(--color-primary); font-weight: 700; }

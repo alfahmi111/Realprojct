@@ -37,6 +37,11 @@ final class ExpiryAlerts
             ], $today->setTime(4, 0), urgent: true, subject: $s);
             $sent[] = 'office_license';
         }
+        // the document vault (REQ-0270) — only inside a subscriber's context
+        $r = $s ? app(\App\Documents\DocumentVault::class)->alerts($today, $this->notifications) : ['alerted' => 0];
+        if ($r['alerted']) {
+            $sent[] = 'documents:' . $r['alerted'];
+        }
         return $sent;
     }
 }

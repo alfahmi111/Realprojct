@@ -37,6 +37,11 @@ class Space extends Model
         return $this->hasMany(self::class, 'parent_id')->whereNull('archived_at')->orderBy('sort');
     }
 
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
     public function building(): BelongsTo
     {
         return $this->belongsTo(Building::class);

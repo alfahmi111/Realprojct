@@ -85,7 +85,7 @@ class OwnerResource extends Resource
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with(['shares.property', 'agreements'])->orderBy('name_ar'))
             ->columns([
                 TextColumn::make('name_ar')->label('المالك')->searchable(['name_ar', 'national_id', 'commercial_registration'])->weight('bold')
-                    ->description(fn (\App\Models\Owner $o) => self::KIND_AR[$o->kind] ?? $o->kind),
+                    ->description(fn (\App\Models\Owner $o) => implode(' · ', array_filter([self::KIND_AR[$o->kind] ?? $o->kind, \App\Filament\Support\IdentityActions::badge($o)]))),
                 TextColumn::make('properties')->label('عقاراته وحصصه')->wrap()->placeholder('لم يُربط بعقار')
                     ->state(fn (\App\Models\Owner $o) => $o->shares->map(fn ($s) => $s->property?->name_ar . ($s->share_numerator == $s->share_denominator ? '' : ' (' . $s->share_numerator . '/' . $s->share_denominator . ')'))->filter()->implode('، ') ?: null),
                 TextColumn::make('fee')->label('أتعاب الإدارة')->placeholder('لا عقد إدارة ساري')
@@ -99,7 +99,7 @@ class OwnerResource extends Resource
                 IconColumn::make('vat_registered')->label('مسجّل ضريبياً')->boolean()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([\Filament\Tables\Filters\SelectFilter::make('kind')->label('النوع')->options(self::KIND_AR)])
-            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([\App\Filament\Support\IdentityActions::group(), EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }
 
     public static function getRelations(): array

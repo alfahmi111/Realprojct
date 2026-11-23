@@ -12,4 +12,9 @@ return [
     'sms' => env('INTEGRATION_SMS', 'none'),
     'accounting' => env('INTEGRATION_ACCOUNTING', 'none'),
     'document_reader' => env('INTEGRATION_DOCUMENT_READER', 'none'),
+    // phase 2 (owner order Q30): identity layer and SADAD — none until a licensed provider is contracted
+    'nafath' => env('INTEGRATION_NAFATH', 'none'),
+    'yaqeen' => env('INTEGRATION_YAQEEN', 'none'),
+    'wathq' => env('INTEGRATION_WATHQ', 'none'),
+    'sadad' => env('INTEGRATION_SADAD', 'none'),
 ];

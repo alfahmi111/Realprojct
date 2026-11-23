@@ -58,7 +58,7 @@
 | REQ-0051 | §2.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0052 | §2.4 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
 | REQ-0053 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 9.2 (REQ-0425) المصنّف P2 §12 L967 — قرار Q5: يُنفَّذ مع P2 |
-| REQ-0054 | §2.4 | BUILD | MVP | BLOCKED |  |  | يحيل إلى 6.7 (P2) و§12 L964 — قرار Q8: يُنفَّذ مع P2 |
+| REQ-0054 | §2.4 | BUILD | MVP | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | يحيل إلى 6.7 (P2) و§12 L964 — قرار Q8: يُنفَّذ مع P2 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
 | REQ-0055 | §2.4 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0056 | §2.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0057 | §3 | BUILD | MVP | DONE | app/Authorization/Role.php, app/Models/User.php | tests/Feature/Foundation/PortalAccessTest.php |  |
@@ -269,12 +269,12 @@
 | REQ-0262 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · جزئي: نسبة اكتمال جرد التأسيس؛ منحنيات الحالة والمفقودات مع جرود P2 |
 | REQ-0263 | §6.6 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942 |
 | REQ-0264 | §6.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L963 |
-| REQ-0265 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0266 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0267 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0268 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0269 | §6.7 | BUILD | P2 | TODO |  |  |  |
-| REQ-0270 | §6.7 | BUILD | P2 | TODO |  |  |  |
+| REQ-0265 | §6.7 | BUILD | P2 | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0266 | §6.7 | BUILD | P2 | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0267 | §6.7 | BUILD | P2 | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0268 | §6.7 | BUILD | P2 | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0269 | §6.7 | BUILD | P2 | DONE | app/Documents/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0270 | §6.7 | BUILD | P2 | DONE | app/Documents/, app/Compliance/ExpiryAlerts.php | tests/Feature/Compliance/IdentityVaultSadadTest.php | · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
 | REQ-0271 | §7 | BUILD | MVP | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php, tests/Feature/Foundation/PortalAccessTest.php | واجهة لكل دور وملف manifest؛ يبقى عامل الخدمة (M6) |
 | REQ-0272 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948 |
 | REQ-0273 | §7.1 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L948 |
@@ -449,9 +449,9 @@
 | REQ-0442 | §9.5 | BUILD | P3 | TODO |  |  | MIXED→P3: §12 L972 |
 | REQ-0443 | §9.5 | BUILD | MVP | DONE | app/Integrations/Ejar/, app/Finance/ | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0444 | §9.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0445 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
-| REQ-0446 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
-| REQ-0447 | §9.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
+| REQ-0445 | §9.5 | BUILD | P2 | DONE | app/Identity/, app/Integrations/Identity/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §12 L962 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0446 | §9.5 | BUILD | P2 | DONE | app/Identity/, app/Integrations/Identity/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0447 | §9.5 | BUILD | P2 | DONE | app/Identity/, app/Integrations/Identity/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
 | REQ-0448 | §9.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 |
 | REQ-0449 | §9.6 | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
 | REQ-0450 | §9.6 | BUILD | MVP | READ |  |  | رأس جدول؛ صفوفه متتبَّعة منفردة |
@@ -471,12 +471,12 @@
 | REQ-0464 | §10.2 | BUILD | MVP | READ |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · رأس جدول؛ صفوفه متتبَّعة منفردة |
 | REQ-0465 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · المزوّد الفعلي غير مختار: الفاتورة تبقى pending — BLOCKED للإنتاج (REQ-0565) |
 | REQ-0466 | §10.2 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L940 · البوابة الفعلية غير مختارة — BLOCKED للإنتاج |
-| REQ-0467 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
+| REQ-0467 | §10.2 | BUILD | P2 | DONE | app/Finance/SadadBilling.php, app/Integrations/Sadad/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §12 L962 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
 | REQ-0468 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: §12 L950 · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
 | REQ-0469 | §10.2 | BUILD | MVP | DONE | app/Migration/ | tests/Feature/Migration/ImportExportTest.php | MIXED→MVP: §12 L938 · الطبقة جاهزة؛ مكان المعالجة قرار صاحب المشروع (REQ-0567) — BLOCKED للإنتاج |
 | REQ-0470 | §10.2 | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ §10.2 L782 = MVP · المزوّد غير مختار: الرسائل blocked_provider — BLOCKED للإنتاج |
-| REQ-0471 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L962 |
-| REQ-0472 | §10.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 |
+| REQ-0471 | §10.2 | BUILD | P2 | DONE | app/Identity/, app/Integrations/Identity/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §12 L962 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
+| REQ-0472 | §10.2 | BUILD | P2 | DONE | app/Identity/, app/Integrations/Identity/ | tests/Feature/Compliance/IdentityVaultSadadTest.php | MIXED→P2: §10.2 L784؛ غائب عن §12 — قرار Q6 · بُني بأمر المالك Q30 (2026-11-23)؛ المزوّد الفعلي غير متعاقد: محاكاة محلياً، ورفض في الإنتاج |
 | REQ-0473 | §10.2 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L946 · الطبقة جاهزة؛ النظام المحاسبي الفعلي حسب حساب المشترك |
 | REQ-0474 | §10.2 | BUILD | P3 | TODO |  |  | MIXED→P3: §10.2 L786؛ غائب عن §12.P3 — قرار Q7 |
 | REQ-0475 | §10.2 | BUILD | P3 | TODO |  |  | MIXED→P3: §10.2 L787؛ غائب عن §12.P3 — قرار Q7 |
