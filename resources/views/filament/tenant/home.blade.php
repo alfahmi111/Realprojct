@@ -61,7 +61,7 @@
                         <b class="wq-muted">الأصول المسجلة على وحدتك</b>
                         <ul class="wq-list" style="margin-top:6px">
                             @forelse ($unit['assets'] as $a)
-                                <li><span>{{ $a['name'] }}</span><span class="wq-muted">الحالة عند الاستلام: {{ $a['condition_at_handover'] ?? '—' }} / 5</span></li>
+                                <li><span>{{ $a['name'] }}</span><span class="wq-muted">{{ $a['condition_at_handover'] ? 'حالته عند الاستلام ' . $a['condition_at_handover'] . ' من 5' : 'لم تُسجَّل حالته عند الاستلام' }}</span></li>
                             @empty
                                 <li class="wq-muted">لا أصول مسجلة بعد.</li>
                             @endforelse
@@ -80,8 +80,13 @@
                             <div class="wq-muted">{{ $i['period'][0] }} — {{ $i['period'][1] }}</div>
                         </div>
                         <div style="text-align:end">
-                            <div class="wq-bill-amt">{{ $sar($i['outstanding']) }}</div>
-                            <div class="wq-muted">المتبقي من {{ $sar($i['total']) }}</div>
+                            @if ($i['outstanding']->isPositive())
+                                <div class="wq-bill-amt">{{ $sar($i['outstanding']) }}</div>
+                                <div class="wq-muted">المتبقي من {{ $sar($i['total']) }}</div>
+                            @else
+                                <div class="wq-bill-amt">{{ $sar($i['total']) }}</div>
+                                <div class="wq-muted">سُدّدت كاملة</div>
+                            @endif
                         </div>
                         @if ($i['outstanding']->isPositive())
                             <x-filament::button icon="heroicon-m-credit-card" wire:click="pay({{ $i['id'] }})" style="width:100%">ادفع (مدى / Apple Pay / بطاقة)</x-filament::button>
