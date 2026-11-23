@@ -23,6 +23,40 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-db-destructive.php"],
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/check-php-after-edit.php"]
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/require-arabic-reply.php"]
+          }
+        ]
       }
     ]
   }
