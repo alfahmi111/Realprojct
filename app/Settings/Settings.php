@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\DB;
  */
 class Settings
 {
+    /** @var array<string,array> resolved values in this request (Settings is scoped per request/job) */
+    private array $memo = [];
+
+    /** @var array<string,int> settings version per subscriber in this request */
+    private array $versions = [];
+
     public function __construct(private TenantContext $tenant)
     {
     }
@@ -30,9 +36,13 @@ class Settings
     {
         $def = SettingsRegistry::get($key);
         $sid = $this->tenant->subscriberId();
+        $memoKey = ($sid ?? 'p') . ':' . ($userId ?? '-') . ':' . ($propertyId ?? '-') . ':' . $key;
+        if (array_key_exists($memoKey, $this->memo)) {
+            return $this->memo[$memoKey];   // same request: no cache round-trip (M16, measured 54-129 cache queries per page)
+        }
         $cacheKey = sprintf('settings:%s:%s:%s:%s:%s', $this->version($sid), $sid ?? 'p', $userId ?? '-', $propertyId ?? '-', $key);
 
-        return Cache::remember($cacheKey, 3600, function () use ($key, $def, $sid, $userId, $propertyId) {
+        return $this->memo[$memoKey] = Cache::remember($cacheKey, 3600, function () use ($key, $def, $sid, $userId, $propertyId) {
             $result = ['value' => $def['default'], 'source' => 'default', 'locked' => false, 'pending' => $def['pending'] ?? null];
 
             // The platform level sets the defaults for every new subscriber (REQ-0323), for any key.
@@ -153,17 +163,21 @@ class Settings
 
     private function version(?int $sid): int
     {
-        return (int) Cache::get('settings:version:all', 0) * 1000003 + (int) Cache::get('settings:version:' . ($sid ?? 'p'), 0);
+        return $this->versions[$sid ?? 'p'] ??= (int) Cache::get('settings:version:all', 0) * 1000003 + (int) Cache::get('settings:version:' . ($sid ?? 'p'), 0);
     }
 
     private function bump(?int $sid): void
     {
+        $this->memo = [];
+        $this->versions = [];
         $k = 'settings:version:' . ($sid ?? 'p');
         Cache::forever($k, (int) Cache::get($k, 0) + 1);
     }
 
     private function bumpAll(): void
     {
+        $this->memo = [];
+        $this->versions = [];
         Cache::forever('settings:version:all', (int) Cache::get('settings:version:all', 0) + 1);
     }
 }

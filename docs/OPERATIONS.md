@@ -17,3 +17,15 @@
 - `Alias /Newprojct` يشير إلى مجلد `public` مباشرة مع `FallbackResource /Newprojct/index.php`، ومجلد المشروع نفسه مرفوض الوصول (`Require all denied`) فلا تُكشف ملفات مثل `.env`.
 - `APP_URL=http://localhost/Newprojct` في `.env`؛ الاختبارات تستخدم `http://localhost` (phpunit.xml).
 - ملاحظة: إن غيّرت إصدار PHP من لوحة AMPPS فقد تعيد كتابة `httpd.conf`؛ عندها تُعاد هذه الأسطر.
+
+## بوابة الإطلاق (M16، 2026-11-24)
+شغّل على خادم الإنتاج قبل فتح المنصة: `php artisan platform:launch-check --production-config`. يفشل الأمر إن بقي شيء من هذه:
+- **عزل المشتركين:** كل جدول فيه `subscriber_id` تحت RLS مفروضة. يُفحص في كل بيئة، وفي الاختبار `LaunchHardeningTest`. الاستثناءان الموثّقان: `qr_codes` و`lease_offer_tokens`، وهما خريطتا بحث عامتان بلا بيانات شخصية (`App\Support\Database\RlsAudit::EXEMPT`).
+- **الإعدادات:** `APP_DEBUG=false`، و`APP_URL` بـ https، و`SESSION_SECURE_COOKIE=true`، و`SESSION_ENCRYPT=true`، و`QUEUE_CONNECTION=redis`، و`CACHE_STORE=redis`، و`FILESYSTEM_DISK=s3` داخل المملكة.
+- **التكاملات:** لا تعمل أي جهة على المحاكاة. والجهة بلا مزوّد تظهر **تحذيراً**: الميزة ترفض العمل حتى يتعاقد المالك.
+- **اختبار الاختراق:** `launch.penetration_test_passed` (REQ-0508)، والسمة الافتراضية للمنصة، والتقويم الهجري أم القرى على الخادم.
+- **تحذير:** تفعيل OPcache على PHP الإنتاج.
+
+**ترويسات الأمان** تُضاف لكل استجابة (`App\Http\Middleware\SecurityHeaders`): منع التضمين في مواقع أخرى، ومنع تخمين نوع الملف، وسياسة المُحيل، وحصر صلاحيات المتصفح، وHSTS على https. لم تُفرض CSP صارمة لأن Filament وLivewire يعتمدان على سكربتات مضمّنة.
+
+**الأداء** (قيس على بيانات العرض في 2026-11-24): كانت قراءة الإعدادات تكلّف 3 استعلامات للذاكرة المؤقتة في كل مرة، أي 54 إلى 129 استعلاماً لكل صفحة. صارت تُقرأ مرة واحدة في الطلب، فنزلت أغلب الصفحات إلى نحو 15 استعلاماً، ومؤشرات الأداء من 121 استعلاماً (486ms) إلى 25 (218ms). وفي الإنتاج تكون الذاكرة المؤقتة Redis لا قاعدة البيانات.

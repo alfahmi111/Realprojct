@@ -50,6 +50,9 @@ class ThemeService
     {
         $presetKey ??= $this->activePresetKey();
         $customPrimary ??= $this->settings->get('theme.custom_primary');
+        if ($customPrimary !== null && ! preg_match('/^#[0-9A-Fa-f]{6}$/', (string) $customPrimary)) {
+            $customPrimary = null;   // printed raw into <style>: only a strict #RRGGBB may pass (M16, XSS)
+        }
         $out = [];
         foreach (['light', 'dark'] as $mode) {
             $vars = [];
@@ -102,6 +105,9 @@ class ThemeService
      */
     public function assertReadable(string $hex): void
     {
+        if (! preg_match('/^#[0-9A-Fa-f]{6}$/', $hex)) {
+            throw new ThemeException('The color must be #RRGGBB.');
+        }
         $required = $this->settings->get('theme.min_contrast_ratio');
         if ($required === null) {
             throw new ThemeException('The required contrast ratio is not configured yet (QUESTIONS.md Q10); custom colors are refused.');
