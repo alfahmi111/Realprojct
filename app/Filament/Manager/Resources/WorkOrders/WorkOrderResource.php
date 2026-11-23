@@ -52,6 +52,19 @@ class WorkOrderResource extends Resource
 
     public const STATUS_AR = ['reported' => 'بلاغ', 'triaged' => 'تم الفرز', 'estimated' => 'قُدّرت التكلفة', 'awaiting_owner_approval' => 'بانتظار موافقة المالك', 'assigned' => 'مُسند', 'in_progress' => 'قيد التنفيذ', 'completed' => 'منجز', 'confirmed' => 'أكّده المستأجر', 'closed' => 'مغلق', 'rejected' => 'مرفوض'];
 
+    public const TYPE_AR = ['corrective' => 'تصحيحية', 'emergency' => 'طارئة', 'unit_prep' => 'تجهيز وحدة', 'preventive' => 'وقائية', 'statutory' => 'نظامية'];
+
+    public const PRIORITY_AR = ['emergency' => 'طارئ', 'urgent' => 'عاجل', 'normal' => 'عادي', 'scheduled' => 'مجدول'];
+
+    /** Stages shown as tabs on the list: what needs sorting, what is being worked, what waits for the owner, what is done. */
+    public const STAGES = [
+        'triage' => ['label' => 'بانتظار الفرز', 'statuses' => ['reported']],
+        'work' => ['label' => 'قيد العمل', 'statuses' => ['triaged', 'estimated', 'assigned', 'in_progress']],
+        'owner' => ['label' => 'بانتظار المالك', 'statuses' => ['awaiting_owner_approval']],
+        'done' => ['label' => 'منجزة', 'statuses' => ['completed', 'confirmed']],
+        'closed' => ['label' => 'مغلقة', 'statuses' => ['closed', 'rejected']],
+    ];
+
     public static function canEdit(Model $record): bool
     {
         return false;
@@ -93,13 +106,37 @@ class WorkOrderResource extends Resource
     public static function table(Table $table): Table
     {
         $svc = fn () => app(MaintenanceService::class);
-        return $table->modifyQueryUsing(fn ($query) => $query->latest('reported_at'))
+        $ago = function ($at) {
+            if (! $at) {
+                return null;
+            }
+            $d = (int) \Carbon\CarbonImmutable::parse($at)->diffInDays(now());
+            return $d === 0 ? 'اليوم' : ($d === 1 ? 'منذ يوم' : ($d === 2 ? 'منذ يومين' : 'منذ ' . $d . ($d <= 10 ? ' أيام' : ' يوماً')));
+        };
+        return $table->modifyQueryUsing(fn ($query) => $query->with(['property', 'space', 'asset', 'vendor', 'assignee', 'costLines'])->latest('reported_at'))
             ->columns([
-                TextColumn::make('number')->label('الرقم')->searchable(), TextColumn::make('type')->label('النوع'), TextColumn::make('priority')->label('الأولوية')->badge(),
-                TextColumn::make('status')->label('الحالة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge(),
-                TextColumn::make('reported_at')->label('البلاغ')->dateTime()->sortable(),
+                TextColumn::make('description')->label('البلاغ')->searchable(['description', 'number'])->weight('bold')->limit(60)->wrap()
+                    ->description(fn (WorkOrder $r) => $r->number . ($r->asset ? '، ' . $r->asset->name_ar : '')),
+                TextColumn::make('property.name_ar')->label('أين')->description(fn (WorkOrder $r) => $r->space?->name_ar),
+                TextColumn::make('type')->label('النوع')->badge()->color('gray')->formatStateUsing(fn ($state) => self::TYPE_AR[$state] ?? $state)
+                    ->description(fn (WorkOrder $r) => $r->priority ? null : 'لم تُحدَّد أولويته'),
+                TextColumn::make('priority')->label('الأولوية')->badge()->placeholder('—')
+                    ->formatStateUsing(fn ($state) => self::PRIORITY_AR[$state] ?? $state)
+                    ->color(fn ($state) => ['emergency' => 'danger', 'urgent' => 'warning', 'normal' => 'info', 'scheduled' => 'gray'][$state] ?? 'gray'),
+                TextColumn::make('status')->label('المرحلة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge()
+                    ->color(fn ($state) => match ($state) { 'reported' => 'danger', 'awaiting_owner_approval' => 'warning', 'completed', 'confirmed', 'closed' => 'success', 'rejected' => 'gray', default => 'info' }),
+                TextColumn::make('who')->label('المنفّذ')->state(fn (WorkOrder $r) => $r->vendor?->name_ar ?? $r->assignee?->name)->placeholder('لم يُسند'),
+                TextColumn::make('cost')->label('التكلفة')->state(fn (WorkOrder $r) => $r->costLines->sum(fn ($c) => $c->total_minor->minor()) ?: ($r->estimated_cost_minor?->minor()))
+                    ->formatStateUsing(fn ($state) => $state ? \App\Support\Dates\NumberFormatter::money((int) $state) : '—')
+                    ->description(fn (WorkOrder $r) => $r->costLines->isNotEmpty() ? 'فعلية' : ($r->estimated_cost_minor ? 'تقديرية' : null)),
+                TextColumn::make('reported_at')->label('العمر')->sortable()->formatStateUsing(fn ($state) => $ago($state))
+                    ->description(fn (WorkOrder $r) => $r->reported_at?->format('Y-m-d')),
             ])
-            ->filters([SelectFilter::make('status')->label('الحالة')->options(self::STATUS_AR)])
+            ->filters([
+                SelectFilter::make('status')->label('المرحلة')->options(self::STATUS_AR),
+                SelectFilter::make('priority')->label('الأولوية')->options(self::PRIORITY_AR),
+                SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
+            ])
             ->recordActions([
                 ViewAction::make(),
                 Action::make('triage')->label('فرز')->visible(fn (WorkOrder $r) => $r->status === 'reported')

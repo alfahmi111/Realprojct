@@ -11,8 +11,9 @@
 .wq-page, .wq-page .fi-page-content, .wq-page section, .wq-two > * { min-width: 0; }
 .wq-page .fi-page-content { max-width: 100%; }
 .wq-sub { display: block; color: var(--color-muted); font-size: .78rem; margin-top: 2px; }
-.wq-note { margin: 0; padding: 12px 22px 18px; font-size: .85rem; color: var(--color-muted); line-height: 1.7; }
-.wq-note a, .wq-link { color: var(--color-primary); font-weight: 700; }
+/* shared names (.wq-note, .wq-muted, .wq-check also exist in withaq-portal.css): scoped to these pages (lesson d-11) */
+.wq-page .wq-note { margin: 0; padding: 12px 22px 18px; font-size: .85rem; color: var(--color-muted); line-height: 1.7; background: none; border-radius: 0; }
+.wq-page .wq-note a, .wq-page .wq-link { color: var(--color-primary); font-weight: 700; }
 
 /* Identity band */
 .wq-idband { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 4px 0 2px; }
@@ -91,7 +92,7 @@
 
 /* Tree pages (units, leases): property → building → floor → unit */
 .wq-help { margin: 0; padding: 14px 18px; border-radius: var(--wq-radius-md); background: var(--color-soft); color: var(--color-ink); font-size: .9rem; line-height: 1.8; max-width: 100ch; }
-.wq-muted { color: var(--color-muted); }
+.wq-page .wq-muted { color: var(--color-muted); font-size: inherit; }
 .wq-treebar { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
 .wq-search { position: relative; flex: 1 1 380px; max-width: 560px; }
 .wq-search input { width: 100%; border: 1px solid var(--color-line); border-radius: var(--wq-radius-md); padding: 10px 40px 10px 14px; background: var(--color-surface); color: var(--color-ink); font: inherit; font-size: .92rem; }
@@ -126,8 +127,8 @@
 .wq-unitrow-rent { text-align: end; font-family: 'Cairo', sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--color-ink); display: grid; }
 .wq-unitrow-rent small { font-family: 'Tajawal', sans-serif; font-weight: 400; font-size: .74rem; color: var(--color-muted); }
 .wq-asking { color: var(--color-muted); }
-.wq-check { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--color-ink); cursor: pointer; }
-.wq-check input { width: 16px; height: 16px; accent-color: var(--color-primary); }
+.wq-page .wq-check { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--color-ink); cursor: pointer; min-height: 0; }
+.wq-page .wq-check input { width: 16px; height: 16px; accent-color: var(--color-primary); }
 .wq-leaserow { display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(180px, 1fr) 150px 140px; gap: 16px; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--color-line); }
 .wq-leaserow-who { display: grid; gap: 1px; min-width: 0; }
 .wq-leaserow-who a strong { color: var(--color-primary); }
@@ -296,22 +297,22 @@
 .wq-stmt-head p { margin: 2px 0 0; color: var(--color-ink); font-weight: 700; }
 .wq-stmt-net { display: grid; justify-items: end; text-align: end; }
 .wq-stmt-net strong { font-family: 'Cairo', sans-serif; font-size: 2rem; color: var(--color-primary); font-variant-numeric: tabular-nums; }
-.wq-fall { list-style: none; margin: 0; padding: 12px 24px 18px; display: grid; gap: 2px; }
-.wq-fall li { display: grid; grid-template-columns: minmax(180px, 1.1fr) 2fr 150px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--color-line); }
-.wq-fall li:last-child { border-bottom: 0; }
-.wq-fall-label { display: grid; gap: 1px; color: var(--color-ink); font-size: .92rem; }
-.wq-fall-label small { color: var(--color-muted); font-size: .76rem; }
-.wq-fall-track { height: 14px; border-radius: 4px; background: var(--color-bg); overflow: hidden; }
-.wq-fall-track span { display: block; height: 100%; width: var(--w, 0); border-radius: inherit; }
-.wq-fall .is-in .wq-fall-track span { background: var(--color-primary); }
-.wq-fall .is-out .wq-fall-track span { background: var(--status-late-fg); opacity: .75; }
-.wq-fall .is-net { border-top: 2px solid var(--color-ink); margin-top: 6px; padding-top: 14px; }
-.wq-fall .is-net .wq-fall-track span { background: var(--status-paid-fg); }
-.wq-fall b { text-align: end; font-family: 'Cairo', sans-serif; font-variant-numeric: tabular-nums; color: var(--color-ink); }
-.wq-fall .is-out b { color: var(--status-late-fg); }
-.wq-fall .is-net b { font-size: 1.15rem; color: var(--status-paid-fg); }
+.wq-cascade { list-style: none; margin: 0; padding: 12px 24px 18px; display: grid; gap: 2px; }
+.wq-cascade li { display: grid; grid-template-columns: minmax(180px, 1.1fr) 2fr 150px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--color-line); }
+.wq-cascade li:last-child { border-bottom: 0; }
+.wq-cascade-label { display: grid; gap: 1px; color: var(--color-ink); font-size: .92rem; }
+.wq-cascade-label small { color: var(--color-muted); font-size: .76rem; }
+.wq-cascade-track { height: 14px; border-radius: 4px; background: var(--color-bg); overflow: hidden; }
+.wq-cascade-track span { display: block; height: 100%; width: var(--w, 0); border-radius: inherit; }
+.wq-cascade .is-in .wq-cascade-track span { background: var(--color-primary); }
+.wq-cascade .is-out .wq-cascade-track span { background: var(--status-late-fg); opacity: .75; }
+.wq-cascade .is-net { border-top: 2px solid var(--color-ink); margin-top: 6px; padding-top: 14px; }
+.wq-cascade .is-net .wq-cascade-track span { background: var(--status-paid-fg); }
+.wq-cascade b { text-align: end; font-family: 'Cairo', sans-serif; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.wq-cascade .is-out b { color: var(--status-late-fg); }
+.wq-cascade .is-net b { font-size: 1.15rem; color: var(--status-paid-fg); }
 .wq-stmt .wq-note { margin: 0 24px 18px; }
-@media (max-width: 700px) { .wq-fall li { grid-template-columns: 1fr auto; } .wq-fall-track { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 700px) { .wq-cascade li { grid-template-columns: 1fr auto; } .wq-cascade-track { grid-column: 1 / -1; grid-row: 2; } }
 @media print {
     .fi-sidebar, .fi-topbar, .wq-noprint, .wq-pager, .fi-header { display: none !important; }
     .fi-main { margin: 0 !important; padding: 0 !important; }
@@ -337,6 +338,21 @@
 .wq-prop-figs dd { margin: 0; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .95rem; font-variant-numeric: tabular-nums; }
 .wq-prop-links { display: flex; flex-wrap: wrap; gap: 4px 14px; padding-top: 2px; }
 .wq-prop-links a { font-size: .82rem; font-weight: 700; color: var(--color-primary) !important; }
+
+/* Work order stages */
+.wq-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 0; }
+.wq-flow li { position: relative; display: grid; justify-items: center; gap: 4px; text-align: center; padding-top: 4px; }
+.wq-flow li::before { content: ""; position: absolute; top: 19px; inset-inline-start: 50%; width: 100%; height: 3px; background: var(--color-line); z-index: 0; }
+.wq-flow li:last-child::before { display: none; }
+.wq-flow li > span { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--color-surface); border: 2px solid var(--color-line); color: var(--color-muted); font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .85rem; }
+.wq-flow li strong { font-size: .8rem; color: var(--color-muted); }
+.wq-flow li small { font-size: .7rem; color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.wq-flow li.is-done > span { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.wq-flow li.is-done::before { background: var(--color-primary); }
+.wq-flow li.is-done strong { color: var(--color-ink); }
+.wq-flow li.is-now > span { border-color: var(--color-primary); color: var(--color-primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 18%, transparent); }
+.wq-flow li.is-now strong { color: var(--color-primary); }
+@media (max-width: 800px) { .wq-flow { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 14px; } .wq-flow li:nth-child(4)::before { display: none; } }
 
 @media (max-width: 1100px) { .wq-two { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
