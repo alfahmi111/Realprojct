@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\EmbeddedSchema;
@@ -49,7 +50,7 @@ class HijriCorrectionsPage extends Page implements HasTable
     public function mount(): void
     {
         $today = app(DateService::class)->calculatedHijriOfDate(CarbonImmutable::now('Asia/Riyadh')->toDateString());
-        $this->form->fill(['gregorian' => null, 'year' => $today['year'], 'month' => $today['month'], 'day' => null, 'note' => null]);
+        $this->form->fill(['gregorian' => null, 'year' => $today['year'], 'month' => $today['month'], 'day' => null, 'note' => null, 'rest_of_month' => true]);
     }
 
     public function form(Schema $schema): Schema
@@ -73,6 +74,8 @@ class HijriCorrectionsPage extends Page implements HasTable
                         TextInput::make('year')->label('السنة الهجرية')->required()->integer()->minValue(1300)->maxValue(1600)->live(onBlur: true),
                     ]),
                     TextInput::make('note')->label('السبب أو المرجع')->placeholder('مثال: إعلان المحكمة العليا دخول شهر رمضان')->maxLength(500),
+                    Toggle::make('rest_of_month')->label('طبّق على بقية الشهر')->default(true)
+                        ->helperText('تغيّر بداية الشهر يزيح كل أيامه يوماً واحداً، فيُسجَّل التصحيح لكل يوم حتى اليوم 29 أو حتى يتطابق الحساب. اليوم 30 تحدده رؤية الشهر التالي.'),
                 ]),
         ]);
     }
@@ -88,9 +91,13 @@ class HijriCorrectionsPage extends Page implements HasTable
     public function save(): void
     {
         $d = $this->form->getState();
-        $saved = Ui::attempt(fn () => app(HijriCorrections::class)->record((string) $d['gregorian'], (int) $d['year'], (int) $d['month'], (int) $d['day'], $d['note'] ?? null), 'حُفظ التصحيح، ويسري الآن على كل الشاشات');
+        $svc = app(HijriCorrections::class);
+        $args = [(string) $d['gregorian'], (int) $d['year'], (int) $d['month'], (int) $d['day'], $d['note'] ?? null];
+        $saved = ($d['rest_of_month'] ?? false)
+            ? Ui::attempt(fn () => $svc->recordRestOfMonth(...$args), 'حُفظ التصحيح لبقية الشهر، ويسري الآن على كل الشاشات')
+            : Ui::attempt(fn () => $svc->record(...$args), 'حُفظ التصحيح، ويسري الآن على كل الشاشات');
         if ($saved) {
-            $this->form->fill(['gregorian' => null, 'year' => $d['year'], 'month' => $d['month'], 'day' => null, 'note' => null]);
+            $this->form->fill(['gregorian' => null, 'year' => $d['year'], 'month' => $d['month'], 'day' => null, 'note' => null, 'rest_of_month' => true]);
         }
     }
 

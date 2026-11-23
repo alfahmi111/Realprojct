@@ -102,9 +102,26 @@ class HijriCorrectionTest extends TestCase
 
         $h = $this->d->calculatedHijriOfDate('2026-11-23');
         Livewire::actingAs($admin)->test(HijriCorrectionsPage::class)
-            ->fillForm(['gregorian' => '2026-11-23', 'day' => $h['day'] - 1, 'month' => $h['month'], 'year' => $h['year'], 'note' => 'اختبار'])
+            ->fillForm(['gregorian' => '2026-11-23', 'day' => $h['day'] - 1, 'month' => $h['month'], 'year' => $h['year'], 'note' => 'اختبار', 'rest_of_month' => false])
             ->call('save')->assertHasNoFormErrors();
         $this->assertSame($h['day'] - 1, HijriCorrection::firstOrFail()->hijri_day);
         $this->assertSame($admin->id, HijriCorrection::firstOrFail()->created_by);
+    }
+    public function test_req_0346_a_shifted_month_start_is_carried_through_the_rest_of_the_month(): void
+    {
+        $first = $this->d->hijriToGregorian(1448, 7, 1);
+        if ($this->d->calculatedHijriOfDate(CarbonImmutable::parse($first)->subDay())['day'] !== 29) {
+            $this->markTestSkipped('Jumada al-Akhirah 1448 already has 30 days in the calculation.');
+        }
+        $rows = app(HijriCorrections::class)->recordRestOfMonth($first, 1448, 6, 30, 'إعلان رؤية');
+
+        $this->assertCount(30, $rows);                                            // 30 Jumada II, then 1…29 Rajab
+        $g = fn (int $i) => CarbonImmutable::parse($first)->addDays($i)->toDateString();
+        $this->assertSame(['year' => 1448, 'month' => 7, 'day' => 1], $this->d->hijriOfDate($g(1)));
+        $this->assertSame(['year' => 1448, 'month' => 7, 'day' => 29], $this->d->hijriOfDate($g(29)));
+        $this->assertNull(HijriCorrection::where('gregorian_date', $g(30))->first(), 'day 30 is left to the next sighting');
+        $this->assertSame($g(1), $this->d->hijriToGregorian(1448, 7, 1));
+        $this->assertSame($g(15), $this->d->hijriToGregorian(1448, 7, 15));
+        $this->assertSame(30, \App\Models\AuditLog::where('action', 'hijri.correction.saved')->count());
     }
 }
