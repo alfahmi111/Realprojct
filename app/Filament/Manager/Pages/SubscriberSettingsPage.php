@@ -57,12 +57,57 @@ class SubscriberSettingsPage extends Page
         foreach (app(\App\Privacy\DataRetention::class)->periods() as $type => $months) {
             $values['retention'][$type] = $months;
         }
+        $sub = $this->subscriber();
+        foreach (self::OFFICE_FIELDS as $f) {
+            $values["office__$f"] = $sub?->$f;
+        }
         $this->form->fill($values);
+    }
+
+    /** The office's own record — the same row the platform admin sees (one source of truth). */
+    private const OFFICE_FIELDS = ['commercial_registration', 'vat_number', 'city', 'contact_name', 'contact_phone', 'contact_email'];
+
+    private function subscriber(): ?Subscriber
+    {
+        return app(\App\Tenancy\TenantContext::class)->run(null, fn () => Subscriber::find(auth()->user()?->subscriber_id));
+    }
+
+    /** What the office sees of its subscription: plan, period, days left, state (Q24). */
+    private function subscriptionSummary(): string
+    {
+        $s = $this->subscriber();
+        if (! $s) {
+            return '—';
+        }
+        $admin = app(\App\Plans\SubscriberAdmin::class);
+        $today = \Carbon\CarbonImmutable::today();
+        $plan = \App\Plans\PlanEntitlements::PLANS[$s->plan] ?? null;
+        $parts = ['باقة ' . ($plan['ar'] ?? $s->plan) . ($plan && $plan['max_units'] ? ' (حتى ' . $plan['max_units'] . ' وحدة)' : ' (وحدات غير محدودة)')];
+        $parts[] = 'الحالة: ' . \App\Plans\SubscriberAdmin::STATE_AR[$admin->state($s, $today)];
+        if ($s->subscription_ends_on) {
+            $d = $admin->daysRemaining($s, $today);
+            $parts[] = 'ينتهي ' . $s->subscription_ends_on->format('Y-m-d') . ($d >= 0 ? " (متبقٍ $d يوماً)" : '');
+        }
+        return implode(' · ', $parts);
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema->statePath('data')->components([
+            Section::make('المكتب والاشتراك')
+                ->description(fn () => $this->subscriptionSummary() . '. التجديد وتغيير الباقة عبر إدارة المنصة.')
+                ->schema([
+                    TextInput::make('office__commercial_registration')->label('السجل التجاري')->maxLength(20),
+                    // ZATCA BR-KSA-39: a VAT registration number is 15 digits starting and ending with 3. Needed on fee invoices.
+                    TextInput::make('office__vat_number')->label('الرقم الضريبي للمكتب')->regex('/^3\d{13}3$/')
+                        ->validationMessages(['regex' => 'الرقم الضريبي 15 رقماً يبدأ بـ 3 وينتهي بـ 3.'])
+                        ->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => (bool) $get('finance__vat_registered'))
+                        ->helperText('مطلوب إذا كان المكتب مسجّلاً في ضريبة القيمة المضافة.'),
+                    TextInput::make('office__city')->label('المدينة')->maxLength(60),
+                    TextInput::make('office__contact_name')->label('مسؤول التواصل مع المنصة'),
+                    TextInput::make('office__contact_phone')->label('جوال التواصل')->tel()->maxLength(30),
+                    TextInput::make('office__contact_email')->label('بريد التواصل')->email(),
+                ])->columns(3),
             Section::make('الهوية والسمة')->schema([
                 Select::make('theme__preset')->label('السمة الجاهزة')->options(['withaq' => 'وِثاق (الأساسية)', 'clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق']),
                 TextInput::make('theme__custom_primary')->label('اللون الأساسي المخصص (#RRGGBB)')->regex('/^#[0-9A-Fa-f]{6}$/'),
@@ -133,6 +178,15 @@ class SubscriberSettingsPage extends Page
                 };
             }
             app(\App\Privacy\DataRetention::class)->save(array_map(fn ($v) => $v === '' ? null : $v, (array) ($d['retention'] ?? [])));
+            $office = [];
+            foreach (self::OFFICE_FIELDS as $f) {
+                $v = $d["office__$f"] ?? null;
+                $office[$f] = $v === '' ? null : $v;
+            }
+            $subscriber->fill($office);
+            if ($subscriber->isDirty()) {
+                app(\App\Tenancy\TenantContext::class)->run(null, fn () => $subscriber->save());   // audited (Auditable)
+            }
         }, 'حُفظت الإعدادات');
     }
 }

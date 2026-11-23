@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(Settings::class);
         $this->app->singleton(DateService::class);
+        $this->app->scoped(\App\Plans\ReadOnlyGuard::class);
 
         $this->registerIntegrations();
 
@@ -59,6 +60,22 @@ class AppServiceProvider extends ServiceProvider
         // Each queued job starts with an empty tenant context; tenant jobs set their own (TenantAware jobs).
         Queue::before(fn () => app(TenantContext::class)->clear());
         Queue::after(fn () => app(TenantContext::class)->clear());
+
+        // Q24: a read-only office (subscription ended, grace period over) cannot save anything — see ReadOnlyGuard.
+        \Illuminate\Support\Facades\Event::listen(['eloquent.saving: *', 'eloquent.deleting: *'], function (string $event, array $payload) {
+            foreach ($payload as $model) {
+                if ($model instanceof \Illuminate\Database\Eloquent\Model) {
+                    app(\App\Plans\ReadOnlyGuard::class)->check($model);
+                }
+            }
+        });
+        // …and the refusal reaches the person as a plain message, not an error page, on any screen.
+        \Livewire\on('exception', function ($component, $e, $stopPropagation) {
+            if ($e instanceof \App\Plans\SubscriptionReadOnlyException) {
+                \Filament\Notifications\Notification::make()->title('وضع القراءة فقط')->body($e->getMessage())->danger()->persistent()->send();
+                $stopPropagation();
+            }
+        });
 
         // Last sign-in, shown to the platform admin for account support. Never allowed to break a sign-in.
         \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($e) {

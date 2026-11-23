@@ -20,7 +20,7 @@ class Subscriber extends Model
     public const CYCLES = ['monthly' => 'شهري', 'annual' => 'سنوي'];
 
     protected $fillable = ['name_ar', 'name_en', 'plan', 'status', 'commercial_registration', 'vat_number', 'city', 'contact_name', 'contact_phone', 'contact_email',
-        'billing_cycle', 'subscription_starts_on', 'subscription_ends_on', 'price_minor', 'addons', 'notes'];
+        'billing_cycle', 'subscription_starts_on', 'subscription_ends_on', 'price_minor', 'addons', 'notes', 'grace_days'];
 
     protected function casts(): array
     {

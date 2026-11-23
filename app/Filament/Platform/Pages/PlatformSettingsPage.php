@@ -40,6 +40,7 @@ class PlatformSettingsPage extends Page
         $this->form->fill([
             'default_theme' => $s->get('platform.default_theme'), 'available_themes' => $s->get('platform.available_themes'),
             'contrast' => $ratio ? $ratio['numerator'] . '/' . $ratio['denominator'] : null, 'pentest' => (bool) $s->get('launch.penetration_test_passed'),
+            'grace_days' => $s->get('subscription.grace_days'), 'warning_days' => $s->get('subscription.warning_days'),
         ]);
     }
 
@@ -51,6 +52,9 @@ class PlatformSettingsPage extends Page
             CheckboxList::make('available_themes')->label('السمات المتاحة للمشتركين')->options($themes),
             TextInput::make('contrast')->label('نسبة التباين المطلوبة للون المخصص (مثل 45/10)')->regex('/^\d+\/\d+$/'),
             Toggle::make('pentest')->label('اجتاز النظام فحص الاختراق'),
+            TextInput::make('grace_days')->label('مهلة السماح بعد انتهاء الاشتراك (أيام)')->integer()->minValue(0)->maxValue(365)->required()
+                ->helperText('بعدها يصبح المكتب للقراءة فقط تلقائياً، ويمكن تمديدها لكل مشترك من صفحته.'),
+            TextInput::make('warning_days')->label('التنبيه بقرب الانتهاء قبل (أيام)')->integer()->minValue(1)->maxValue(365)->required(),
         ]);
     }
 
@@ -73,6 +77,11 @@ class PlatformSettingsPage extends Page
                 $s->setPlatform('theme.min_contrast_ratio', ['numerator' => $n, 'denominator' => $den]);
             }
             $s->setPlatform('launch.penetration_test_passed', (bool) $d['pentest']);
+            foreach (['grace_days' => 'subscription.grace_days', 'warning_days' => 'subscription.warning_days'] as $field => $key) {
+                if ((int) $d[$field] !== (int) $s->get($key)) {
+                    $s->setPlatform($key, (int) $d[$field]);
+                }
+            }
         }, 'حُفظت إعدادات المنصة');
     }
 }

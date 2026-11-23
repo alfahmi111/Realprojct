@@ -90,7 +90,7 @@ class PlatformSubscribersTest extends TestCase
         $this->assertSame('2027-12-10', $this->s->fresh()->subscription_ends_on->toDateString());
 
         $this->s->forceFill(['subscription_ends_on' => '2026-10-01'])->save();      // already ended: from today
-        $this->assertSame('expired', $this->svc()->state($this->s->fresh(), $today));
+        $this->assertSame('read_only', $this->svc()->state($this->s->fresh(), $today));      // 53 days after the end: grace (7) is over
         $this->svc()->renew($this->s->fresh(), 1, $today);
         $this->assertSame('2026-12-22', $this->s->fresh()->subscription_ends_on->toDateString());
         $this->assertSame(2, $this->tenant()->run($this->s->id, fn () => AuditLog::where('action', 'subscription.renewed')->count()), 'in the office\'s own log');

@@ -116,12 +116,19 @@
     .wq-month { flex-wrap: wrap; }
 }
 
+/* Subscription notice for office staff (Q24) */
+.wq-subnotice { margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: .92rem; line-height: 1.6;
+    color: var(--tone-fg); background: var(--tone-bg); border-inline-start: 4px solid var(--tone-fg); }
+.wq-subnotice-soon { --tone-fg: var(--status-soon-fg); --tone-bg: var(--status-soon-bg); }
+.wq-subnotice-late { --tone-fg: var(--status-late-fg); --tone-bg: var(--status-late-bg); }
+
 /* Platform admin — one subscriber */
 .wq-sub-hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 22px 26px; border-radius: var(--wq-radius-lg);
     background: var(--color-surface); border: 1px solid var(--color-line); border-inline-start: 6px solid var(--tone); box-shadow: var(--wq-shadow-md); }
 .wq-sub-active { --tone: var(--status-paid-fg); }
 .wq-sub-expiring { --tone: var(--status-soon-fg); }
-.wq-sub-expired, .wq-sub-suspended { --tone: var(--status-late-fg); }
+.wq-sub-grace { --tone: var(--status-soon-fg); }
+.wq-sub-read_only, .wq-sub-suspended { --tone: var(--status-late-fg); }
 .wq-sub-no_period { --tone: var(--color-line); }
 .wq-sub-state { display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 700; font-size: .85rem; color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); }
 .wq-sub-plan { margin: 8px 0 0; font-family: 'Cairo', sans-serif; font-size: 1.3rem; color: var(--color-deep, var(--color-ink)); }

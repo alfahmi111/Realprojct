@@ -19,8 +19,10 @@
         <div class="wq-sub-days">
             @if ($days === null)
                 <strong>—</strong><span>لم تُسجَّل مدة للاشتراك. أضفها من «تعديل البيانات».</span>
+            @elseif ($state === 'grace')
+                <strong>{{ $graceLeft }}</strong><span>{{ $graceLeft === 0 ? 'اليوم آخر أيام مهلة السماح' : 'يوماً متبقية من مهلة السماح' }} · انتهى الاشتراك {{ $s->subscription_ends_on->format('Y-m-d') }}، ثم قراءة فقط تلقائياً</span>
             @elseif ($days < 0)
-                <strong>{{ abs($days) }}</strong><span>يوماً منذ انتهاء الاشتراك ({{ $s->subscription_ends_on->format('Y-m-d') }})</span>
+                <strong>{{ abs($days) }}</strong><span>يوماً منذ انتهاء الاشتراك ({{ $s->subscription_ends_on->format('Y-m-d') }}) · المكتب للقراءة فقط منذ انتهاء المهلة</span>
             @else
                 <strong>{{ $days }}</strong><span>يوماً متبقية · ينتهي {{ $s->subscription_ends_on->format('Y-m-d') }}</span>
             @endif
@@ -35,6 +37,7 @@
                 <div><dt>النهاية</dt><dd>{{ $s->subscription_ends_on?->format('Y-m-d') ?? '—' }}</dd></div>
                 <div><dt>السعر المتفق عليه</dt><dd>{{ $s->price_minor ? $money($s->price_minor) . ($s->billing_cycle ? ' / ' . ($s->billing_cycle === 'annual' ? 'سنة' : 'شهر') : '') : '—' }}</dd></div>
                 <div><dt>الإضافات</dt><dd>{{ $addons ? implode('، ', $addons) : 'لا توجد' }}</dd></div>
+                <div><dt>مهلة السماح بعد الانتهاء</dt><dd>{{ $graceDays }} أيام {{ $s->grace_days !== null ? '(ممدّدة لهذا المشترك)' : '(الافتراضي)' }}</dd></div>
                 <div><dt>مشترك منذ</dt><dd>{{ $s->created_at->format('Y-m-d') }}</dd></div>
                 @if ($s->notes)<div class="wq-sub-wide"><dt>ملاحظات</dt><dd>{{ $s->notes }}</dd></div>@endif
             </dl>

@@ -55,6 +55,8 @@ trait ConfiguresPanel
                 ['css' => app(ThemeService::class)->css()],
             ))
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('brand.preferences'))
+            // Subscription notice for the office's own staff (Q24): ending soon, grace period, read-only.
+            ->renderHook(PanelsRenderHook::CONTENT_START, fn () => view('brand.subscription-notice'))
             ->pages([MyPreferencesPage::class])
             ->middleware([
                 EncryptCookies::class,

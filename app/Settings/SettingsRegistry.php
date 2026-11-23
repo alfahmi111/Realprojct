@@ -93,6 +93,8 @@ final class SettingsRegistry
             'launch.penetration_test_passed' => ['levels' => ['platform'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0508'],
             // Platform admin: a subscription is flagged "ending soon" this many days before its end (display only; editable).
             'subscription.warning_days' => ['levels' => ['platform'], 'type' => 'int', 'min' => 1, 'max' => 365, 'default' => 30, 'req' => 'REQ-0323'],
+            // Q24 (owner 2026-11-23): days after the end date before the office becomes read-only; a subscriber may have its own.
+            'subscription.grace_days' => ['levels' => ['platform'], 'type' => 'int', 'min' => 0, 'max' => 365, 'default' => 7, 'decision' => 'Q24 settled by the owner 2026-11-23', 'req' => 'REQ-0323'],
             'data.retention' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0371'],
         ];
     }

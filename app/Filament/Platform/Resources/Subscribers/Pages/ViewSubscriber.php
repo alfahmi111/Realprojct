@@ -45,6 +45,8 @@ class ViewSubscriber extends ViewRecord
             's' => $s,
             'state' => $this->admin()->state($s, $today),
             'days' => $this->admin()->daysRemaining($s, $today),
+            'graceDays' => $this->admin()->graceDays($s),
+            'graceLeft' => $this->admin()->graceLeft($s, $today),
             'usage' => $this->admin()->usage($s),
             'users' => $this->admin()->users($s),
             'plan' => PlanEntitlements::PLANS[$s->plan] ?? null,
@@ -59,6 +61,11 @@ class ViewSubscriber extends ViewRecord
                 ->schema([Select::make('months')->label('مدة التجديد')->options([1 => 'شهر', 3 => '3 أشهر', 6 => '6 أشهر', 12 => 'سنة', 24 => 'سنتان'])->default(fn () => $this->record->billing_cycle === 'annual' ? 12 : 1)->required()])
                 ->modalDescription('يُمدَّد من تاريخ النهاية الحالي، أو من اليوم إن كان الاشتراك قد انتهى.')
                 ->action(fn (array $data) => Ui::attempt(fn () => $this->admin()->renew($this->record, (int) $data['months'], CarbonImmutable::today()), 'جُدِّد الاشتراك')),
+            Action::make('extendGrace')->label('تمديد مهلة السماح')->icon(Heroicon::OutlinedClock)->color('warning')
+                ->visible(fn () => in_array($this->admin()->state($this->record, CarbonImmutable::today()), ['grace', 'read_only', 'expiring'], true))
+                ->schema([Select::make('days')->label('أيام إضافية')->options([3 => '3 أيام', 7 => 'أسبوع', 14 => 'أسبوعان', 30 => 'شهر'])->default(7)->required()])
+                ->modalDescription(fn () => 'المهلة الحالية لهذا المشترك ' . $this->admin()->graceDays($this->record) . ' أيام. التمديد لهذا المشترك وحده، ويعود للافتراضي عند التجديد. إن كان المكتب للقراءة فقط وعاد داخل المهلة، يعود للعمل الكامل فوراً.')
+                ->action(fn (array $data) => Ui::attempt(fn () => $this->admin()->extendGrace($this->record, (int) $data['days']), 'مُدِّدت مهلة السماح')),
             Action::make('changePlan')->label('تغيير الباقة')->icon(Heroicon::OutlinedSquare3Stack3d)->color('gray')
                 ->schema([Select::make('plan')->label('الباقة الجديدة')->options(SubscriberResource::planOptions())->default(fn () => $this->record->plan)->required()])
                 ->action(fn (array $data) => Ui::attempt(fn () => $this->admin()->changePlan($this->record, $data['plan']), 'غُيِّرت الباقة')),

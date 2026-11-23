@@ -28,6 +28,7 @@ class NotificationCenter
         'lease.expiring' => 'عقد قارب الانتهاء', 'renewal.survey_reply' => 'رد على استطلاع التجديد',
         'maintenance.new_report' => 'بلاغ صيانة جديد', 'maintenance.emergency' => 'بلاغ طارئ', 'work_order.late' => 'أمر عمل تأخر عن موعده',
         'approval.waiting' => 'اعتماد ينتظرك', 'document.expiring' => 'مستند قارب الانتهاء', 'waitlist.new_prospect' => 'مهتم جديد في قائمة الانتظار', 'waitlist.long_while_vacant' => 'قائمة انتظار طويلة ووحدة شاغرة',
+        'subscription.grace' => 'انتهى اشتراك المكتب — مهلة السماح جارية', 'subscription.read_only' => 'انتهت مهلة السماح — المنصة للقراءة فقط',
         'inventory.due' => 'جرد مستحق', 'security.new_device' => 'دخول من جهاز جديد',
     ];
 

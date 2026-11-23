@@ -60,7 +60,8 @@ class SubscriberResource extends Resource
                 TextInput::make('name_ar')->label('الاسم بالعربية')->required(),
                 TextInput::make('name_en')->label('الاسم بالإنجليزية')->required(),
                 TextInput::make('commercial_registration')->label('السجل التجاري')->maxLength(20),
-                TextInput::make('vat_number')->label('الرقم الضريبي')->maxLength(20),
+                TextInput::make('vat_number')->label('الرقم الضريبي')->regex('/^3\d{13}3$/')   // ZATCA BR-KSA-39
+                    ->validationMessages(['regex' => 'الرقم الضريبي 15 رقماً يبدأ بـ 3 وينتهي بـ 3.']),
                 TextInput::make('city')->label('المدينة')->maxLength(60),
                 TextInput::make('contact_name')->label('اسم مسؤول التواصل'),
                 TextInput::make('contact_phone')->label('جوال التواصل')->tel()->maxLength(30),
@@ -112,7 +113,7 @@ class SubscriberResource extends Resource
                 SelectFilter::make('plan')->label('الباقة')->options(collect(PlanEntitlements::PLANS)->map(fn ($p) => $p['ar'])->all()),
                 Filter::make('suspended')->label('الموقوفون')->query(fn (Builder $query) => $query->where('status', 'suspended')),
                 Filter::make('expiring')->label('ينتهي اشتراكهم قريباً')->query(fn (Builder $query) => $query->whereBetween('subscription_ends_on', [$today->toDateString(), $today->addDays((int) (app(\App\Settings\Settings::class)->get('subscription.warning_days') ?? 30))->toDateString()])),
-                Filter::make('expired')->label('انتهى اشتراكهم')->query(fn (Builder $query) => $query->where('subscription_ends_on', '<', $today->toDateString())),
+                Filter::make('expired')->label('انتهى اشتراكهم (في المهلة أو للقراءة فقط)')->query(fn (Builder $query) => $query->where('subscription_ends_on', '<', $today->toDateString())),
             ])
             ->recordUrl(fn (Subscriber $r) => static::getUrl('view', ['record' => $r]))
             ->recordActions([ViewAction::make()->label('فتح'), EditAction::make()]);

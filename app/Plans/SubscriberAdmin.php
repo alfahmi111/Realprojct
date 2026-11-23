@@ -34,7 +34,11 @@ final class SubscriberAdmin
         return $s->subscription_ends_on ? (int) $today->startOfDay()->diffInDays(CarbonImmutable::parse($s->subscription_ends_on)->startOfDay(), false) : null;
     }
 
-    /** suspended | expired | expiring | active | no_period — what the admin needs to see at a glance. */
+    /**
+     * suspended | read_only | grace | expiring | active | no_period (Q24, owner 2026-11-23): after the end date the office
+     * keeps full use for the grace period with a daily notice, then becomes read-only on its own — no job has to run for
+     * the state to change, so it can never be missed. Manual suspension (no sign-in at all) stays a separate decision.
+     */
     public function state(Subscriber $s, CarbonImmutable $today): string
     {
         if ($s->isSuspended()) {
@@ -45,14 +49,45 @@ final class SubscriberAdmin
             return 'no_period';
         }
         if ($days < 0) {
-            return 'expired';
+            return -$days > $this->graceDays($s) ? 'read_only' : 'grace';
         }
         return $days <= (int) ($this->settings->get('subscription.warning_days') ?? 30) ? 'expiring' : 'active';
     }
 
-    public const STATE_AR = ['active' => 'نشط', 'expiring' => 'ينتهي قريباً', 'expired' => 'منتهٍ', 'suspended' => 'موقوف', 'no_period' => 'بلا مدة'];
+    public const STATE_AR = ['active' => 'نشط', 'expiring' => 'ينتهي قريباً', 'grace' => 'منتهٍ — في مهلة السماح', 'read_only' => 'منتهٍ — قراءة فقط', 'suspended' => 'موقوف', 'no_period' => 'بلا مدة'];
 
-    public const STATE_COLOR = ['active' => 'success', 'expiring' => 'warning', 'expired' => 'danger', 'suspended' => 'danger', 'no_period' => 'gray'];
+    public const STATE_COLOR = ['active' => 'success', 'expiring' => 'warning', 'grace' => 'warning', 'read_only' => 'danger', 'suspended' => 'danger', 'no_period' => 'gray'];
+
+    /** The subscriber's own grace period if the admin extended it, otherwise the platform default (7 days, Q24). */
+    public function graceDays(Subscriber $s): int
+    {
+        return $s->grace_days ?? (int) ($this->settings->get('subscription.grace_days') ?? 7);
+    }
+
+    /** Days left in the grace period (0 = last day), or null outside it. */
+    public function graceLeft(Subscriber $s, CarbonImmutable $today): ?int
+    {
+        $days = $this->daysRemaining($s, $today);
+        return $days !== null && $days < 0 && -$days <= $this->graceDays($s) ? $this->graceDays($s) + $days : null;
+    }
+
+    /** Read-only offices can sign in, read and export (ر-20), but nothing their users do is saved. */
+    public function isReadOnly(Subscriber $s, CarbonImmutable $today): bool
+    {
+        return $this->state($s, $today) === 'read_only';
+    }
+
+    /** Extend this subscriber's grace period by whole days (it may bring a read-only office back to full use). */
+    public function extendGrace(Subscriber $s, int $days): Subscriber
+    {
+        if ($days < 1 || $days > 90) {
+            throw new InvalidArgumentException('تمديد المهلة بالأيام بين 1 و90.');
+        }
+        $before = $this->graceDays($s);
+        $s->forceFill(['grace_days' => $before + $days])->save();
+        $this->audit($s, 'subscription.grace_extended', ['grace_days' => $before], ['grace_days' => $before + $days]);
+        return $s;
+    }
 
     /** Extend the subscription by whole cycles, from its end date or from today if it already ended. */
     public function renew(Subscriber $s, int $months, CarbonImmutable $today): Subscriber
@@ -66,6 +101,7 @@ final class SubscriberAdmin
         $s->forceFill([
             'subscription_starts_on' => $s->subscription_starts_on ?? $today->toDateString(),
             'subscription_ends_on' => $from->addMonthsNoOverflow($months)->toDateString(),
+            'grace_days' => null,   // an extended grace period belonged to the period that ended
         ])->save();
         $this->audit($s, 'subscription.renewed', $before, ['months' => $months, 'ends_on' => $s->subscription_ends_on->toDateString()]);
         return $s;
@@ -83,8 +119,27 @@ final class SubscriberAdmin
             throw new InvalidArgumentException(sprintf('لدى المشترك %d وحدة، وباقة «%s» تتسع لـ %d فقط. تُختار باقة أكبر أو تُؤرشف وحدات أولاً.', $units, PlanEntitlements::PLANS[$plan]['ar'], $max));
         }
         $before = $s->plan;
-        $s->forceFill(['plan' => $plan])->save();
-        $this->audit($s, 'subscription.plan_changed', ['plan' => $before], ['plan' => $plan]);
+        // A smaller plan takes back what it does not include (custom colour, app name, domain…): otherwise the office
+        // would keep using them, since they are applied when the page is drawn (REQ-0333…REQ-0337).
+        $dropped = array_values(array_diff(\App\Theming\Customization::FEATURES[$before] ?? [], \App\Theming\Customization::FEATURES[$plan] ?? []));
+        $cleared = DB::transaction(function () use ($s, $plan, $dropped) {
+            $s->forceFill(['plan' => $plan])->save();
+            return $this->ctx->run($s->id, function () use ($dropped) {
+                $cleared = [];
+                foreach ($dropped as $key) {
+                    try {
+                        if ($this->settings->get($key) !== null) {
+                            $this->settings->setSubscriber($key, null);
+                            $cleared[] = $key;
+                        }
+                    } catch (\InvalidArgumentException) {
+                        // not a stored setting (feature flag only): nothing to clear
+                    }
+                }
+                return $cleared;
+            });
+        });
+        $this->audit($s, 'subscription.plan_changed', ['plan' => $before], ['plan' => $plan, 'cleared' => $cleared]);
         return $s;
     }
 
