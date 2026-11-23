@@ -22,7 +22,14 @@ use Filament\Support\Icons\Heroicon;
  */
 class ViewSubscriber extends ViewRecord
 {
+    use \App\Filament\Support\ManagesTeam;
+
     protected static string $resource = SubscriberResource::class;
+
+    protected function teamSubscriberId(): int
+    {
+        return $this->record->id;
+    }
 
     protected string $view = 'filament.platform.subscriber-view';
 
@@ -48,9 +55,9 @@ class ViewSubscriber extends ViewRecord
             'graceDays' => $this->admin()->graceDays($s),
             'graceLeft' => $this->admin()->graceLeft($s, $today),
             'usage' => $this->admin()->usage($s),
-            'users' => $this->admin()->users($s),
+            'team' => app(\App\Organization\TeamStructure::class)->tree($s->id),
             'plan' => PlanEntitlements::PLANS[$s->plan] ?? null,
-            'addons' => collect($s->addons ?? [])->map(fn ($a) => SubscriberResource::ADDONS_AR[$a] ?? $a)->all(),
+            'addons' => $s->addons ?? [],
         ];
     }
 
@@ -84,7 +91,7 @@ class ViewSubscriber extends ViewRecord
     /** Per-user support actions, rendered in the users table with the user id as an argument. */
     public function setPasswordAction(): Action
     {
-        return Action::make('setPassword')->label('كلمة مرور مؤقتة')->icon(Heroicon::OutlinedKey)->color('gray')->size('sm')
+        return Action::make('setPassword')->label('كلمة مرور مؤقتة')->tooltip('كلمة مرور مؤقتة')->icon(Heroicon::OutlinedKey)->iconButton()->color('gray')
             ->modalHeading('تعيين كلمة مرور مؤقتة')
             ->modalDescription('أبلغ المستخدم بها بطريقة آمنة. تُغلق جلساته المفتوحة، ويُسجَّل الإجراء في سجل المكتب.')
             ->schema([TextInput::make('password')->label('كلمة المرور')->password()->revealable()->required()->rule(\Illuminate\Validation\Rules\Password::default())])
@@ -93,15 +100,17 @@ class ViewSubscriber extends ViewRecord
 
     public function resetTwoFactorAction(): Action
     {
-        return Action::make('resetTwoFactor')->label('إعادة ضبط التحقق بخطوتين')->icon(Heroicon::OutlinedShieldExclamation)->color('warning')->size('sm')
+        return Action::make('resetTwoFactor')->label('إعادة ضبط التحقق بخطوتين')->tooltip('إعادة ضبط التحقق بخطوتين')->icon(Heroicon::OutlinedShieldExclamation)->iconButton()->color('warning')
             ->requiresConfirmation()->modalDescription('لمن فقد جهاز التحقق: يطلب منه النظام إعداد التحقق من جديد عند دخوله التالي.')
             ->action(fn (array $arguments) => Ui::attempt(fn () => $this->admin()->resetTwoFactor($this->record, (int) $arguments['user']), 'أُعيد ضبط التحقق بخطوتين'));
     }
 
     public function toggleUserAction(): Action
     {
-        return Action::make('toggleUser')->label(fn (array $arguments) => ($arguments['active'] ?? true) ? 'إيقاف المستخدم' : 'تفعيل المستخدم')
-            ->color(fn (array $arguments) => ($arguments['active'] ?? true) ? 'danger' : 'success')->size('sm')->requiresConfirmation()
+        $label = fn (array $arguments) => ($arguments['active'] ?? true) ? 'إيقاف المستخدم' : 'تفعيل المستخدم';
+        return Action::make('toggleUser')->label($label)->tooltip($label)->iconButton()
+            ->icon(fn (array $arguments) => ($arguments['active'] ?? true) ? Heroicon::OutlinedNoSymbol : Heroicon::OutlinedCheckCircle)
+            ->color(fn (array $arguments) => ($arguments['active'] ?? true) ? 'danger' : 'success')->requiresConfirmation()
             ->action(fn (array $arguments) => Ui::attempt(fn () => $this->admin()->setUserActive($this->record, (int) $arguments['user'], ! ($arguments['active'] ?? true)), 'حُدِّث المستخدم'));
     }
 }

@@ -155,3 +155,111 @@
 .wq-sub-table tr.is-off td { opacity: .55; }
 .wq-sub-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 @media (max-width: 700px) { .wq-sub-facts { grid-template-columns: 1fr; } .wq-sub-days { justify-items: start; text-align: start; } }
+
+/* Platform home */
+.wq-platform { display: grid; gap: 20px; }
+.wq-states { display: flex; flex-wrap: wrap; gap: 8px; }
+.wq-state { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: .85rem; font-weight: 600;
+    color: var(--sfg); background: var(--sbg); white-space: nowrap; }
+.wq-state strong { font-family: 'Cairo', sans-serif; }
+.wq-state.is-zero { opacity: .5; }
+.wq-state-paid { --sfg: var(--status-paid-fg); --sbg: var(--status-paid-bg); }
+.wq-state-soon { --sfg: var(--status-soon-fg); --sbg: var(--status-soon-bg); }
+.wq-state-late { --sfg: var(--status-late-fg); --sbg: var(--status-late-bg); }
+.wq-state-vacant { --sfg: var(--status-vacant-fg); --sbg: var(--status-vacant-bg); }
+.wq-stack { display: grid; gap: 20px; }
+.wq-att { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--color-line); color: inherit; text-decoration: none; }
+.wq-att:last-child { border-bottom: 0; }
+.wq-att:hover, .wq-att:focus-visible { background: var(--color-bg); }
+.wq-att-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--sfg); }
+.wq-att-who { flex: 1; display: grid; min-width: 0; }
+.wq-att-who small { color: var(--color-muted); font-size: .8rem; }
+.wq-att .wq-org-avatar { width: 36px; height: 36px; flex: none; }
+.wq-bars { list-style: none; margin: 0; padding: 14px 20px 18px; display: grid; gap: 10px; }
+.wq-bars li { display: grid; grid-template-columns: 60px 1fr 32px; align-items: center; gap: 10px; font-size: .9rem; }
+.wq-bars strong { text-align: end; font-family: 'Cairo', sans-serif; }
+.wq-bar { height: 10px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
+.wq-bar > span { display: block; height: 100%; width: var(--p); background: var(--color-primary); border-radius: inherit; }
+.wq-health { list-style: none; margin: 0; padding: 10px 20px 16px; display: grid; gap: 10px; }
+.wq-health li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; }
+.wq-health li span { display: grid; }
+.wq-health li small { color: var(--color-muted); font-size: .78rem; }
+.wq-health-icon { width: 20px; height: 20px; flex: none; }
+.wq-health .is-ok .wq-health-icon { color: var(--status-paid-fg); }
+.wq-health .is-bad .wq-health-icon { color: var(--status-soon-fg); }
+@media (max-width: 900px) { .wq-platform .wq-split { grid-template-columns: 1fr; } }
+
+/* Add-ons: every add-on shown, the subscribed ones lit */
+.wq-addons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 20px 20px; }
+.wq-addon { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center;
+    padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--color-line); color: var(--color-muted); }
+.wq-addon-icon { grid-row: 1 / 3; width: 22px; height: 22px; }
+.wq-addon-name { font-weight: 600; font-size: .88rem; }
+.wq-addon-state { font-size: .75rem; }
+.wq-addon.is-on { border-style: solid; border-color: color-mix(in srgb, var(--color-primary) 40%, transparent); background: color-mix(in srgb, var(--color-primary) 7%, transparent); color: var(--color-ink); }
+.wq-addon.is-on .wq-addon-icon, .wq-addon.is-on .wq-addon-state { color: var(--color-primary); }
+
+/* Organisation chart — top-down, connectors drawn with borders (direction-neutral, so RTL needs nothing special) */
+.wq-org { padding: 8px 16px 20px; }
+.wq-org-hint { margin: 4px 4px 8px; font-size: .82rem; color: var(--color-muted); }
+.wq-org-scroll { overflow-x: auto; padding-bottom: 8px; }
+.wq-org-level { display: flex; justify-content: center; margin: 0; padding: 22px 0 0; position: relative; list-style: none; }
+.wq-org-top { padding-top: 4px; width: max-content; min-width: 100%; }
+.wq-org-node { position: relative; display: flex; flex-direction: column; align-items: center; padding: 22px 8px 0; list-style: none; }
+.wq-org-top > .wq-org-node { padding-top: 0; }
+/* each child: a vertical stub into its card (::before) and its share of the sibling bar (::after) */
+.wq-org-level:not(.wq-org-top) > .wq-org-node::before { content: ''; position: absolute; top: 0; inset-inline-start: 50%; height: 22px; border-inline-start: 2px solid var(--color-line); }
+.wq-org-level:not(.wq-org-top) > .wq-org-node::after { content: ''; position: absolute; top: 0; inset-inline: 0; border-top: 2px solid var(--color-line); }
+.wq-org-level:not(.wq-org-top) > .wq-org-node:first-child::after { inset-inline-start: 50%; }
+.wq-org-level:not(.wq-org-top) > .wq-org-node:last-child::after { inset-inline-end: 50%; }
+.wq-org-level:not(.wq-org-top) > .wq-org-node:only-child::after { display: none; }
+/* the stub down from a parent to its children's bar */
+.wq-org-node > .wq-org-level::before { content: ''; position: absolute; top: 0; inset-inline-start: 50%; height: 22px; border-inline-start: 2px solid var(--color-line); }
+.wq-org-card { position: relative; width: 236px; padding: 12px 14px 10px; border-radius: 14px; background: var(--color-surface); text-align: start;
+    border: 1px solid var(--color-line); border-top: 4px solid var(--tone); box-shadow: var(--wq-shadow-md); cursor: grab; transition: box-shadow .15s, transform .15s; }
+.wq-org-card:active { cursor: grabbing; }
+.wq-org-card.is-drop { outline: 3px dashed var(--color-primary); outline-offset: 3px; transform: translateY(-2px); }
+.wq-org-card.is-dragging { opacity: .45; }
+.wq-org-card.is-off { opacity: .6; }
+.wq-org-card.is-implied { border-style: dashed; border-top-style: solid; }
+/* department colours — own names, so the home page's .wq-tone-* cards keep theirs */
+.wq-orgt-deep { --tone: var(--color-deep, var(--color-primary)); }
+.wq-orgt-paid { --tone: var(--status-paid-fg); }
+.wq-orgt-vacant { --tone: var(--status-vacant-fg); }
+.wq-orgt-maint { --tone: var(--status-maint-fg); }
+.wq-orgt-soon { --tone: var(--status-soon-fg); }
+.wq-org-head { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center; }
+.wq-org-avatar { grid-row: 1 / 3; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; font-weight: 700;
+    color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); }
+.wq-org-who { display: grid; min-width: 0; }
+.wq-org-who strong { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wq-org-who small { color: var(--color-muted); font-size: .8rem; }
+.wq-org-dept { grid-column: 2; justify-self: start; margin-top: 4px; padding: 1px 8px; border-radius: 999px; font-size: .72rem; font-weight: 700;
+    color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); }
+.wq-org-meta { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 10px 0 0; font-size: .75rem; color: var(--color-muted); }
+.wq-org-flag { padding: 0 6px; border-radius: 6px; background: var(--color-bg); }
+.wq-org-flag.is-ok { color: var(--status-paid-fg); background: var(--status-paid-bg); }
+.wq-org-flag.is-bad { color: var(--status-late-fg); background: var(--status-late-bg); }
+.wq-org-note { margin: 6px 0 0; font-size: .74rem; color: var(--status-soon-fg); }
+.wq-org-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--color-line); }
+.wq-org-external { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--color-line); }
+.wq-org-external h3 { margin: 0 4px 10px; font-size: .95rem; font-weight: 700; color: var(--color-ink); }
+.wq-org-external h3 small { font-weight: 400; color: var(--color-muted); font-size: .8rem; margin-inline-start: 6px; }
+.wq-org-external ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.wq-org-ext { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--color-surface); }
+.wq-org-ext.is-off { opacity: .6; }
+.wq-org-ext .wq-org-avatar { width: 32px; height: 32px; font-size: .85rem; }
+.wq-org-ext-who { display: grid; }
+.wq-org-ext-who small { color: var(--color-muted); font-size: .75rem; }
+.wq-org-ext .wq-org-actions { margin: 0; padding: 0; border: 0; }
+@media (prefers-reduced-motion: reduce) { .wq-org-card { transition: none; } }
+/* Phones: a vertical tree is easier than scrolling sideways */
+@media (max-width: 760px) {
+    .wq-org-top { width: auto; }
+    .wq-org-level { display: block; padding: 0 0 0; }
+    .wq-org-node { display: block; padding: 10px 0 0; padding-inline-start: 18px; border-inline-start: 2px solid var(--color-line); }
+    .wq-org-top > .wq-org-node { border: 0; padding-inline-start: 0; }
+    .wq-org-node::before, .wq-org-node::after, .wq-org-node > .wq-org-level::before { display: none; }
+    .wq-org-card { width: 100%; }
+    .wq-addons { grid-template-columns: 1fr; }
+}

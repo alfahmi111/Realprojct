@@ -35,12 +35,22 @@
             <dl class="wq-sub-facts">
                 <div><dt>البداية</dt><dd>{{ $s->subscription_starts_on?->format('Y-m-d') ?? '—' }}</dd></div>
                 <div><dt>النهاية</dt><dd>{{ $s->subscription_ends_on?->format('Y-m-d') ?? '—' }}</dd></div>
-                <div><dt>السعر المتفق عليه</dt><dd>{{ $s->price_minor ? $money($s->price_minor) . ($s->billing_cycle ? ' / ' . ($s->billing_cycle === 'annual' ? 'سنة' : 'شهر') : '') : '—' }}</dd></div>
-                <div><dt>الإضافات</dt><dd>{{ $addons ? implode('، ', $addons) : 'لا توجد' }}</dd></div>
+                <div><dt>السعر المتفق عليه</dt><dd>{{ $s->price_minor ? $money($s->price_minor) . ($s->billing_cycle ? ' / ' . ($s->billing_cycle === 'annual' ? 'سنة' : 'شهر') : '') : 'لم يُحدَّد' }}</dd></div>
                 <div><dt>مهلة السماح بعد الانتهاء</dt><dd>{{ $graceDays }} أيام {{ $s->grace_days !== null ? '(ممدّدة لهذا المشترك)' : '(الافتراضي)' }}</dd></div>
                 <div><dt>مشترك منذ</dt><dd>{{ $s->created_at->format('Y-m-d') }}</dd></div>
                 @if ($s->notes)<div class="wq-sub-wide"><dt>ملاحظات</dt><dd>{{ $s->notes }}</dd></div>@endif
             </dl>
+            @php($addonIcons = ['qr_boards' => 'heroicon-o-qr-code', 'asset_qr_labels' => 'heroicon-o-tag', 'waitlist' => 'heroicon-o-queue-list', 'extra_whatsapp_messages' => 'heroicon-o-chat-bubble-left-right'])
+            <div class="wq-addons" role="list" aria-label="الإضافات">
+                @foreach (\App\Filament\Platform\Resources\Subscribers\SubscriberResource::ADDONS_AR as $key => $label)
+                    @php($on = in_array($key, $addons, true))
+                    <div class="wq-addon {{ $on ? 'is-on' : '' }}" role="listitem">
+                        <x-filament::icon :icon="$addonIcons[$key] ?? 'heroicon-o-puzzle-piece'" class="wq-addon-icon" />
+                        <span class="wq-addon-name">{{ $label }}</span>
+                        <span class="wq-addon-state">{{ $on ? 'مشترك' : 'غير مشترك' }}</span>
+                    </div>
+                @endforeach
+            </div>
         </section>
 
         <section class="wq-panel" aria-labelledby="use-h">
@@ -79,31 +89,7 @@
     </div>
 
     <section class="wq-panel" aria-labelledby="usr-h">
-        <header class="wq-panel-head"><h2 id="usr-h">مستخدمو المكتب</h2><span class="wq-panel-meta">دعم الحسابات: كل إجراء يُسجَّل في سجل تدقيق المكتب</span></header>
-        @if (count($users))
-            <div class="wq-sub-table-wrap">
-                <table class="wq-sub-table">
-                    <thead><tr><th>المستخدم</th><th>الدور</th><th>آخر دخول</th><th>التحقق بخطوتين</th><th>الحالة</th><th><span class="wq-sr">إجراءات</span></th></tr></thead>
-                    <tbody>
-                        @foreach ($users as $u)
-                            <tr class="{{ $u['active'] ? '' : 'is-off' }}">
-                                <td><strong>{{ $u['name'] }}</strong><small dir="ltr">{{ $u['email'] }}</small></td>
-                                <td>{{ $u['role'] }}</td>
-                                <td>{{ $u['last_login_at'] ? $u['last_login_at']->diffForHumans() : 'لم يدخل بعد' }}</td>
-                                <td>{{ $u['two_factor'] ? 'مفعّل' : 'غير مُعَدّ' }}</td>
-                                <td>{{ $u['active'] ? 'نشط' : 'موقوف' }}</td>
-                                <td class="wq-sub-actions">
-                                    {{ ($this->setPasswordAction)(['user' => $u['id']]) }}
-                                    @if ($u['two_factor']){{ ($this->resetTwoFactorAction)(['user' => $u['id']]) }}@endif
-                                    {{ ($this->toggleUserAction)(['user' => $u['id'], 'active' => $u['active']]) }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <div class="wq-empty">لا يوجد مستخدمون لهذا المكتب.</div>
-        @endif
+        <header class="wq-panel-head"><h2 id="usr-h">الهيكل التنظيمي للمكتب</h2><span class="wq-panel-meta">{{ $team['count'] }} موظفين · كل إجراء يُسجَّل في سجل تدقيق المكتب</span></header>
+        @include('filament.partials.team-chart', ['tree' => $team, 'mode' => 'platform'])
     </section>
 </x-filament-panels::page>

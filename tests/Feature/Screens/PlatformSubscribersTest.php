@@ -69,7 +69,7 @@ class PlatformSubscribersTest extends TestCase
     {
         $this->s->forceFill(['subscription_starts_on' => now()->subMonths(11)->toDateString(), 'subscription_ends_on' => now()->addDays(12)->toDateString(), 'billing_cycle' => 'annual'])->save();
         $html = $this->actingAs($this->admin)->get("/platform/subscribers/{$this->s->id}")->assertOk()->getContent();
-        foreach (['ينتهي قريباً', '12', 'يوماً متبقية', 'الاستخدام', 'الوحدات', 'مستخدمو المكتب', 'm@nada.test', 'كلمة مرور مؤقتة', 'تجديد الاشتراك', 'إيقاف الاشتراك'] as $needle) {
+        foreach (['ينتهي قريباً', '12', 'يوماً متبقية', 'الاستخدام', 'الوحدات', 'الهيكل التنظيمي للمكتب', 'مدير الأصل', 'كلمة مرور مؤقتة', 'لوحات الباركود', 'غير مشترك', 'تجديد الاشتراك', 'إيقاف الاشتراك'] as $needle) {
             $this->assertStringContainsString($needle, $html, $needle);
         }
         $list = $this->actingAs($this->admin)->get('/platform/subscribers')->assertOk()->getContent();
