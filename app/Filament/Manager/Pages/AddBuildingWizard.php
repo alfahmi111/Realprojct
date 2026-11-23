@@ -64,9 +64,10 @@ class AddBuildingWizard extends Page
             Wizard::make([
                 Step::make('بيانات العقار')->schema([
                     Select::make('portfolio_id')->label('المحفظة')->options(fn () => Portfolio::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->placeholder('محفظة المالك (تُنشأ باسمه تلقائياً)')
+                        ->visible(fn () => app(\App\Settings\Settings::class)->get('properties.portfolio_mode') === 'manual')->required(fn () => app(\App\Settings\Settings::class)->get('properties.portfolio_mode') === 'manual')
                         ->createOptionForm([TextInput::make('name_ar')->label('اسم المحفظة')->required()])
                         ->createOptionUsing(fn (array $data) => Portfolio::create(['name_ar' => $data['name_ar']])->id)
-                        ->helperText('المحفظة تجميع إداري لعقارات عميل واحد (مالك أو ورثة أو شركة). اتركها فارغة فتُنشأ «محفظة <اسم المالك>» تلقائياً، أو تُستعمل محفظته إن وُجدت. الحساب المالي (الأمانات والكشف) يبقى لكل مالك على حدة.'),
+                        ->helperText('المحفظة تجميع إداري للعقارات؛ الحساب المالي يبقى لكل مالك. طريقة تنظيم المحافظ تُضبط من «إعدادات المكتب».'),
                     TextInput::make('name_ar')->label('اسم العقار')->required(),
                     \App\Filament\Support\Ui::propertyPhoto()->columnSpanFull(),
                     TextInput::make('name_en')->label('الاسم بالإنجليزية'),
@@ -154,8 +155,15 @@ class AddBuildingWizard extends Page
      */
     public static function portfolioFor(array $d): Portfolio
     {
+        $mode = app(\App\Settings\Settings::class)->get('properties.portfolio_mode') ?? 'per_owner';   // office settings (owner 2026-11-24)
         if (! empty($d['portfolio_id'])) {
             return Portfolio::findOrFail($d['portfolio_id']);
+        }
+        if ($mode === 'office') {
+            $sid = app(\App\Tenancy\TenantContext::class)->subscriberId();
+            $name = 'محفظة ' . app(\App\Tenancy\TenantContext::class)->run(null, fn () => \App\Models\Subscriber::find($sid))?->name_ar;
+            return Portfolio::whereNull('archived_at')->whereNull('owner_id')->where('name_ar', $name)->orderBy('id')->first()
+                ?? Portfolio::create(['name_ar' => $name]);
         }
         $owner = Owner::findOrFail($d['owners'][0]['owner_id'] ?? 0);
         return Portfolio::whereNull('archived_at')->where('owner_id', $owner->id)->orderBy('id')->first()

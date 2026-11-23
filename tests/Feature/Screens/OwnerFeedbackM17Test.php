@@ -152,6 +152,25 @@ class OwnerFeedbackM17Test extends TestCase
         $this->assertSame($chosen->id, AddBuildingWizard::portfolioFor(['portfolio_id' => $chosen->id, 'owners' => [['owner_id' => $o->id]]])->id);
     }
 
+    /** REQ-0074, Q32 decided 2026-11-24: the office chooses its portfolio mode in its settings. */
+    public function test_req_0074_office_chooses_portfolio_mode_in_settings(): void
+    {
+        $settings = app(\App\Settings\Settings::class);
+        $this->assertSame('per_owner', $settings->get('properties.portfolio_mode'));
+        $o = Owner::create(['kind' => 'company', 'name_ar' => 'شركة الأفق']);
+        $settings->setSubscriber('properties.portfolio_mode', 'office');
+        $office = AddBuildingWizard::portfolioFor(['owners' => [['owner_id' => $o->id]]]);
+        $this->assertSame('محفظة ' . $this->manager->subscriber->name_ar, $office->name_ar);
+        $this->assertNull($office->owner_id);
+        $other = Owner::create(['kind' => 'individual', 'name_ar' => 'مالك آخر']);
+        $this->assertSame($office->id, AddBuildingWizard::portfolioFor(['owners' => [['owner_id' => $other->id]]])->id);   // one for the whole office
+        $html = $this->actingAs($this->manager)->get('/manage/subscriber-settings')->assertOk()->getContent();
+        foreach (['كيف تنظّم محافظك؟', 'محفظة لكل عميل (مالك)', 'محفظة عامة واحدة للمكتب', 'أختار المحفظة عند إضافة كل عقار'] as $n) {
+            $this->assertStringContainsString($n, $html, $n);
+        }
+        $this->assertStringNotContainsString('اجلب العنوان من الموقع', $this->get('/manage/properties/' . $this->a->id . '/edit')->getContent());   // SPL deferred (Q34)
+    }
+
     public function test_req_0315_setup_steps_include_office_logo_and_official_data(): void
     {
         $steps = collect(app(\App\Dashboards\HomeOverview::class)->setupSteps($this->manager))->keyBy('key');

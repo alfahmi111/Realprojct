@@ -68,6 +68,8 @@ final class SettingsRegistry
             // و) Subscriber operational & financial settings — REQ-0365…REQ-0372
             'finance.fiscal_year_start_month' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 12, 'default' => 1, 'req' => 'REQ-0366'],
             'finance.vat_registered' => ['levels' => ['subscriber'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0366'],
+            // how the office organises portfolios (owner decision 2026-11-24, Q32): one per client, one for the whole office, or chosen each time
+            'properties.portfolio_mode' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['per_owner', 'office', 'manual'], 'default' => 'per_owner', 'req' => 'REQ-0074'],
             'finance.tax_period' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['monthly', 'quarterly'], 'default' => 'quarterly', 'req' => 'REQ-0366'],
             // Management fee terms differ from office to office — the owner's decision (2026-11-23): set per subscriber.
             'finance.fee.collection' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['deduct_from_remittance', 'invoice_owner'], 'default' => 'deduct_from_remittance', 'req' => 'REQ-0066, REQ-0305'],

@@ -38,7 +38,7 @@ class SubscriberSettingsPage extends Page
 
     public ?array $data = [];
 
-    private const KEYS = ['theme.preset', 'theme.custom_primary', 'theme.logo_light', 'theme.logo_dark', 'date.documents', 'date.week_start', 'date.timezone', 'finance.fiscal_year_start_month', 'finance.vat_registered', 'finance.tax_period',
+    private const KEYS = ['properties.portfolio_mode', 'theme.preset', 'theme.custom_primary', 'theme.logo_light', 'theme.logo_dark', 'date.documents', 'date.week_start', 'date.timezone', 'finance.fiscal_year_start_month', 'finance.vat_registered', 'finance.tax_period',
         'finance.fee.collection', 'finance.fee.percentage_basis', 'finance.fee.fixed_period', 'waitlist.long_threshold', 'security.session_minutes',
         'leasing.non_renewal_notice_days', 'leasing.renewal_survey_days', 'maintenance.owner_approval_cap', 'waitlist.confirm_interval_days', 'security.dual_approval', 'notifications.quiet_hours'];
 
@@ -132,6 +132,11 @@ class SubscriberSettingsPage extends Page
                 \Filament\Forms\Components\ColorPicker::make('theme__custom_primary')->label('لون المكتب (اختياري)')->hex()->regex('/^#[0-9A-Fa-f]{6}$/')
                     ->helperText('يحل محل لون السمة. يُرفض اللون الفاتح الذي لا يُقرأ عليه النص الأبيض.'),
             ])->columns(2),
+            Section::make('المحافظ')->description('المحفظة تجميع إداري للعقارات، والحساب المالي (الأمانات وكشف الحساب) يبقى لكل مالك في كل الأحوال. تستطيع تغيير الاختيار لاحقاً، ويسري على العقارات الجديدة.')->schema([
+                \Filament\Forms\Components\Radio::make('properties__portfolio_mode')->label('كيف تنظّم محافظك؟')
+                    ->options(['per_owner' => 'محفظة لكل عميل (مالك)', 'office' => 'محفظة عامة واحدة للمكتب', 'manual' => 'أختار المحفظة عند إضافة كل عقار'])
+                    ->descriptions(['per_owner' => 'تُنشأ «محفظة <اسم المالك>» تلقائياً عند إضافة أول عقار له. الأنسب لمكاتب إدارة الأملاك.', 'office' => 'كل العقارات في «محفظة <اسم المكتب>». الأبسط للمالك المؤسسي أو المكتب الصغير.', 'manual' => 'لمن يجمع عقاراته بطريقته (حسب المدينة أو الفريق مثلاً).']),
+            ]),
             Section::make('التاريخ')->schema([
                 Select::make('date__documents')->label('التاريخ في المستندات الرسمية')->options(['hijri' => 'هجري', 'gregorian' => 'ميلادي', 'both' => 'كلاهما']),
                 Select::make('date__week_start')->label('بداية الأسبوع')->options(['sunday' => 'الأحد', 'saturday' => 'السبت', 'monday' => 'الاثنين']),

@@ -57,7 +57,9 @@ final class Ui
             \Filament\Notifications\Notification::make()->title('جُلب العنوان الوطني: ' . ($a['short'] ?? ''))->success()->send();
         };
         return \Filament\Schemas\Components\Section::make('الموقع والعنوان الوطني')
-            ->description('حدّد المبنى على الخريطة، ثم اجلب عنوانه الوطني المختصر المعتمد من سبل، أو اكتبه.')
+            // SPL lookup deferred by the owner 2026-11-24 (paid subscription): the buttons below stay hidden while
+            // integrations.national_address is "none"; the short address is typed by hand.
+            ->description(fn () => $linked() ? 'حدّد المبنى على الخريطة، ثم اجلب عنوانه الوطني المختصر من سبل، أو اكتبه.' : 'حدّد المبنى على الخريطة، واكتب عنوانه الوطني المختصر.')
             ->schema([
                 \Filament\Forms\Components\ViewField::make('map_picker')->view('filament.forms.map-picker')->dehydrated(false)->columnSpanFull(),
                 \Filament\Forms\Components\Hidden::make('latitude'),
@@ -65,7 +67,7 @@ final class Ui
                 \Filament\Forms\Components\TextInput::make('national_address.short')->label('العنوان الوطني المختصر')->placeholder('RRRD2929')
                     ->regex('/^[A-Za-z]{4}\d{4}$/')->validationMessages(['regex' => 'العنوان المختصر أربعة أحرف ثم أربعة أرقام، مثل RRRD2929.'])
                     ->extraInputAttributes(['dir' => 'ltr', 'style' => 'text-transform:uppercase'])->dehydrateStateUsing(fn ($state) => $state ? strtoupper($state) : null)
-                    ->helperText(fn () => $linked() ? 'أو اجلبه من الموقع بالزر.' : 'يُكتب يدوياً حتى تُربط خدمة العنوان الوطني (سبل).'),
+                    ->helperText(fn () => $linked() ? 'أو اجلبه من الموقع بالزر.' : 'تجده في تطبيق «العنوان الوطني» أو على لوحة المبنى.'),
                 \Filament\Schemas\Components\Actions::make([
                     \Filament\Actions\Action::make('fetchAddress')->label('اجلب العنوان من الموقع')->icon(Heroicon::OutlinedMapPin)->color('gray')
                         ->visible($linked)
