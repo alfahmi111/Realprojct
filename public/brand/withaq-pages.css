@@ -271,6 +271,23 @@
 .wq-tl-hint { margin-inline-start: auto; font-size: .78rem; }
 @media (max-width: 700px) { .wq-tl-head, .wq-tl-row { grid-template-columns: 70px 1fr; } .wq-tl-lab { padding: 6px 8px; } .wq-pager { margin-inline-start: 0; } }
 
+/* Quick migration: three steps */
+.wq-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--wq-radius-lg); overflow: hidden; }
+.wq-steps li { display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-inline-start: 1px solid var(--color-line); position: relative; }
+.wq-steps li:first-child { border-inline-start: 0; }
+.wq-steps li > span { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--color-line); color: var(--color-muted); font-family: 'Cairo', sans-serif; font-weight: 700; }
+.wq-steps li div { display: grid; gap: 1px; }
+.wq-steps li strong { color: var(--color-muted); }
+.wq-steps li small { font-size: .78rem; color: var(--color-muted); }
+.wq-steps li.is-on { background: var(--color-soft); }
+.wq-steps li.is-on::after { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 3px; background: var(--color-primary); }
+.wq-steps li.is-on > span { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+.wq-steps li.is-on strong { color: var(--color-ink); }
+.wq-steps li.is-done > span { border-color: var(--color-primary); color: var(--color-primary); }
+.wq-migrate-body { padding: 20px 22px; overflow: visible; }
+.wq-rec { grid-template-columns: 1fr auto 120px !important; border-inline-start-color: var(--color-line) !important; }
+@media (max-width: 800px) { .wq-steps { grid-template-columns: 1fr; } .wq-steps li { border-inline-start: 0; border-top: 1px solid var(--color-line); } .wq-steps li:first-child { border-top: 0; } }
+
 @media (max-width: 1100px) { .wq-two { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
     .wq-ledger { grid-template-columns: 1fr 1fr; }
