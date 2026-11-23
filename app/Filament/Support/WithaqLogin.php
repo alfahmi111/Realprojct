@@ -50,6 +50,10 @@ class WithaqLogin extends Login
         if (! $user || ! $provider->validateCredentials($user, ['email' => $email, 'password' => $password])) {
             return null;
         }
+        // Right password, suspended office: say so plainly (only after the password is proven, so nothing leaks).
+        if (method_exists($user, 'subscriberSuspended') && $user->subscriberSuspended()) {
+            throw ValidationException::withMessages(['data.email' => 'اشتراك مكتبك موقوف حالياً. تواصل مع إدارة المنصة لإعادة تفعيله.']);
+        }
         $portal = $user->role?->portal();
         $current = Filament::getCurrentPanel()?->getId();
         if (! $portal || $portal === $current) {

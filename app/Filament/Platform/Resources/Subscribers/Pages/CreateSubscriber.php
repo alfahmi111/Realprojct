@@ -19,7 +19,7 @@ class CreateSubscriber extends CreateRecord
     {
         $ctx = app(TenantContext::class);
         return DB::transaction(function () use ($data, $ctx) {
-            $s = Subscriber::create(collect($data)->only(['name_ar', 'name_en', 'plan', 'status'])->all());
+            $s = Subscriber::create(collect($data)->except(['manager_name', 'manager_email', 'manager_password'])->put('status', 'active')->all());
             $ctx->run($s->id, fn () => User::create(['subscriber_id' => $s->id, 'name' => $data['manager_name'], 'email' => $data['manager_email'], 'password' => $data['manager_password'], 'role' => 'manager']));
             return $s;
         });

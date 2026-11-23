@@ -117,7 +117,27 @@ class DemoSeeder extends Seeder
         $m->assign($wo3, $tech);
         // A tenant account linked to the lease on unit 102 (which has the AC asset), to try the tenant interface.
         self::linkDemoTenant($s);
+        self::demoPlatform($s);
         $this->command?->info('Demo office ready: manager@withaq.test / demo-password-123');
+    }
+
+    /**
+     * Local demo only: platform@withaq.test (platform admin, same demo password as the other demo accounts) and a
+     * subscription profile for the demo office. Safe to run again. Never used outside a local machine.
+     */
+    public static function demoPlatform(\App\Models\Subscriber $s): void
+    {
+        $ctx = app(\App\Tenancy\TenantContext::class);
+        $ctx->run(null, function () use ($ctx) {
+            $ctx->setPlatform(true);
+            if (! User::where('email', 'platform@withaq.test')->exists()) {
+                User::create(['subscriber_id' => null, 'name' => 'إدارة المنصة', 'email' => 'platform@withaq.test', 'password' => 'demo-password-123', 'role' => 'platform_admin']);
+            }
+        });
+        if (! $s->subscription_ends_on) {
+            $s->forceFill(['commercial_registration' => '1010000000', 'city' => 'الرياض', 'contact_name' => 'أحمد الفاهمي', 'contact_phone' => '0500000000', 'contact_email' => 'office@withaq.test',
+                'billing_cycle' => 'annual', 'subscription_starts_on' => now()->subMonths(10)->toDateString(), 'subscription_ends_on' => now()->addDays(58)->toDateString(), 'addons' => ['waitlist']])->save();
+        }
     }
 
     /** Local demo only: tenant@withaq.test sees the lease on unit 102. Safe to run again on an existing demo office. */

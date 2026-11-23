@@ -60,6 +60,15 @@ class AppServiceProvider extends ServiceProvider
         Queue::before(fn () => app(TenantContext::class)->clear());
         Queue::after(fn () => app(TenantContext::class)->clear());
 
+        // Last sign-in, shown to the platform admin for account support. Never allowed to break a sign-in.
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($e) {
+            try {
+                $ctx = app(TenantContext::class);
+                $ctx->run($e->user->subscriber_id, fn () => \Illuminate\Support\Facades\DB::table('users')->where('id', $e->user->id)->update(['last_login_at' => now()]));
+            } catch (\Throwable) {
+            }
+        });
+
         // Password policy per subscriber (REQ-0370; Q10 settled 2026-11-23: at least 12 characters by default).
         \Illuminate\Validation\Rules\Password::defaults(function () {
             $min = 12;

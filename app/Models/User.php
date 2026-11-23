@@ -32,6 +32,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         return [
             'email_verified_at' => 'datetime',
             'archived_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
             'role' => Role::class,
             'app_authentication_secret' => 'encrypted',
@@ -62,7 +63,16 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     /** One app, one interface per role (REQ-0271, REQ-0494): a user enters only their role's panel. */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->archived_at === null && $panel->getId() === $this->role->portal();
+        return $this->archived_at === null && $panel->getId() === $this->role->portal() && ! $this->subscriberSuspended();
+    }
+
+    /** A suspended subscription stops every user of the office — Filament checks this on every request, not only at sign-in. */
+    public function subscriberSuspended(): bool
+    {
+        if ($this->subscriber_id === null) {
+            return false;
+        }
+        return \Illuminate\Support\Facades\DB::table('subscribers')->where('id', $this->subscriber_id)->value('status') === 'suspended';
     }
 
     public function getFilamentName(): string

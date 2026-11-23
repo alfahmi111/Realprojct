@@ -7,7 +7,7 @@
      technician → task cards with a priority edge, thumb-sized controls
    ============================================================= */
 .wq-portal { display: grid; gap: 20px; }
-.wq-portal .fi-header { display: none; }
+.wq-portal:not(.wq-sub) .fi-header { display: none; }   /* role homes have their own greeting band; the subscriber page keeps its title and actions */
 :where(.wq-portal) a { text-decoration: none; color: inherit; }
 .wq-portal :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; border-radius: 8px; }
 .wq-portal, .wq-portal .fi-page-content, .wq-portal section, .wq-grid > * { min-width: 0; }
@@ -115,3 +115,36 @@
     .wq-fall { padding-inline: 16px; }
     .wq-month { flex-wrap: wrap; }
 }
+
+/* Platform admin — one subscriber */
+.wq-sub-hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 22px 26px; border-radius: var(--wq-radius-lg);
+    background: var(--color-surface); border: 1px solid var(--color-line); border-inline-start: 6px solid var(--tone); box-shadow: var(--wq-shadow-md); }
+.wq-sub-active { --tone: var(--status-paid-fg); }
+.wq-sub-expiring { --tone: var(--status-soon-fg); }
+.wq-sub-expired, .wq-sub-suspended { --tone: var(--status-late-fg); }
+.wq-sub-no_period { --tone: var(--color-line); }
+.wq-sub-state { display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 700; font-size: .85rem; color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); }
+.wq-sub-plan { margin: 8px 0 0; font-family: 'Cairo', sans-serif; font-size: 1.3rem; color: var(--color-deep, var(--color-ink)); }
+.wq-sub-note { margin: 6px 0 0; color: var(--status-late-fg); font-size: .9rem; }
+.wq-sub-days { display: grid; justify-items: end; text-align: end; }
+.wq-sub-days strong { font-family: 'Cairo', sans-serif; font-size: 3rem; line-height: 1; color: var(--tone); }
+.wq-sub-days span { color: var(--color-muted); font-size: .9rem; margin-top: 4px; }
+.wq-sub-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; margin: 0; padding: 16px 20px 20px; }
+.wq-sub-facts dt { color: var(--color-muted); font-size: .8rem; }
+.wq-sub-facts dd { margin: 2px 0 0; font-weight: 600; color: var(--color-ink); overflow-wrap: anywhere; }
+.wq-sub-wide { grid-column: 1 / -1; }
+.wq-sub-usage { padding-top: 16px; }
+.wq-sub-meter { padding: 0 20px; }
+.wq-sub-meter-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.wq-sub-bar { height: 8px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
+.wq-sub-bar span { display: block; height: 100%; width: var(--p); background: var(--color-primary); border-radius: inherit; }
+.wq-sub-bar.is-high span { background: var(--status-late-fg); }
+.wq-sub-roles { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0 20px 18px; }
+.wq-sub-table-wrap { overflow-x: auto; }
+.wq-sub-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.wq-sub-table th { text-align: start; font-weight: 600; color: var(--color-muted); font-size: .8rem; padding: 10px 16px; border-bottom: 1px solid var(--color-line); white-space: nowrap; }
+.wq-sub-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-line); vertical-align: middle; }
+.wq-sub-table td small { display: block; color: var(--color-muted); font-size: .78rem; }
+.wq-sub-table tr.is-off td { opacity: .55; }
+.wq-sub-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+@media (max-width: 700px) { .wq-sub-facts { grid-template-columns: 1fr; } .wq-sub-days { justify-items: start; text-align: start; } }

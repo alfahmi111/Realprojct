@@ -91,6 +91,8 @@ final class SettingsRegistry
             'security.dual_approval' => ['levels' => ['subscriber'], 'type' => 'bool', 'default' => true, 'pending' => 'PENDING-D10', 'req' => 'REQ-0069, REQ-0370, REQ-0652'],
             // Launch gates (REQ-0508 penetration test before launch).
             'launch.penetration_test_passed' => ['levels' => ['platform'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0508'],
+            // Platform admin: a subscription is flagged "ending soon" this many days before its end (display only; editable).
+            'subscription.warning_days' => ['levels' => ['platform'], 'type' => 'int', 'min' => 1, 'max' => 365, 'default' => 30, 'req' => 'REQ-0323'],
             'data.retention' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0371'],
         ];
     }
