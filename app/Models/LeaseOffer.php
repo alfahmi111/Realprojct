@@ -27,7 +27,12 @@ class LeaseOffer extends Model
         return $this->belongsTo(LeasableUnit::class, 'leasable_unit_id');
     }
 
-    public function approvals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function approvals():\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(LeaseOfferApproval::class)->orderBy('step');
     }

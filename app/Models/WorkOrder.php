@@ -22,7 +22,12 @@ class WorkOrder extends Model
 
     protected $attributes = ['status' => 'reported', 'photos_report' => '[]', 'photos_before' => '[]', 'photos_after' => '[]'];
 
-    public function costLines(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function property(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function costLines():\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CostLine::class);
     }

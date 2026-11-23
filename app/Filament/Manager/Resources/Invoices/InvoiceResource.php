@@ -42,6 +42,8 @@ class InvoiceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'الفواتير';
 
+    public const KIND_AR = ['rent' => 'إيجار', 'maintenance_recharge' => 'تحميل صيانة', 'service' => 'خدمة', 'management_fee' => 'أتعاب إدارة'];
+
     public static function canCreate(): bool
     {
         return false;
@@ -79,14 +81,32 @@ class InvoiceResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->latest('issue_date'))
+        $out = fn (Invoice $r) => app(InvoiceService::class)->outstanding($r)->minor();
+        $pay = fn (Invoice $r) => $r->status === 'cancelled' ? 'cancelled' : (($o = $out($r)) <= 0 ? 'paid' : ($o < $r->total_minor->minor() ? 'partial' : 'unpaid'));
+        return $table->modifyQueryUsing(fn ($query) => $query->with(['tenant', 'property'])->latest('issue_date')->latest('id'))
             ->columns([
-                TextColumn::make('number')->label('الرقم')->searchable(), TextColumn::make('kind')->label('النوع'), TextColumn::make('unit_code')->label('الوحدة'),
-                TextColumn::make('issue_date')->label('التاريخ')->date()->sortable(), Ui::moneyColumn('total_minor', 'الإجمالي'),
-                TextColumn::make('outstanding')->label('المتبقي')->state(fn (Invoice $r) => app(InvoiceService::class)->outstanding($r)->toDecimalString()),
-                TextColumn::make('status')->label('الحالة')->badge(), TextColumn::make('einvoice_status')->label('الفوترة الإلكترونية')->badge(),
+                TextColumn::make('number')->label('الفاتورة')->searchable()->weight('bold')
+                    ->description(fn (Invoice $r) => self::KIND_AR[$r->kind] ?? $r->kind),
+                TextColumn::make('tenant.name_ar')->label('العميل')->searchable()->placeholder('—')
+                    // implode, not trim(): trim() works on bytes and cuts Arabic letters that share a lead byte with «،»
+                    ->description(fn (Invoice $r) => implode('، ', array_filter([$r->unit_code ? 'الوحدة ' . $r->unit_code : null, $r->property?->name_ar]))),
+                TextColumn::make('issue_date')->label('التاريخ')->date('Y-m-d')->sortable()
+                    ->description(fn (Invoice $r) => $r->period_start ? 'عن ' . \Carbon\CarbonImmutable::parse($r->period_start)->format('Y-m') : null),
+                Ui::moneyColumn('total_minor', 'الإجمالي'),
+                TextColumn::make('outstanding')->label('المتبقي')->state(fn (Invoice $r) => $out($r))
+                    ->formatStateUsing(fn ($state) => (int) $state > 0 ? \App\Support\Dates\NumberFormatter::money((int) $state) : '—')
+                    ->color(fn ($state) => (int) $state > 0 ? 'danger' : 'gray'),
+                TextColumn::make('pay')->label('السداد')->badge()->state($pay)
+                    ->formatStateUsing(fn ($state) => ['paid' => 'مسددة', 'partial' => 'مسددة جزئياً', 'unpaid' => 'غير مسددة', 'cancelled' => 'ملغاة'][$state])
+                    ->color(fn ($state) => ['paid' => 'success', 'partial' => 'warning', 'unpaid' => 'danger', 'cancelled' => 'gray'][$state]),
+                TextColumn::make('einvoice_status')->label('الفوترة الإلكترونية')->badge()->color('gray')->toggleable()
+                    ->formatStateUsing(fn ($state) => ['pending' => 'بانتظار الإرسال', 'reported' => 'مُبلَّغ عنها', 'cleared' => 'معتمدة', 'rejected' => 'مرفوضة'][$state] ?? $state),
             ])
-            ->filters([SelectFilter::make('status')->label('الحالة')->options(['issued' => 'صادرة', 'cancelled' => 'ملغاة'])])
+            ->filters([
+                SelectFilter::make('status')->label('الحالة')->options(['issued' => 'صادرة', 'cancelled' => 'ملغاة']),
+                SelectFilter::make('kind')->label('النوع')->options(self::KIND_AR),
+                SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
+            ])
             ->recordActions([
                 ViewAction::make(),
                 Action::make('cancel')->label('طلب إلغاء')->color('danger')->visible(fn (Invoice $r) => $r->status === 'issued')

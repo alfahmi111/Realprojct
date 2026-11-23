@@ -65,21 +65,55 @@ class AssetResource extends Resource
                 DatePicker::make('installed_on')->label('تاريخ التركيب'),
                 DatePicker::make('warranty_ends_on')->label('انتهاء الضمان'),
                 Select::make('condition')->label('الحالة (1–5)')->options([1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5']),
-                Ui::money('cost_minor', 'التكلفة'),
-                TextInput::make('useful_life_months')->label('العمر الافتراضي (شهر)')->integer()->minValue(1),
+                Section::make('القيمة والإهلاك')->description('قسط ثابت: يفقد الأصل كل سنة القدر نفسه من قيمته حتى يخرج من الخدمة.')->schema([
+                    Ui::money('cost_minor', 'التكلفة')->live(onBlur: true),
+                    TextInput::make('useful_life_months')->label('العمر الافتراضي (شهر)')->integer()->minValue(1)
+                        ->helperText('يُستعمل لحساب الإهلاك إن لم تحدد نسبة أو مبلغاً'),
+                    Select::make('depreciation_method')->label('طريقة الإهلاك')->live()
+                        ->options(['percent' => 'نسبة سنوية من التكلفة', 'amount' => 'مبلغ سنوي ثابت'])->placeholder('حسب العمر الافتراضي'),
+                    TextInput::make('depreciation_rate_pct')->label('النسبة السنوية')->suffix('%')->numeric()->minValue(0.01)->maxValue(100)
+                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('depreciation_method') === 'percent')->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('depreciation_method') === 'percent')
+                        ->afterStateHydrated(fn ($component, $record) => $component->state($record?->depreciation_rate_bp ? $record->depreciation_rate_bp / 100 : null))
+                        ->dehydrated(false),
+                    Ui::money('depreciation_annual_minor', 'المبلغ السنوي')
+                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('depreciation_method') === 'amount')->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('depreciation_method') === 'amount'),
+                    Ui::money('salvage_minor', 'قيمة الخردة (اختياري)')->helperText('ما يساويه الأصل عند خروجه من الخدمة؛ إن تُرك فارغاً فهو صفر'),
+                ])->columns(2)->columnSpanFull(),
             ])->columns(2);
+    }
+
+    /** Converts the percentage typed on the form into basis points and clears the unused basis (form ↔ ر-02 integers). */
+    public static function prepareDepreciation(array $data, array $raw): array
+    {
+        $method = $data['depreciation_method'] ?? null;
+        $pct = $raw['depreciation_rate_pct'] ?? null;
+        $data['depreciation_rate_bp'] = $method === 'percent' && $pct !== null && $pct !== '' ? (int) round(((float) $pct) * 100) : null;
+        if ($method !== 'amount') {
+            $data['depreciation_annual_minor'] = null;
+        }
+        return $data;
     }
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+        $val = app(\App\Maintenance\AssetValuation::class);
+        $today = \Carbon\CarbonImmutable::today();
+        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with('space'))
             ->columns([
-                TextColumn::make('qr_code')->label('الرمز')->searchable(),
-                TextColumn::make('name_ar')->label('الاسم')->searchable(),
-                TextColumn::make('category')->label('الفئة'),
-                TextColumn::make('condition')->label('الحالة'),
-                TextColumn::make('warranty_ends_on')->label('انتهاء الضمان')->date(),
+                TextColumn::make('qr_code')->label('الرمز')->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name_ar')->label('الأصل')->searchable()->description(fn (Asset $r) => trim(($r->brand ?? '') . ' ' . ($r->model ?? ''))),
+                TextColumn::make('space.name_ar')->label('الموقع'),
+                TextColumn::make('category')->label('الفئة')->formatStateUsing(fn ($state) => \App\Maintenance\AssetTaxonomy::CATEGORIES[$state]['ar'] ?? $state),
+                TextColumn::make('condition')->label('الحالة')->formatStateUsing(fn ($state) => $state ? $state . ' من 5' : '—'),
+                TextColumn::make('book')->label('القيمة الحالية')->state(fn (Asset $r) => $val->value($r, $today)['book'])
+                    ->formatStateUsing(fn ($state) => \App\Support\Dates\NumberFormatter::money((int) $state))->placeholder('ناقص البيانات'),
+                TextColumn::make('pct')->label('الإهلاك')->state(fn (Asset $r) => $val->value($r, $today)['pct_bp'])
+                    ->formatStateUsing(fn ($state) => intdiv((int) $state, 100) . '%')->placeholder('—'),
+                TextColumn::make('ends')->label('يخرج من الخدمة')->state(fn (Asset $r) => $val->value($r, $today)['ends_on']?->format('Y-m'))
+                    ->badge()->color(fn (Asset $r) => match ($val->value($r, $today)['state']) { 'ended' => 'danger', 'near' => 'warning', default => 'gray' })->placeholder('—'),
+                TextColumn::make('warranty_ends_on')->label('انتهاء الضمان')->date()->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filters([\Filament\Tables\Filters\SelectFilter::make('category')->label('الفئة')->options(collect(\App\Maintenance\AssetTaxonomy::CATEGORIES)->map(fn ($c) => $c['ar']))])
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }
 

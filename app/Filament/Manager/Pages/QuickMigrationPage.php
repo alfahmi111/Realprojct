@@ -58,28 +58,71 @@ class QuickMigrationPage extends Page
         return ['uploadForm', 'reviewForm'];
     }
 
+    protected string $view = 'filament.manager.quick-migration';
+
+    public function getHeading(): string
+    {
+        return '';
+    }
+
     public function uploadForm(Schema $schema): Schema
     {
         return $schema->statePath('upload')->components([
-            Select::make('kind')->label('نوع الملف')->options(['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد ورقي'])->required(),
-            FileUpload::make('file')->label('الملف')->disk('local')->directory('imports')->required(),
-        ])->columns(2);
+            \Filament\Forms\Components\Radio::make('kind')->label('ما الذي ستنقله؟')->required()->inline()
+                ->options(['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel لعدة عقود', 'photo' => 'صورة عقد ورقي'])
+                ->descriptions(['ejar_pdf' => 'الملف الذي تنزّله من منصة إيجار', 'excel' => 'صف لكل عقد', 'photo' => 'صورة واضحة بالجوال']),
+            FileUpload::make('file')->label('الملف')->disk('local')->directory('imports')->required()
+                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'])
+                ->helperText('PDF أو صورة أو Excel. يبقى الملف خاصاً بمكتبك.'),
+        ]);
     }
 
+    /** Review fields grouped as on the contract; enums shown as Arabic choices, confidence beside each field. */
     public function reviewForm(Schema $schema): Schema
     {
-        $fields = ['tenant_name' => 'اسم المستأجر', 'tenant_kind' => 'نوع المستأجر (individual/company)', 'tenant_phone' => 'الجوال', 'unit_code' => 'رمز الوحدة', 'usage' => 'الاستخدام (residential/commercial)',
-            'starts_on' => 'البداية (YYYY-MM-DD)', 'ends_on' => 'النهاية (YYYY-MM-DD)', 'annual_rent' => 'الإيجار السنوي', 'payment_frequency' => 'الدفعات (monthly/quarterly/semiannual/annual/single)', 'deposit' => 'التأمين', 'ejar_contract_number' => 'رقم عقد إيجار'];
         $conf = collect(ImportBatch::find($this->batchId)?->extracted ?? [])->keyBy('field');
-        return $schema->statePath('review')->components(collect($fields)->map(fn ($label, $f) => TextInput::make($f)->label($label . ($conf->has($f) ? ' — الثقة ' . $conf[$f]['confidence'] . '%' : '')))->values()->all())->columns(2);
+        $hint = function (string $f) use ($conf) {
+            if (! $conf->has($f)) {
+                return 'لم يُستخرج؛ أدخله يدوياً';
+            }
+            $c = (int) $conf[$f]['confidence'];
+            return $c >= 90 ? "ثقة عالية {$c}%" : ($c >= 70 ? "ثقة متوسطة {$c}%، راجعه" : "ثقة منخفضة {$c}%، تحقّق منه");
+        };
+        $color = fn (string $f) => ! $conf->has($f) ? 'gray' : ((int) $conf[$f]['confidence'] >= 90 ? 'success' : ((int) $conf[$f]['confidence'] >= 70 ? 'warning' : 'danger'));
+        $t = fn (string $f, string $label) => TextInput::make($f)->label($label)->hint($hint($f))->hintColor($color($f));
+        $s = fn (string $f, string $label, array $opts) => Select::make($f)->label($label)->options($opts)->hint($hint($f))->hintColor($color($f));
+        return $schema->statePath('review')->components([
+            \Filament\Schemas\Components\Section::make('المستأجر')->schema([
+                $t('tenant_name', 'الاسم'), $s('tenant_kind', 'النوع', ['individual' => 'فرد', 'company' => 'منشأة']), $t('tenant_phone', 'الجوال'),
+            ])->columns(3),
+            \Filament\Schemas\Components\Section::make('الوحدة والعقد')->schema([
+                $t('unit_code', 'رمز الوحدة'), $s('usage', 'الغرض', ['residential' => 'سكني', 'commercial' => 'تجاري']), $t('ejar_contract_number', 'رقم عقد إيجار'),
+                $t('starts_on', 'البداية')->placeholder('YYYY-MM-DD'), $t('ends_on', 'النهاية')->placeholder('YYYY-MM-DD'),
+            ])->columns(3),
+            \Filament\Schemas\Components\Section::make('البيانات المالية')->schema([
+                $t('annual_rent', 'الإيجار السنوي'), $s('payment_frequency', 'دورة السداد', ['monthly' => 'شهري', 'quarterly' => 'ربع سنوي', 'semiannual' => 'نصف سنوي', 'annual' => 'سنوي', 'single' => 'دفعة واحدة']),
+                $t('deposit', 'مبلغ الضمان'),
+            ])->columns(3),
+        ]);
     }
 
     public function content(Schema $schema): Schema
     {
         return $schema->components([
-            Form::make([EmbeddedSchema::make('uploadForm')])->id('upload')->livewireSubmitHandler('stage')->footer([Actions::make([Action::make('stage')->label('استخراج البيانات')->submit('stage')])])->visible(fn () => $this->batchId === null),
-            Form::make([EmbeddedSchema::make('reviewForm')])->id('review')->livewireSubmitHandler('confirm')->footer([Actions::make([Action::make('confirm')->label('تأكيد وحفظ')->submit('confirm'), Action::make('discard')->label('تجاهل')->color('gray')->action('discard')])])->visible(fn () => $this->batchId !== null),
+            Form::make([EmbeddedSchema::make('uploadForm')])->id('upload')->livewireSubmitHandler('stage')->footer([Actions::make([Action::make('stage')->label('استخرج البيانات')->icon(Heroicon::OutlinedSparkles)->submit('stage')])])->visible(fn () => $this->batchId === null),
+            Form::make([EmbeddedSchema::make('reviewForm')])->id('review')->livewireSubmitHandler('confirm')->footer([Actions::make([Action::make('confirm')->label('أكّد واحفظ العقد')->submit('confirm'), Action::make('discard')->label('تجاهل هذا الملف')->color('gray')->action('discard')])])->visible(fn () => $this->batchId !== null),
         ]);
+    }
+
+    /** Last imports of this office, newest first. */
+    public function recent(): array
+    {
+        return ImportBatch::orderByDesc('id')->limit(6)->get()->map(fn ($b) => [
+            'kind' => ['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد'][$b->kind] ?? $b->kind,
+            'status' => $b->status, 'at' => $b->created_at?->format('Y-m-d H:i'),
+            'tenant' => collect($b->reviewed ?? [])->get('tenant_name') ?? collect($b->extracted)->firstWhere('field', 'tenant_name')['value'] ?? null,
+            'lease_id' => $b->created_refs['lease_id'] ?? null,
+        ])->all();
     }
 
     public function stage(): void

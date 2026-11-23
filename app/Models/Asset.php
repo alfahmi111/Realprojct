@@ -14,11 +14,13 @@ class Asset extends Model
 {
     use Archivable, Auditable, BelongsToSubscriber;
 
-    protected $fillable = ['space_id', 'qr_code', 'category', 'type', 'name_ar', 'name_en', 'brand', 'model', 'serial_number', 'installed_on', 'warranty_ends_on', 'condition', 'cost_minor', 'useful_life_months', 'photos'];
+    protected $fillable = ['space_id', 'qr_code', 'category', 'type', 'name_ar', 'name_en', 'brand', 'model', 'serial_number', 'installed_on', 'warranty_ends_on', 'condition', 'cost_minor', 'useful_life_months', 'photos',
+        'depreciation_method', 'depreciation_rate_bp', 'depreciation_annual_minor', 'salvage_minor'];
 
     protected function casts(): array
     {
-        return ['installed_on' => 'date', 'warranty_ends_on' => 'date', 'photos' => 'array', 'archived_at' => 'datetime', 'cost_minor' => MoneyCast::class];
+        return ['installed_on' => 'date', 'warranty_ends_on' => 'date', 'photos' => 'array', 'archived_at' => 'datetime', 'cost_minor' => MoneyCast::class,
+            'depreciation_rate_bp' => 'integer', 'depreciation_annual_minor' => 'integer', 'salvage_minor' => 'integer'];
     }
 
     public function space(): BelongsTo

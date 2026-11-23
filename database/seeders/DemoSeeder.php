@@ -40,7 +40,8 @@ class DemoSeeder extends Seeder
         $s = $ctx->run(null, fn () => Subscriber::firstOrCreate(['name_ar' => 'مكتب الديار لإدارة الأملاك'], ['name_en' => 'Al Diyar Property Management', 'plan' => 'office']));
         $ctx->set($s->id);
         if (LeasableUnit::exists()) {
-            $this->command?->info('Demo data already present.');
+            self::demoAssets();
+            $this->command?->info('Demo data already present (assets topped up).');
             return;
         }
         $mk = fn (string $role, string $name, string $email) => User::create(['subscriber_id' => $s->id, 'name' => $name, 'email' => $email, 'password' => 'demo-password-123', 'role' => $role]);
@@ -118,6 +119,7 @@ class DemoSeeder extends Seeder
         // A tenant account linked to the lease on unit 102 (which has the AC asset), to try the tenant interface.
         self::linkDemoTenant($s);
         self::demoPlatform($s);
+        self::demoAssets();
         $this->command?->info('Demo office ready: manager@withaq.test / demo-password-123');
     }
 
@@ -137,6 +139,43 @@ class DemoSeeder extends Seeder
         if (! $s->subscription_ends_on) {
             $s->forceFill(['commercial_registration' => '1010000000', 'city' => 'الرياض', 'contact_name' => 'أحمد الفاهمي', 'contact_phone' => '0500000000', 'contact_email' => 'office@withaq.test',
                 'billing_cycle' => 'annual', 'subscription_starts_on' => now()->subMonths(10)->toDateString(), 'subscription_ends_on' => now()->addDays(58)->toDateString(), 'addons' => ['waitlist']])->save();
+        }
+    }
+
+    /**
+     * Local demo only: a realistic asset register for the demo building (costs, install dates, depreciation bases), so
+     * "محتوى المبنى والجرد" shows real figures. Safe to run again: adds only when the register is still near-empty.
+     */
+    public static function demoAssets(): void
+    {
+        if (Asset::count() >= 10) {
+            return;
+        }
+        $today = CarbonImmutable::today();
+        $mk = function (Space $sp, string $cat, string $type, string $name, string $cost, CarbonImmutable $installed, array $dep, int $cond) {
+            Asset::create(['space_id' => $sp->id, 'qr_code' => 'A-DEMO-' . strtoupper(\Illuminate\Support\Str::random(8)), 'category' => $cat, 'type' => $type, 'name_ar' => $name,
+                'cost_minor' => Money::parse($cost), 'installed_on' => $installed->toDateString(), 'condition' => $cond] + $dep);
+        };
+        Asset::where('qr_code', 'A-DEMO-AC1')->update(['cost_minor' => 240000, 'installed_on' => $today->subYears(9)->subMonths(4)->toDateString(), 'depreciation_method' => 'percent', 'depreciation_rate_bp' => 1000]);
+        foreach (Space::where('kind', 'unit')->whereNull('archived_at')->orderBy('code')->get() as $i => $sp) {
+            $age = $i % 5;
+            if ($sp->unit_type === 'shop') {
+                $mk($sp, 'hvac', 'split_ac', 'مكيف سبليت', '3200', $today->subYears(3 + $age), ['depreciation_method' => 'percent', 'depreciation_rate_bp' => 1000], 4);
+                $mk($sp, 'electrical', 'lighting', 'إنارة المحل', '1800', $today->subYears(2 + $age), ['useful_life_months' => 96], 4);
+                continue;
+            }
+            foreach (['الصالة', 'غرفة النوم', 'المجلس'] as $k => $room) {
+                $mk($sp, 'hvac', 'split_ac', 'مكيف سبليت — ' . $room, '2400', $today->subYears(4 + $age + $k)->subMonths(3), ['depreciation_method' => 'percent', 'depreciation_rate_bp' => 1000], max(2, 5 - $age));
+            }
+            $mk($sp, 'plumbing', 'water_heater', 'سخان مياه', '850', $today->subYears(2 + $age * 2), ['useful_life_months' => 96], max(2, 5 - $age));
+            $mk($sp, 'appliances', 'kitchen', 'فرن وموقد', '1600', $today->subYears(1 + $age), ['depreciation_method' => 'amount', 'depreciation_annual_minor' => 16000], 4);
+        }
+        $common = Space::where('kind', '<>', 'unit')->where('name_ar', 'المصعد')->first() ?? Space::where('kind', 'building')->first();
+        if ($common) {
+            $mk($common, 'vertical_transport', 'elevator', 'مصعد ركاب 8 أشخاص', '185000', $today->subYears(11), ['depreciation_method' => 'amount', 'depreciation_annual_minor' => 925000, 'salvage_minor' => 1500000], 3);
+            $mk($common, 'plumbing', 'pump', 'مضخة مياه رئيسية', '4500', $today->subYears(7), ['useful_life_months' => 96], 2);
+            $mk($common, 'safety', 'fire_alarm', 'لوحة إنذار الحريق', '12000', $today->subYears(5), ['depreciation_method' => 'percent', 'depreciation_rate_bp' => 1000], 4);
+            $mk($common, 'safety', 'camera', 'كاميرات المداخل', '6800', $today->subYears(4), ['depreciation_method' => 'percent', 'depreciation_rate_bp' => 2000], 4);
         }
     }
 

@@ -14,7 +14,14 @@ Route::get('/manifest.webmanifest', ManifestController::class)->name('manifest')
 Route::get('/b/{code}', [\App\Http\Controllers\BuildingPageController::class, 'show'])->where('code', '[2-9A-HJ-NP-Z]{6}')->name('building.page');
 Route::post('/b/{code}', [\App\Http\Controllers\BuildingPageController::class, 'register'])->where('code', '[2-9A-HJ-NP-Z]{6}')->middleware('throttle:10,1')->name('building.register');
 
-Route::get('/export', \App\Http\Controllers\DataExportController::class)->middleware(['web', 'auth'])->name('data.export');
+// Property photo (private disk; RLS through the signed-in user decides who may see it — owner request 2026-11-23).
+Route::get('/media/property/{id}/photo', function (int $id) {
+    $p = \App\Models\Property::find($id);
+    abort_unless($p && $p->photo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($p->photo_path), 404);
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($p->photo_path, null, ['Cache-Control' => 'private, max-age=86400']);
+})->middleware(['web', 'auth'])->whereNumber('id')->name('property.photo');
+
+Route::get('/export',\App\Http\Controllers\DataExportController::class)->middleware(['web', 'auth'])->name('data.export');
 
 // Technician interface API + offline sync (REQ-0313, REQ-0495). Same-origin session auth inside the PWA.
 Route::middleware(['web', 'auth'])->prefix('api/tech')->group(function () {

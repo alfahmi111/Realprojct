@@ -65,7 +65,12 @@ class PaymentResource extends Resource
         return $table->modifyQueryUsing(fn ($query) => $query->latest('received_on'))
             ->columns([
                 TextColumn::make('receipt_number')->label('رقم السند')->searchable(), TextColumn::make('received_on')->label('التاريخ')->date()->sortable(),
-                Ui::moneyColumn('amount_minor', 'المبلغ'), TextColumn::make('method')->label('الطريقة'), TextColumn::make('status')->label('الحالة')->badge(),
+                TextColumn::make('tenant.name_ar')->label('المستأجر')->searchable()->placeholder('—'),
+                Ui::moneyColumn('amount_minor', 'المبلغ'),
+                TextColumn::make('method')->label('الطريقة')->formatStateUsing(fn ($state) => ['mada' => 'مدى', 'apple_pay' => 'Apple Pay', 'card' => 'بطاقة', 'sadad' => 'سداد', 'bank_transfer' => 'تحويل بنكي', 'cash' => 'نقداً'][$state] ?? $state),
+                TextColumn::make('paid_to')->label('في حساب')->formatStateUsing(fn ($state) => ['manager' => 'المكتب (أمانات)', 'owner' => 'المالك'][$state] ?? $state)->toggleable(),
+                TextColumn::make('status')->label('الحالة')->badge()->formatStateUsing(fn ($state) => ['recorded' => 'مسجّلة', 'reversed' => 'معكوسة', 'pending_reversal' => 'بانتظار العكس'][$state] ?? $state)
+                    ->color(fn ($state) => $state === 'recorded' ? 'success' : 'gray'),
             ])
             ->recordActions([
                 Action::make('reverse')->label('طلب تعديل/عكس')->color('danger')->visible(fn (Payment $r) => $r->status === 'recorded')

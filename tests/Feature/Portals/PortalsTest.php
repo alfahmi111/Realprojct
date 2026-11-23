@@ -222,4 +222,30 @@ class PortalsTest extends TestCase
         $this->actingAs($this->manager)->get('/manage/kpis')->assertRedirect();
         $this->assertTrue(class_exists(\App\Filament\Owner\Pages\KpiDashboard::class));
     }
+
+    /** REQ-0278 extended (owner request 2026-11-23): end date, several buildings, excluded units, scheduled ones hidden. */
+    public function test_req_0278_announcement_audience_buildings_exclusions_and_end_date(): void
+    {
+        $p = app(TenantPortal::class);
+        $mine = (int) Space::where('code', '101')->first()->building_id;
+        $myUnit = (int) $this->lease->leasable_unit_id;
+        $other = app(BuildingWizard::class)->createProperty(Portfolio::create(['name_ar' => 'ب']), ['name_ar' => 'برج'], [['owner' => Owner::first(), 'numerator' => 1, 'denominator' => 1]], 'residential_building');
+        app(BuildingWizard::class)->generate($other, ['name_ar' => 'B', 'code_prefix' => 'B', 'floors' => [['number' => 1, 'units' => [['type' => 'apartment', 'count' => 1]]]]]);
+        $otherBuilding = (int) \App\Models\Building::where('property_id', $other->id)->value('id');
+        $mk = fn (string $t, array $a) => Announcement::create($a + ['title_ar' => $t, 'body_ar' => 'نص', 'published_at' => now()->subHour()]);
+        $mk('للجميع', []);
+        $mk('لمبنيين', ['building_ids' => [(string) $mine, (string) $otherBuilding]]);   // form sends strings
+        $mk('للمبنى الآخر', ['building_ids' => [$otherBuilding]]);
+        $mk('باستثناء وحدتي', ['building_ids' => [$mine], 'excluded_unit_ids' => [(string) $myUnit]]);
+        $mk('انتهى', ['expires_at' => now()->subMinute()]);
+        $mk('مجدول', ['published_at' => now()->addDay()]);
+        $mk('ينتهي غداً', ['expires_at' => now()->addDay()]);
+        $titles = collect($p->announcements($this->tenantUser))->pluck('title_ar')->sort()->values()->all();
+        $this->assertSame(collect(['للجميع', 'لمبنيين', 'ينتهي غداً'])->sort()->values()->all(), $titles);
+        $this->assertSame('ended', Announcement::where('title_ar', 'انتهى')->first()->state());
+        $this->assertSame('scheduled', Announcement::where('title_ar', 'مجدول')->first()->state());
+        $this->assertSame([$myUnit], Announcement::where('title_ar', 'باستثناء وحدتي')->first()->excluded_unit_ids);
+        $this->expectException(\Illuminate\Database\QueryException::class);   // end must come after start
+        $mk('خطأ', ['expires_at' => now()->subDays(2)]);
+    }
 }

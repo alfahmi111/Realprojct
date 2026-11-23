@@ -13,4 +13,9 @@ class CreateAsset extends CreateRecord
     {
         return [];
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return AssetResource::prepareDepreciation($data, $this->data ?? []);
+    }
 }

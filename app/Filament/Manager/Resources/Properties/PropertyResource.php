@@ -61,6 +61,7 @@ class PropertyResource extends Resource
             TextInput::make('deed_number')->label('رقم الصك'), TextInput::make('ejar_property_number')->label('رقم العقار في إيجار'),
             TextInput::make('real_estate_registry_number')->label('رقم التسجيل العيني'), TextInput::make('region')->label('المنطقة'),
             TextInput::make('city')->label('المدينة'), Toggle::make('within_urban_boundary')->label('داخل النطاق العمراني'),
+            \App\Filament\Support\Ui::propertyPhoto()->columnSpanFull(),
         ])->columns(2);
     }
 
