@@ -87,16 +87,14 @@ class DateServiceTest extends TestCase
         }
     }
 
-    public function test_req_0656_the_correction_setting_is_not_applied_by_the_date_api(): void
+    public function test_req_0656_no_global_offset_is_applied_by_the_date_api(): void
     {
-        // Decision 13: no correction logic until specified — the API has no correction parameter at all.
+        // Q19 (2026-11-23): corrections are per day, entered by the platform admin. A global offset is not applied:
+        // the previous system treated a non-zero offset as untrusted, so the subscriber offset setting is never read.
         $ref = new \ReflectionClass(DateService::class);
-        foreach ($ref->getMethods() as $m) {
-            foreach ($m->getParameters() as $p) {
-                $this->assertStringNotContainsStringIgnoringCase('correction', $p->getName());
-            }
-        }
-        $this->assertStringNotContainsString('hijri_correction', file_get_contents($ref->getFileName()) === false ? '' : preg_replace('#/\*.*?\*/#s', '', file_get_contents($ref->getFileName())));
+        $code = preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents($ref->getFileName()));
+        $this->assertStringNotContainsString('date.hijri_correction', $code);
+        $this->assertStringNotContainsString('Settings', $code);
     }
     /** REQ-0345 — the anchors of the owner's previous system are reproduced, so the server is trusted to show Hijri. */
     public function test_req_0345_umm_al_qura_anchors_from_the_previous_system_are_reproduced(): void

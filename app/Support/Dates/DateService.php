@@ -14,8 +14,10 @@ use InvalidArgumentException;
  *
  *  - Storage: always Gregorian in UTC. Display settings never change a stored value or a computed deadline.
  *  - Hijri: Umm al-Qura through ICU (`intl`, calendar "islamic-umalqura") — REQ-0345.
- *  - Manual Hijri correction: the subscriber setting exists (date.hijri_correction) but NO correction logic is
- *    written until the owner provides the specification (decision 13). This class ignores it on purpose.
+ *  - Manual Hijri correction (owner's decision 2026-11-23 on Q19, amending decision 13; from the previous system):
+ *    the platform admin records the official Hijri date of a Gregorian day when a sighting differs from Umm al-Qura
+ *    by one day (table hijri_corrections). A correction is absolute for that day and wins over the calculation, in
+ *    both directions. There is no global offset: the previous system treated a non-zero offset as untrusted.
  */
 final class DateService
 {
@@ -36,6 +38,58 @@ final class DateService
 
     private static string $untrustedReason = '';
 
+    /** @var array<string, array{year:int,month:int,day:int}>|null Gregorian Y-m-d => corrected Hijri */
+    private static ?array $corrections = null;
+
+    private static int $correctionsLoadedAt = 0;
+
+    /** Corrections are few (a handful a year); loaded once and refreshed every minute so queue workers follow edits. */
+    public static function corrections(): array
+    {
+        if (self::$corrections === null || time() - self::$correctionsLoadedAt > 60) {
+            self::$corrections = [];
+            self::$correctionsLoadedAt = time();
+            try {
+                foreach (\Illuminate\Support\Facades\DB::table('hijri_corrections')->get(['gregorian_date', 'hijri_year', 'hijri_month', 'hijri_day']) as $r) {
+                    self::$corrections[substr((string) $r->gregorian_date, 0, 10)] = ['year' => (int) $r->hijri_year, 'month' => (int) $r->hijri_month, 'day' => (int) $r->hijri_day];
+                }
+            } catch (\Throwable) {
+                self::$corrections = []; // no database yet (installation): the calculation alone
+            }
+        }
+        return self::$corrections;
+    }
+
+    public static function forgetCorrections(): void
+    {
+        self::$corrections = null;
+    }
+
+    /**
+     * A sighting moves a month start by one day, so a valid correction is the calculated Hijri day shifted by exactly
+     * one day, including across a month end (29 or 30) and the year end (§7.6ج: ±1 day).
+     */
+    public static function isOneDayShift(array $calculated, array $corrected): bool
+    {
+        [$y, $m, $d] = [$calculated['year'], $calculated['month'], $calculated['day']];
+        [$cy, $cm, $cd] = [$corrected['year'], $corrected['month'], $corrected['day']];
+        if ($cd < 1 || $cd > 30 || $cm < 1 || $cm > 12) {
+            return false;
+        }
+        if ($cy === $y && $cm === $m) {
+            return abs($cd - $d) === 1;
+        }
+        [$ny, $nm] = $m === 12 ? [$y + 1, 1] : [$y, $m + 1];
+        [$py, $pm] = $m === 1 ? [$y - 1, 12] : [$y, $m - 1];
+        if ($cy === $ny && $cm === $nm) {
+            return $cd === 1 && $d >= 29;                       // the month ended a day early
+        }
+        if ($cy === $py && $cm === $pm) {
+            return $d === 1 && in_array($cd, [29, 30], true);  // the previous month ran one day longer
+        }
+        return false;
+    }
+
     /** Is ICU really applying Umm al-Qura on this server? Measured once per process against the anchors. */
     public function hijriTrusted(?string &$reason = null): bool
     {
@@ -46,7 +100,7 @@ final class DateService
                 [self::$trusted, self::$untrustedReason] = [false, 'intl extension is missing'];
             } else {
                 foreach (self::HIJRI_ANCHORS as $g => [$y, $m, $d]) {
-                    $got = $this->hijriOfDate($g);
+                    $got = $this->calculatedHijriOfDate($g);
                     if ($got !== ['year' => $y, 'month' => $m, 'day' => $d]) {
                         [self::$trusted, self::$untrustedReason] = [false, sprintf('Umm al-Qura anchor %s should be %04d-%02d-%02d, ICU gives %04d-%02d-%02d', $g, $y, $m, $d, $got['year'], $got['month'], $got['day'])];
                         break;
@@ -68,7 +122,14 @@ final class DateService
     public function hijriOfDate(DateTimeInterface|string $date): array
     {
         $ymd = $date instanceof DateTimeInterface ? $date->format('Y-m-d') : substr(trim($date), 0, 10);
-        return $this->hijriParts(CarbonImmutable::parse($ymd . ' 12:00:00', 'UTC'), 'UTC');
+        return self::corrections()[$ymd] ?? $this->calculatedHijriOfDate($ymd);
+    }
+
+    /** Umm al-Qura alone, without any manual correction (the anchors, and the reference shown next to a correction). */
+    public function calculatedHijriOfDate(DateTimeInterface|string $date): array
+    {
+        $ymd = $date instanceof DateTimeInterface ? $date->format('Y-m-d') : substr(trim($date), 0, 10);
+        return $this->rawParts(CarbonImmutable::parse($ymd . ' 12:00:00', 'UTC'), 'UTC');
     }
 
     /**
@@ -106,8 +167,14 @@ final class DateService
         return $c->utc();
     }
 
-    /** Hijri (Umm al-Qura) parts of an instant as seen in a timezone: ['year'=>1448,'month'=>5,'day'=>9]. */
+    /** Hijri parts of an instant as seen in a timezone: ['year'=>1448,'month'=>5,'day'=>9]. A manual correction wins. */
     public function hijriParts(DateTimeInterface $instant, string $timezone): array
+    {
+        $local = CarbonImmutable::instance($instant)->setTimezone($timezone)->format('Y-m-d');
+        return self::corrections()[$local] ?? $this->rawParts($instant, $timezone);
+    }
+
+    private function rawParts(DateTimeInterface $instant, string $timezone): array
     {
         $cal = IntlCalendar::createInstance(new DateTimeZone($timezone), '@calendar=' . self::HIJRI_CALENDAR);
         $cal->setTime($instant->getTimestamp() * 1000);
@@ -121,13 +188,31 @@ final class DateService
     /** Convert a Hijri (Umm al-Qura) calendar date to the Gregorian date (Y-m-d) of that day. */
     public function hijriToGregorian(int $year, int $month, int $day): string
     {
+        $want = ['year' => $year, 'month' => $month, 'day' => $day];
+        $hit = array_search($want, self::corrections(), true);
+        if ($hit !== false) {
+            return $hit;
+        }
+        $g = $this->calculatedHijriToGregorian($year, $month, $day);
+        // The calculated day may itself be corrected to another Hijri date; the target is then a neighbouring day.
+        foreach ([0, -1, 1, -2, 2] as $delta) {
+            $candidate = CarbonImmutable::parse($g, 'UTC')->addDays($delta)->toDateString();
+            if ($this->hijriOfDate($candidate) === $want) {
+                return $candidate;
+            }
+        }
+        throw new InvalidArgumentException("Hijri date $year-$month-$day does not exist after the manual corrections.");
+    }
+
+    private function calculatedHijriToGregorian(int $year, int $month, int $day): string
+    {
         $cal = IntlCalendar::createInstance(new DateTimeZone('UTC'), '@calendar=' . self::HIJRI_CALENDAR);
         $cal->clear();
         $cal->set(IntlCalendar::FIELD_EXTENDED_YEAR, $year);
         $cal->set(IntlCalendar::FIELD_MONTH, $month - 1);
         $cal->set(IntlCalendar::FIELD_DAY_OF_MONTH, $day);
         $cal->set(IntlCalendar::FIELD_HOUR_OF_DAY, 12);
-        $back = $this->hijriParts(CarbonImmutable::createFromTimestamp((int) ($cal->getTime() / 1000)), 'UTC');
+        $back = $this->rawParts(CarbonImmutable::createFromTimestamp((int) ($cal->getTime() / 1000)), 'UTC');
         if ($back !== ['year' => $year, 'month' => $month, 'day' => $day]) {
             throw new InvalidArgumentException("Invalid Hijri date $year-$month-$day.");
         }
@@ -146,7 +231,7 @@ final class DateService
         $g = $this->formatCalendar($instant, 'gregorian', $timezone, $locale, $withTime);
         // A dash is visible; a wrong Hijri number looks right. Never print one the server cannot vouch for.
         $h = $mode === 'gregorian' ? '' : ($this->hijriTrusted()
-            ? $this->formatCalendar($instant, self::HIJRI_CALENDAR, $timezone, $locale, $withTime) . ($locale === 'ar' ? ' هـ' : ' AH')
+            ? $this->formatHijri($instant, $timezone, $locale, $withTime) .($locale === 'ar' ? ' هـ' : ' AH')
             : '—');
         $text = match ($mode) {
             'hijri' => $h,
@@ -171,6 +256,21 @@ final class DateService
     public function addDays(DateTimeInterface $storedUtc, int $days): CarbonImmutable
     {
         return CarbonImmutable::instance($storedUtc)->utc()->addDays($days);
+    }
+
+    /** Hijri text of an instant; a corrected day is written with ICU's own month name so both read alike. */
+    private function formatHijri(DateTimeInterface $instant, string $timezone, string $locale, bool $withTime): string
+    {
+        $local = CarbonImmutable::instance($instant)->setTimezone($timezone);
+        $fix = self::corrections()[$local->format('Y-m-d')] ?? null;
+        if ($fix === null) {
+            return $this->formatCalendar($instant, self::HIJRI_CALENDAR, $timezone, $locale, $withTime);
+        }
+        $monthStart = CarbonImmutable::parse($this->calculatedHijriToGregorian($fix['year'], $fix['month'], 1) . ' 12:00:00', 'UTC');
+        $fmt = new IntlDateFormatter(($locale === 'ar' ? 'ar_SA' : 'en_US') . '@calendar=' . self::HIJRI_CALENDAR . ';numbers=latn',
+            IntlDateFormatter::NONE, IntlDateFormatter::NONE, new DateTimeZone('UTC'), IntlDateFormatter::TRADITIONAL, 'MMMM');
+        $text = $fix['day'] . ' ' . $fmt->format($monthStart->getTimestamp()) . ' ' . $fix['year'];
+        return $withTime ? $text . '، ' . $local->format('H:i') : $text;
     }
 
     private function formatCalendar(DateTimeInterface $instant, string $calendar, string $timezone, string $locale, bool $withTime): string

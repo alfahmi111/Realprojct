@@ -350,7 +350,7 @@
 | REQ-0343 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0344 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0345 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
-| REQ-0346 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
+| REQ-0346 | §7.6ج | BUILD | MVP | DONE | app/Settings/, app/Support/Dates/HijriCorrections.php, app/Filament/Platform/Pages/HijriCorrectionsPage.php | tests/Feature/Foundation/SettingsTest.php, tests/Feature/Foundation/HijriCorrectionTest.php | Q19 |
 | REQ-0347 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0348 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0349 | §7.6ج | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
@@ -660,7 +660,7 @@
 | REQ-0653 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
 | REQ-0654 | §14 | DECISION | DECISIONS | SEE-§14 | app/Theming/ThemeService.php, app/Console/Commands/LaunchCheck.php | tests/Feature/Foundation/ThemeTest.php | القرار 11: لا افتراضي في الكود؛ فحص الإطلاق يفشل حتى يُضبط |
 | REQ-0655 | §14 | DECISION | DECISIONS | SEE-§14 |  |  |  |
-| REQ-0656 | §14 | DECISION | DECISIONS | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php |  |
+| REQ-0656 | §14 | DECISION | DECISIONS | DONE | app/Support/Dates/DateService.php | tests/Unit/DateServiceTest.php, tests/Feature/Foundation/HijriCorrectionTest.php | Q19 |
 | REQ-0657 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0658 | §15 | DECIDED | BINDING | BINDING |  |  |  |
 | REQ-0659 | §15 | DECIDED | BINDING | BINDING |  |  |  |
