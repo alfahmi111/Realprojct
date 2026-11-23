@@ -165,4 +165,22 @@ class BuildingQrTest extends TestCase
         $this->tenant()->set($this->qr->subscriber_id);
         $this->assertSame(1, Prospect::count());
     }
+    /** REQ-0409 (Q15 settled 2026-11-23: threshold 3) — long waitlist while a matching unit is vacant → owner and manager alerted, once a week. */
+    public function test_req_0409_owner_is_alerted_when_the_waitlist_is_long_and_a_unit_is_vacant(): void
+    {
+        $now = CarbonImmutable::parse('2027-01-10 09:00');
+        foreach (['أ', 'ب'] as $i => $n) {
+            $this->svc->register($this->qr, ['name' => $n, 'phone' => '05000000' . $i, 'unit_type' => 'apartment'], true, $now);
+        }
+        $this->assertSame(0, $this->svc->alertLongWaitlistWhileVacant($now->startOfDay()));   // 2 < 3: no alert
+        $this->svc->register($this->qr, ['name' => 'ج', 'phone' => '0500000009', 'unit_type' => 'apartment'], true, $now);
+        $this->assertSame(1, $this->svc->alertLongWaitlistWhileVacant($now->startOfDay()));
+        $sent = DB::table('notifications_outbox')->where('event', 'waitlist.long_while_vacant')->pluck('recipient_id')->all();
+        $this->assertContains($this->ownerUser->id, $sent);
+        $this->assertContains($this->manager->id, $sent);
+        $this->assertSame(0, $this->svc->alertLongWaitlistWhileVacant($now->addDays(2)->startOfDay()));   // not again within the week
+        $this->assertSame(1, $this->svc->alertLongWaitlistWhileVacant($now->addDays(8)->startOfDay()));
+        app(\App\Settings\Settings::class)->setSubscriber('waitlist.long_threshold', 10);   // the office can raise it
+        $this->assertSame(0, $this->svc->alertLongWaitlistWhileVacant($now->addDays(20)->startOfDay()));
+    }
 }

@@ -50,7 +50,7 @@ class UserResource extends Resource
             TextInput::make('name')->label('الاسم')->required(), TextInput::make('name_en')->label('الاسم بالإنجليزية'),
             TextInput::make('email')->label('البريد')->email()->required()->unique(ignoreRecord: true), TextInput::make('phone')->label('الجوال'),
             Select::make('role')->label('الدور')->options(collect(Role::cases())->reject(fn ($r) => $r === Role::PlatformAdmin)->mapWithKeys(fn ($r) => [$r->value => $r->labelAr()]))->required(),
-            TextInput::make('password')->label('كلمة المرور')->password()->minLength(12)->required(fn (string $operation) => $operation === 'create')->dehydrated(fn ($state) => filled($state)),
+            TextInput::make('password')->label('كلمة المرور')->password()->rule(\Illuminate\Validation\Rules\Password::default())->required(fn (string $operation) => $operation === 'create')->dehydrated(fn ($state) => filled($state)),
         ])->columns(2);
     }
 

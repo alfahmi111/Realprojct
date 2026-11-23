@@ -42,7 +42,7 @@ class SubscriberResource extends Resource
             Select::make('status')->label('الحالة')->options(['active' => 'نشط', 'suspended' => 'موقوف'])->default('active')->required(),
             Section::make('مدير المشترك الأول')->schema([
                 TextInput::make('manager_name')->label('الاسم')->required(), TextInput::make('manager_email')->label('البريد')->email()->required(),
-                TextInput::make('manager_password')->label('كلمة المرور المؤقتة')->password()->minLength(12)->required(),
+                TextInput::make('manager_password')->label('كلمة المرور المؤقتة')->password()->rule(\Illuminate\Validation\Rules\Password::default())->required(),
             ])->columns(3)->visibleOn('create'),
         ])->columns(2);
     }

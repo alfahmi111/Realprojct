@@ -105,10 +105,13 @@ class ThemeTest extends TestCase
         $this->themes()->assertReadable('#F4E4D9');   // pale: unreadable with white text
     }
 
-    public function test_req_0329_custom_colors_are_refused_while_the_ratio_is_not_configured(): void
+    /** Q10 settled 2026-11-23: the required ratio is 4.5:1 by default — a dark colour passes, a pale one is refused. */
+    public function test_req_0329_custom_colors_must_reach_the_default_4_5_to_1_contrast(): void
     {
+        $this->assertSame(['numerator' => 45, 'denominator' => 10], app(Settings::class)->get('theme.min_contrast_ratio'));
+        $this->themes()->assertReadable('#0D4F5C');
         $this->expectException(ThemeException::class);
-        $this->themes()->assertReadable('#000000');
+        $this->themes()->assertReadable('#9FE3D9');
     }
 
     /** Decision 11 settled by the owner (2026-11-22): «وِثاق» is the platform default; the platform admin can still change it. */

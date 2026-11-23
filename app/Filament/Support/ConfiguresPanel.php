@@ -70,6 +70,7 @@ trait ConfiguresPanel
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\EnforceSessionTimeout::class,
                 ApplyUserPreferences::class,
             ]);
     }

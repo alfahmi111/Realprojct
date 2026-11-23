@@ -26,6 +26,7 @@ class RunNotifications extends Command
                     app(PaymentReminders::class)->run($now->startOfDay());
                     app(NotificationCenter::class)->sendDigests($now);
                     app(MaintenanceService::class)->generatePreventive($now->startOfDay());
+                    app(\App\BuildingQr\BuildingQrService::class)->alertLongWaitlistWhileVacant($now->startOfDay());   // REQ-0409
                 }
                 app(NotificationCenter::class)->escalate($now);
                 app(NotificationCenter::class)->deliver($now);

@@ -413,7 +413,7 @@
 | REQ-0406 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0407 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 |
 | REQ-0408 | §8.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
-| REQ-0409 | §8.5 | BUILD | MVP | BLOCKED |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · «قائمة طويلة» غير محددة رقمياً — سؤال Q15 |
+| REQ-0409 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/BuildingQrService.php (alertLongWaitlistWhileVacant), app/Console/Commands/RunNotifications.php | tests/Feature/BuildingQr/BuildingQrTest.php | Q15 محسوم 2026-11-23: الحد 3 (waitlist.long_threshold) |
 | REQ-0410 | §8.5 | BUILD | MVP | DONE | app/BuildingQr/, app/Http/Controllers/BuildingPageController.php, resources/views/public/building.blade.php | tests/Feature/BuildingQr/BuildingQrTest.php | MIXED→MVP: §12 L951 (EXPECTED_VACANCY)؛ PROSPECT_MATCH وVIEWING_SLOT P2 §12 L965 · EXPECTED_VACANCY منجز؛ PROSPECT_MATCH وVIEWING_SLOT في P2 |
 | REQ-0411 | §8.5 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L961 |
 | REQ-0412 | §9.1 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |

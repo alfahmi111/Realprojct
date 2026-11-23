@@ -164,6 +164,52 @@ class BuildingQrService
         return Prospect::where('building_qr_id', $qr->id)->where('status', 'active')->selectRaw("coalesce(unit_type, 'any') as t, count(*) as n")->groupBy('t')->pluck('n', 't')->map(fn ($v) => (int) $v)->all();
     }
 
+    /**
+     * REQ-0409 (Q15 settled 2026-11-23: threshold 3): a long waitlist while a matching unit stands vacant is an operational
+     * problem, not a demand problem → alert the owner (and the manager). At most once per building and unit type a week.
+     * Returns the number of alerts raised.
+     */
+    public function alertLongWaitlistWhileVacant(CarbonImmutable $today): int
+    {
+        $threshold = (int) $this->settings->get('waitlist.long_threshold');
+        if ($threshold < 1) {
+            return 0;
+        }
+        $raised = 0;
+        foreach (\App\Models\BuildingQr::all() as $qr) {
+            $lengths = $this->waitlistLength($qr);
+            $building = Building::find($qr->building_id);
+            $units = LeasableUnit::whereNull('archived_at')->where('is_composite', false)
+                ->whereHas('spaces', fn ($q) => $q->where('building_id', $building->id))->with('spaces')->get();
+            $vacant = $units->filter(fn ($u) => ! DB::table('space_occupancies')->whereIn('space_id', $u->spaces->pluck('id'))
+                ->whereRaw('period @> ?::date', [$today->toDateString()])->exists());
+            foreach ($lengths as $type => $count) {
+                $matching = $type === 'any' ? $vacant : $vacant->where('unit_type', $type);
+                if ($count < $threshold || $matching->isEmpty()) {
+                    continue;
+                }
+                $recent = DB::table('notifications_outbox')->where('event', 'waitlist.long_while_vacant')
+                    ->where('subject_type', 'BuildingQr')->where('subject_id', $qr->id)->where('payload->unit_type', $type)
+                    ->where('created_at', '>=', $today->subDays(7))->exists();
+                if ($recent) {
+                    continue;
+                }
+                $recipients = User::where('role', 'manager')->whereNull('archived_at')->get()->all();
+                foreach (OwnershipShare::where('property_id', $building->property_id)->with('owner')->get() as $s) {
+                    if ($s->owner->user_id && ($u = User::find($s->owner->user_id)) && $u->role->value === 'owner') {
+                        $recipients[] = $u;
+                    }
+                }
+                $this->notifications->dispatch('waitlist.long_while_vacant', $recipients, [
+                    'building' => $building->name_ar, 'unit_type' => $type, 'waitlist' => (string) $count,
+                    'vacant_units' => $matching->pluck('code')->implode('، '),
+                ], $today, subject: $qr);
+                $raised++;
+            }
+        }
+        return $raised;
+    }
+
     /** A confirmed expected vacancy when a non-renewal notice is given or eviction requested (REQ-0399, REQ-0156, REQ-0410). */
     public function syncConfirmedVacancies(CarbonImmutable $today): void
     {

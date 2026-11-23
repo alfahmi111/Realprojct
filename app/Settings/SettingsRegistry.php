@@ -26,7 +26,7 @@ final class SettingsRegistry
             // أ) Themes — REQ-0327…REQ-0332, decision 11 (no platform default fixed in code)
             'platform.default_theme' => ['levels' => ['platform'], 'type' => 'enum', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => 'withaq', 'decision' => 'decision 11 settled by the owner 2026-11-22', 'req' => 'REQ-0328, REQ-0654'],
             'platform.available_themes' => ['levels' => ['platform'], 'type' => 'list', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => ['withaq', 'clay', 'ink', 'plum'], 'req' => 'REQ-0323, REQ-0328'],
-            'theme.min_contrast_ratio' => ['levels' => ['platform'], 'type' => 'ratio', 'default' => null, 'req' => 'REQ-0329'],
+            'theme.min_contrast_ratio' => ['levels' => ['platform'], 'type' => 'ratio', 'default' => ['numerator' => 45, 'denominator' => 10], 'decision' => 'Q10 settled 2026-11-23: 4.5:1', 'req' => 'REQ-0329'],
             'theme.preset' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['withaq', 'clay', 'ink', 'plum'], 'default' => null, 'req' => 'REQ-0328'],
             'theme.custom_primary' => ['levels' => ['subscriber'], 'type' => 'color', 'default' => null, 'req' => 'REQ-0329'],
             'theme.logo_light' => ['levels' => ['subscriber'], 'type' => 'string', 'default' => null, 'req' => 'REQ-0329'],
@@ -47,13 +47,14 @@ final class SettingsRegistry
             'locale.interface' => ['levels' => $u, 'type' => 'enum', 'options' => ['ar', 'en'], 'default' => 'ar', 'req' => 'REQ-0362, REQ-0490'],
             'locale.messages' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['ar', 'en'], 'default' => null, 'req' => 'REQ-0362'],
             'numbers.digits' => ['levels' => $u, 'type' => 'enum', 'options' => ['western', 'eastern'], 'default' => 'western', 'req' => 'REQ-0363'],
-            'numbers.currency_display' => ['levels' => $u, 'type' => 'enum', 'options' => ['symbol', 'abbreviation'], 'default' => null, 'req' => 'REQ-0364'],
+            'numbers.currency_display' => ['levels' => $u, 'type' => 'enum', 'options' => ['symbol', 'abbreviation'], 'default' => 'abbreviation', 'decision' => 'Q10 settled 2026-11-23', 'req' => 'REQ-0364'],
 
             // ز) Accessibility — REQ-0373
-            'a11y.font_size' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['normal', 'large', 'larger'], 'default' => null, 'req' => 'REQ-0373'],
-            'a11y.high_contrast' => ['levels' => ['user'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0373'],
-            'a11y.reduce_motion' => ['levels' => ['user'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0373'],
-            'a11y.table_density' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['comfortable', 'compact'], 'default' => null, 'req' => 'REQ-0373'],
+            'a11y.font_size' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['normal', 'large', 'larger'], 'default' => 'normal', 'req' => 'REQ-0373'],
+            'a11y.high_contrast' => ['levels' => ['user'], 'type' => 'bool', 'default' => false, 'req' => 'REQ-0373'],
+            'a11y.reduce_motion' => ['levels' => ['user'], 'type' => 'bool', 'default' => false,   // off = follow the device setting (prefers-reduced-motion is always honoured)
+            'req' => 'REQ-0373'],
+            'a11y.table_density' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['comfortable', 'compact'], 'default' => 'comfortable', 'req' => 'REQ-0373'],
             'a11y.landing_page' => ['levels' => ['user'], 'type' => 'string', 'default' => null, 'req' => 'REQ-0373'],
 
             // د) Notifications — REQ-0353…REQ-0361
@@ -61,7 +62,8 @@ final class SettingsRegistry
             'notifications.events' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0355'],
             'notifications.mandatory' => ['levels' => ['subscriber'], 'type' => 'list', 'default' => null, 'req' => 'REQ-0356'],
             'notifications.quiet_hours' => ['levels' => ['subscriber'], 'type' => 'time_range', 'default' => ['start' => '22:00', 'end' => '08:00'], 'req' => 'REQ-0357'],
-            'notifications.daily_digest' => ['levels' => ['user'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0358'],
+            'notifications.daily_digest' => ['levels' => ['user'], 'type' => 'bool', 'default' => false,   // opt-in; sent 07:00 Riyadh (Q10)
+            'req' => 'REQ-0358'],
 
             // و) Subscriber operational & financial settings — REQ-0365…REQ-0372
             'finance.fiscal_year_start_month' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 12, 'default' => 1, 'req' => 'REQ-0366'],
@@ -76,11 +78,12 @@ final class SettingsRegistry
             'maintenance.response_hours' => ['levels' => ['subscriber', 'property'], 'type' => 'object', 'default' => ['emergency' => 2, 'urgent' => 24, 'normal' => 72], 'req' => 'REQ-0368, REQ-0325'],
             'maintenance.owner_approval_cap' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 0, 'default' => null, 'req' => 'REQ-0368'],
             'maintenance.inventory_interval_months' => ['levels' => ['subscriber', 'property'], 'type' => 'object', 'default' => ['unfurnished' => 12, 'furnished' => 6], 'pending' => 'PENDING-D9', 'req' => 'REQ-0368, REQ-0651'],
+            'waitlist.long_threshold' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 1000, 'default' => 3, 'decision' => 'Q15 settled 2026-11-23', 'req' => 'REQ-0409'],
             'waitlist.confirm_interval_days' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 3650, 'default' => 60, 'req' => 'REQ-0369, REQ-0405'],
             'waitlist.probable_visibility' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['public', 'registered_only'], 'default' => 'registered_only', 'pending' => 'PENDING-D8', 'req' => 'REQ-0369, REQ-0650'],
             'security.two_factor_roles' => ['levels' => ['subscriber'], 'type' => 'list', 'default' => ['manager', 'owner', 'institutional_owner'], 'lockable' => true, 'req' => 'REQ-0370, REQ-0506'],
-            'security.session_minutes' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 5, 'max' => 10080, 'default' => null, 'req' => 'REQ-0370'],
-            'security.password_policy' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0370'],
+            'security.session_minutes' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 5, 'max' => 10080, 'default' => 120, 'decision' => 'Q10 settled 2026-11-23: idle timeout', 'req' => 'REQ-0370'],
+            'security.password_policy' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => ['min_length' => 12], 'decision' => 'Q10 settled 2026-11-23', 'req' => 'REQ-0370'],
             'security.dual_approval' => ['levels' => ['subscriber'], 'type' => 'bool', 'default' => true, 'pending' => 'PENDING-D10', 'req' => 'REQ-0069, REQ-0370, REQ-0652'],
             // Launch gates (REQ-0508 penetration test before launch).
             'launch.penetration_test_passed' => ['levels' => ['platform'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0508'],

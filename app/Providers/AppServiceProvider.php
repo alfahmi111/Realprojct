@@ -59,5 +59,16 @@ class AppServiceProvider extends ServiceProvider
         // Each queued job starts with an empty tenant context; tenant jobs set their own (TenantAware jobs).
         Queue::before(fn () => app(TenantContext::class)->clear());
         Queue::after(fn () => app(TenantContext::class)->clear());
+
+        // Password policy per subscriber (REQ-0370; Q10 settled 2026-11-23: at least 12 characters by default).
+        \Illuminate\Validation\Rules\Password::defaults(function () {
+            $min = 12;
+            try {
+                $min = max(8, (int) (app(\App\Settings\Settings::class)->get('security.password_policy')['min_length'] ?? 12));
+            } catch (\Throwable) {
+                // no tenant context (console, platform): keep the platform default
+            }
+            return \Illuminate\Validation\Rules\Password::min($min);
+        });
     }
 }

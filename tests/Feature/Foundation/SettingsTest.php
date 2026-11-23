@@ -150,6 +150,15 @@ class SettingsTest extends TestCase
         $this->assertSame(60, $d('waitlist.confirm_interval_days'));           // REQ-0369
         $this->assertSame(['start' => '22:00', 'end' => '08:00'], $d('notifications.quiet_hours'));  // REQ-0357
         $this->assertSame('withaq', $d('platform.default_theme'));             // decision 11 settled by the owner (2026-11-22)
-        $this->assertNull($d('security.session_minutes'));                     // not in spec → question
+        // Q10 settled by the owner (2026-11-23):
+        $this->assertSame(120, $d('security.session_minutes'));                // REQ-0370
+        $this->assertSame(['min_length' => 12], $d('security.password_policy')); // REQ-0370
+        $this->assertSame('abbreviation', $d('numbers.currency_display'));    // REQ-0364 (ر.س)
+        $this->assertSame('normal', $d('a11y.font_size'));                   // REQ-0373
+        $this->assertSame('comfortable', $d('a11y.table_density'));          // REQ-0373
+        $this->assertFalse($d('a11y.high_contrast'));
+        $this->assertFalse($d('a11y.reduce_motion'));
+        $this->assertFalse($d('notifications.daily_digest'));
+        $this->assertSame(3, $d('waitlist.long_threshold'));                     // REQ-0409, Q15
     }
 }

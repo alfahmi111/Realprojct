@@ -96,7 +96,7 @@ class DemoSeeder extends Seeder
                 continue;
             }
             foreach ($lease->scheduleLines()->where('due_on', '<=', $today->toDateString())->get() as $line) {
-                $invoice = $inv->issueRent($line, $today);   // VAT rate row is effective from 2026-11-22 (Q18)
+                $invoice = $inv->issueRent($line, $today);   // VAT 15% from 2020-07-01 (Q18 settled)
                 if ($i % 4 !== 1) {
                     $pay->record($lease->tenant, $invoice->total_minor, 'mada', CarbonImmutable::parse($line->due_on)->addDays(3), 'manager', $accountant);
                 }
