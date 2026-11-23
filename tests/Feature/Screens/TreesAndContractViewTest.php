@@ -40,6 +40,7 @@ class TreesAndContractViewTest extends TestCase
         $w = app(BuildingWizard::class);
         $o = Owner::create(['kind' => 'individual', 'name_ar' => 'سعد المالك', 'national_id' => '1000000001']);
         $this->p = $w->createProperty(Portfolio::create(['name_ar' => 'م']), ['name_ar' => 'عمارة السلام', 'deed_number' => '3101'], [['owner' => $o, 'numerator' => 1, 'denominator' => 1]], 'residential_building');
+        $w->createAgreement($o, [$this->p], ['fee_type' => 'percentage', 'fee_percentage_bp' => 500, 'collector' => 'manager', 'starts_on' => '2026-01-01']);
         $w->generate($this->p, ['name_ar' => 'A', 'floors' => [['number' => 1, 'units' => [['type' => 'apartment', 'count' => 2]]], ['number' => 2, 'units' => [['type' => 'apartment', 'count' => 1]]]]]);
         $w->setPrice(LeasableUnit::where('code', '102')->first(), 'year', Money::parse('45000'));
         $ls = app(LeasingService::class);
@@ -97,6 +98,34 @@ class TreesAndContractViewTest extends TestCase
             $this->assertStringContainsString($n, $html, $n);
         }
         $this->assertSame(4, substr_count($html, 'يوماً<small class="wq-sub">'));   // four quarterly lines in the schedule
+    }
+
+    /** Redesigned pages (owner request 2026-11-23) render their key content in Arabic, without raw English enums. */
+    public function test_req_0315_redesigned_pages_render_key_content(): void
+    {
+        $this->actingAs($this->manager);
+        $pages = [
+            '/manage/inbox' => ['صندوق المهام', 'بانتظار قرارك', 'بلاغات صيانة جديدة', 'متأخرات مصعّدة إليك'],
+            '/manage/kpis' => ['مؤشرات الأداء', 'الإشغال الفعلي', 'التحصيل', 'أعمار الذمم', 'هذا الربع'],
+            '/manage/availability' => ['تقويم الإتاحة', 'خالد المستأجر', '90 يوماً', 'اضغط على أي فترة شاغرة'],
+            '/manage/quick-migration' => ['الانتقال السريع', 'ارفع الملف', 'راجع الحقول', 'عقد إيجار PDF'],
+            '/manage/properties' => ['العقارات', 'عمارة السلام', 'سعد المالك', 'الإيجار السنوي'],
+            '/manage/tenants' => ['المستأجرون', 'خالد المستأجر', 'لهم عقد ساري', 'الوحدة 101', 'واتساب'],
+            '/manage/owner-statement' => ['كشف حساب المالك', 'سعد المالك', 'صافي المحوَّل للمالك'],
+            '/manage/invoices' => ['الفواتير'],
+            '/manage/payments' => ['الدفعات وسندات القبض'],
+        ];
+        $missing = [];
+        foreach ($pages as $url => $needles) {
+            $html = $this->get($url)->assertOk()->getContent();
+            foreach ($needles as $n) {
+                if (! str_contains($html, $n)) {
+                    $missing[] = $url . ' : ' . $n;
+                }
+            }
+        }
+        $this->assertSame([], $missing);
+        $this->assertStringNotContainsString('>individual<', $this->get('/manage/tenants')->getContent());
     }
 
     public function test_owner_request_scheduled_payments_show_property_and_tenant(): void

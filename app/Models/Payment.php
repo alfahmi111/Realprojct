@@ -22,7 +22,12 @@ class Payment extends Model
 
     protected $attributes = ['status' => 'recorded'];
 
-    public function allocations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function allocations():\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PaymentAllocation::class);
     }

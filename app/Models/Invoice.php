@@ -27,7 +27,17 @@ class Invoice extends Model
         return $this->hasMany(InvoiceLine::class);
     }
 
-    public function allocations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function property(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function allocations():\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PaymentAllocation::class);
     }

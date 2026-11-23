@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(Settings::class);
         $this->app->singleton(DateService::class);
         $this->app->scoped(\App\Plans\ReadOnlyGuard::class);
+        $this->app->scoped(\App\Dashboards\TenantProfiles::class);   // computed once per request for the tenants table
 
         $this->registerIntegrations();
 

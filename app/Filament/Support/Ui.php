@@ -53,7 +53,9 @@ final class Ui
     {
         try {
             $result = $fn();
-            Notification::make()->title($success)->success()->send();
+            if ($success !== '') {   // '' = quiet (e.g. a report refreshed as the user changes a filter)
+                Notification::make()->title($success)->success()->send();
+            }
             return $result;
         } catch (Throwable $e) {
             if ($e instanceof \Illuminate\Validation\ValidationException) {

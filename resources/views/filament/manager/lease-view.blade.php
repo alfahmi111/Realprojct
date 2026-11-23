@@ -63,7 +63,8 @@
                 <div><dt>{{ $l->tenant->kind === 'company' ? 'السجل التجاري' : 'رقم الهوية' }}</dt><dd>{{ $v($l->tenant->kind === 'company' ? $l->tenant->commercial_registration : $l->tenant->national_id) }}</dd></div>
                 <div><dt>الجوال</dt><dd dir="ltr">{{ $v($l->tenant->phone) }}</dd></div>
                 <div><dt>البريد الإلكتروني</dt><dd>{{ $v($l->tenant->email) }}</dd></div>
-                <div class="wq-wide"><dt>العنوان الوطني</dt><dd>{{ $v($l->tenant->national_address) }}</dd></div>
+                @php($na = $l->tenant->national_address)
+                <div class="wq-wide"><dt>العنوان الوطني</dt><dd>{{ $v(is_array($na) ? implode('، ', array_filter(array_map('strval', $na), fn ($x) => $x !== '')) : $na) }}</dd></div>
             </dl>
         </section>
     </div>
@@ -76,7 +77,8 @@
                 <div><dt>رقم الصك</dt><dd>{{ $v($c['property']->deed_number) }}</dd></div>
                 <div><dt>رقم العقار في إيجار</dt><dd>{{ $v($c['property']->ejar_property_number) }}</dd></div>
                 <div><dt>رقم التسجيل العيني</dt><dd>{{ $v($c['property']->real_estate_registry_number) }}</dd></div>
-                <div class="wq-wide"><dt>العنوان الوطني</dt><dd>{{ $v($c['property']->national_address) }}</dd></div>
+                @php($pa = $c['property']->national_address)
+                <div class="wq-wide"><dt>العنوان الوطني</dt><dd>{{ $v(is_array($pa) ? implode('، ', array_filter(array_map('strval', $pa), fn ($x) => $x !== '')) : $pa) }}</dd></div>
             </dl>
         </section>
         <section class="wq-sheet" aria-labelledby="s5">

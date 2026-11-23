@@ -71,13 +71,49 @@ class TenantResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+        $p = fn (Tenant $t) => app(\App\Dashboards\TenantProfiles::class)->all()[$t->id] ?? [];
+        $base = fn () => filament()->getCurrentPanel()->getUrl();
+        $wa = fn (?string $phone) => $phone ? 'https://wa.me/' . preg_replace('/\D/', '', $phone) : null;
+        return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->orderBy('name_ar'))
             ->columns([
-                TextColumn::make('name_ar')->label('الاسم')->searchable(),
-                TextColumn::make('kind')->label('النوع'),
-                TextColumn::make('phone')->label('الجوال'),
+                TextColumn::make('name_ar')->label('المستأجر')->searchable(['name_ar', 'phone', 'national_id', 'commercial_registration'])->weight('bold')
+                    ->description(fn (Tenant $t) => $t->kind === 'company' ? 'منشأة' . ($t->commercial_registration ? '، سجل ' . $t->commercial_registration : '') : 'فرد'),
+                TextColumn::make('unit')->label('يسكن الآن')->state(fn (Tenant $t) => ($x = $p($t)) && $x['unit'] ? 'الوحدة ' . $x['unit'] : null)
+                    ->description(fn (Tenant $t) => $p($t)['property'] ?? null)->placeholder('بلا عقد ساري')
+                    ->url(fn (Tenant $t) => ($id = $p($t)['lease_id'] ?? null) ? $base() . '/leases/' . $id : null),
+                TextColumn::make('ends')->label('ينتهي العقد')->state(fn (Tenant $t) => $p($t)['days_left'] ?? null)->badge()->placeholder('—')
+                    ->formatStateUsing(fn ($state) => $state < 0 ? 'انتهى' : 'بعد ' . $state . ' يوماً')
+                    ->color(fn ($state) => $state === null ? 'gray' : ($state <= 30 ? 'danger' : ($state <= 90 ? 'warning' : 'gray')))
+                    ->description(fn (Tenant $t) => ($p($t)['ends_on'] ?? null)?->format('Y-m-d')),
+                TextColumn::make('outstanding')->label('المستحق عليه')->state(fn (Tenant $t) => $p($t)['outstanding'] ?? 0)
+                    ->formatStateUsing(fn ($state) => (int) $state > 0 ? \App\Support\Dates\NumberFormatter::money((int) $state) : 'لا شيء')
+                    ->color(fn ($state) => (int) $state > 0 ? 'danger' : 'success')
+                    ->description(fn (Tenant $t) => ($n = $p($t)['overdue'] ?? 0) ? ($n === 1 ? 'فاتورة متأخرة' : $n . ' فواتير متأخرة') : null),
+                TextColumn::make('history')->label('عقوده')->state(fn (Tenant $t) => $p($t)['leases'] ?? 0)->alignCenter()->toggleable(),
+                TextColumn::make('phone')->label('التواصل')->placeholder('لا جوال')->icon(Heroicon::OutlinedPhone)
+                    ->url(fn (Tenant $t) => $t->phone ? 'tel:+' . preg_replace('/\D/', '', $t->phone) : null)->extraAttributes(['dir' => 'ltr'])
+                    ->description(fn (Tenant $t) => $t->email),
             ])
-            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('state')->label('الحال')
+                    ->options(['active' => 'لهم عقد ساري', 'none' => 'بلا عقد ساري', 'arrears' => 'عليهم مستحقات', 'ending' => 'تنتهي عقودهم خلال 90 يوماً'])
+                    ->query(function ($query, array $data) {
+                        $all = collect(app(\App\Dashboards\TenantProfiles::class)->all());
+                        $ids = match ($data['value'] ?? null) {
+                            'active' => $all->whereNotNull('lease_id')->keys(),
+                            'none' => $all->whereNull('lease_id')->keys(),
+                            'arrears' => $all->where('outstanding', '>', 0)->keys(),
+                            'ending' => $all->filter(fn ($x) => $x['days_left'] !== null && $x['days_left'] <= 90)->keys(),
+                            default => null,
+                        };
+                        return $ids === null ? $query : $query->whereIn('id', $ids->all() ?: [0]);
+                    }),
+            ])
+            ->recordActions([
+                \Filament\Actions\Action::make('whatsapp')->label('واتساب')->icon(Heroicon::OutlinedChatBubbleLeftRight)->color('success')
+                    ->visible(fn (Tenant $t) => (bool) $t->phone)->url(fn (Tenant $t) => $wa($t->phone), shouldOpenInNewTab: true),
+                EditAction::make(), \App\Filament\Support\Ui::archive(),
+            ]);
     }
 
     public static function getPages(): array
