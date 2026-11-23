@@ -34,6 +34,8 @@ class PropertyResource extends Resource
     }
     protected static ?string $model = Property::class;
 
+    protected static ?string $recordTitleAttribute = 'name_ar';   // global search in the header
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;
 
     protected static string|UnitEnum|null $navigationGroup = 'العقارات';

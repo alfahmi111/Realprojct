@@ -39,6 +39,8 @@ class LeasableUnitResource extends Resource
     }
     protected static ?string $model = LeasableUnit::class;
 
+    protected static ?string $recordTitleAttribute = 'code';   // global search in the header
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
     protected static string|UnitEnum|null $navigationGroup = 'العقارات';

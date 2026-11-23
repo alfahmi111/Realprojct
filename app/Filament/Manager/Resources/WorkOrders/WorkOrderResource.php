@@ -40,6 +40,8 @@ class WorkOrderResource extends Resource
     }
     protected static ?string $model = WorkOrder::class;
 
+    protected static ?string $recordTitleAttribute = 'number';   // global search in the header
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrench;
 
     protected static string|UnitEnum|null $navigationGroup = 'الصيانة';

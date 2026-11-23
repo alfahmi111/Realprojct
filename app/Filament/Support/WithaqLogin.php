@@ -26,6 +26,22 @@ class WithaqLogin extends Login
         }
     }
 
+    public function getHeading(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return 'أهلاً بك';
+    }
+
+    public function getSubheading(): string|\Illuminate\Contracts\Support\Htmlable|null
+    {
+        return match (Filament::getCurrentPanel()?->getId()) {
+            'owner' => 'سجّل الدخول لترى كشف حسابك وطلبات الموافقة.',
+            'tenant' => 'سجّل الدخول لعقدك وفواتيرك وبلاغاتك.',
+            'technician' => 'سجّل الدخول لمهامك اليوم.',
+            'platform' => 'دخول إدارة المنصة.',
+            default => 'سجّل الدخول لمتابعة عمل مكتبك.',
+        };
+    }
+
     public function authenticate(): ?LoginResponse
     {
         try {

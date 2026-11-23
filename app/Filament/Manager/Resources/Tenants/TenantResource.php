@@ -33,6 +33,8 @@ class TenantResource extends Resource
     }
     protected static ?string $model = Tenant::class;
 
+    protected static ?string $recordTitleAttribute = 'name_ar';   // global search in the header
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static string|UnitEnum|null $navigationGroup = 'التأجير';

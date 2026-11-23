@@ -32,6 +32,8 @@ class InvoiceResource extends Resource
     }
     protected static ?string $model = Invoice::class;
 
+    protected static ?string $recordTitleAttribute = 'number';   // global search in the header
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
     protected static string|UnitEnum|null $navigationGroup = 'المالية';

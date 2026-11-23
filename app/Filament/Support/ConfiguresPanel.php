@@ -55,6 +55,13 @@ trait ConfiguresPanel
                 ['css' => app(ThemeService::class)->css()],
             ))
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('brand.preferences'))
+            // Header: whose workspace (beside the logo), then today's date, quick "new" and the task bell (before the user menu).
+            ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn () => view('brand.topbar-identity'))
+            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, fn () => view('brand.topbar-tools'))
+            ->globalSearchKeyBindings(['mod+k'])
+            ->globalSearchFieldSuffix(fn () => 'Ctrl K')
+            // Caps Lock warning on every password field (sign-in, temporary passwords, profile).
+            ->renderHook(PanelsRenderHook::BODY_END, fn () => view('brand.capslock'))
             // Subscription notice for the office's own staff (Q24): ending soon, grace period, read-only.
             ->renderHook(PanelsRenderHook::CONTENT_START, fn () => view('brand.subscription-notice'))
             ->pages([MyPreferencesPage::class])
