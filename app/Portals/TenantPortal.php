@@ -106,7 +106,8 @@ class TenantPortal
     {
         $lease = $this->currentLease($this->tenantOf($user));
         $building = $lease?->unit->spaces->first()->building_id;
-        return Announcement::where(fn ($q) => $q->whereNull('building_id')->orWhere('building_id', $building))->orderByDesc('published_at')->get(['title_ar', 'body_ar', 'published_at'])->toArray();
+        return Announcement::visibleTo($building ? (int) $building : null, $lease?->leasable_unit_id ? (int) $lease->leasable_unit_id : null)
+            ->orderByDesc('published_at')->get(['title_ar', 'body_ar', 'published_at', 'expires_at'])->toArray();
     }
 
     /** نقل العدادات — guidance to the meter-transfer service Ejar provides at registration (REQ-0280). */
