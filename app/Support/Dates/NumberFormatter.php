@@ -32,12 +32,48 @@ final class NumberFormatter
         if ($digits === 'eastern') {
             $text = strtr(self::digits($text, 'eastern'), [',' => '٬', '.' => '٫']);
         }
+        if ($neg) {
+            $text = "\u{2066}{$text}\u{2069}";   // LRI…PDI isolate: the minus stays at the start of the number inside Arabic text
+        }
         $symbol = self::currencySymbol($money->currency(), $currencyDisplay);
         return $symbol === null ? $text : "$text $symbol";
     }
 
     /**
-     * Currency display (setting numbers.currency_display): symbol (﷼ as written in spec 7.6هـ) | abbreviation (ر.س) | code.
+     * An amount for the signed-in user's screen, in their own digits and currency display (REQ-0363, REQ-0364).
+     * In Arabic text the number comes first in reading order, so the sign appears to its left with a space, as the
+     * Saudi Central Bank's usage guide requires.
+     */
+    public static function money(Money|int|null $money, ?int $userId = null): string
+    {
+        if ($money === null) {
+            return '—';
+        }
+        [$digits, $display] = self::preferences($userId);
+        return self::amount($money instanceof Money ? $money : Money::of($money), $digits, $display);
+    }
+
+    /** The currency mark alone, for field suffixes and labels ("سعر الوحدة (⃁)"). */
+    public static function currencyLabel(?int $userId = null): string
+    {
+        return self::currencySymbol('SAR', self::preferences($userId)[1]) ?? 'SAR';
+    }
+
+    private static function preferences(?int $userId): array
+    {
+        $userId ??= auth()->id();
+        try {
+            $settings = app(\App\Settings\Settings::class);
+            return [$settings->get('numbers.digits', $userId) ?? 'western', $settings->get('numbers.currency_display', $userId) ?? 'symbol'];
+        } catch (\Throwable) {
+            return ['western', 'symbol'];
+        }
+    }
+
+    /**
+     * Currency display (setting numbers.currency_display): symbol = the official Saudi riyal sign U+20C1 (Unicode 17,
+     * Saudi Central Bank 2025-02-20; the platform ships its glyph: public/fonts/saudi-riyal.ttf, built by tools/build_riyal_font.php) | abbreviation (ر.س) | code.
+     * Not U+FDFC "﷼": that is an old compatibility character that renders the word «ریال», not the sign.
      * Gulf currencies are shown by ISO code until the expansion phase (REQ-0364).
      */
     public static function currencySymbol(string $currency, string $display): ?string
@@ -46,7 +82,7 @@ final class NumberFormatter
             return $currency;
         }
         return match ($display) {
-            'symbol' => '﷼',
+            'symbol' => "\u{20C1}",
             'abbreviation' => 'ر.س',
             'code' => 'SAR',
             'none' => null,

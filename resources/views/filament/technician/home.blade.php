@@ -54,7 +54,7 @@
                             </div>
                             <div class="wq-row">
                                 <label class="wq-field" style="flex:0 1 90px"><span>الكمية</span><input class="wq-input" wire:model="cost.quantity" type="number" min="1" inputmode="numeric"></label>
-                                <label class="wq-field"><span>سعر الوحدة (ر.س)</span><input class="wq-input" wire:model="cost.unit_cost" placeholder="0.00" inputmode="decimal"></label>
+                                <label class="wq-field"><span>سعر الوحدة ({{ \App\Support\Dates\NumberFormatter::currencyLabel() }})</span><input class="wq-input" wire:model="cost.unit_cost" placeholder="0.00" inputmode="decimal"></label>
                                 <x-filament::button color="gray" icon="heroicon-m-plus" wire:click="addCost({{ $o['id'] }})">إضافة</x-filament::button>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                             <div class="wq-fact"><span>الأصل</span><strong>{{ $scanned['asset']['name_ar'] }}</strong></div>
                             <div class="wq-fact"><span>الطراز</span><strong>{{ trim($scanned['asset']['brand'] . ' ' . $scanned['asset']['model']) ?: '—' }}</strong></div>
                             <div class="wq-fact"><span>الحالة</span><strong>{{ $scanned['asset']['condition'] }}/5</strong></div>
-                            <div class="wq-fact"><span>تكلفة الإصلاحات التراكمية</span><strong>{{ $scanned['cumulative'] }} ر.س</strong></div>
+                            <div class="wq-fact"><span>تكلفة الإصلاحات التراكمية</span><strong>{{ $scanned['cumulative'] }}</strong></div>
                         </div>
                     @endif
                 </form>

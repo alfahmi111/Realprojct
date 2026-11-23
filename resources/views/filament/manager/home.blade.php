@@ -1,6 +1,6 @@
 @php
     $pct = fn (int $bp) => intdiv($bp, 100);
-    $money = fn ($m) => \App\Support\Dates\NumberFormatter::amount($m, 'western', 'abbreviation');
+    $money = fn ($m) => \App\Support\Dates\NumberFormatter::money($m);
     $statusLabels = ['paid' => 'مؤجرة ومسددة', 'late' => 'عليها متأخرات', 'vacant' => 'شاغرة', 'maint' => 'تحت الصيانة', 'soon' => 'ستشغر'];
 @endphp
 <x-filament-panels::page class="wq-home">

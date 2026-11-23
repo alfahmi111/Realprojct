@@ -47,7 +47,7 @@ final class SettingsRegistry
             'locale.interface' => ['levels' => $u, 'type' => 'enum', 'options' => ['ar', 'en'], 'default' => 'ar', 'req' => 'REQ-0362, REQ-0490'],
             'locale.messages' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['ar', 'en'], 'default' => null, 'req' => 'REQ-0362'],
             'numbers.digits' => ['levels' => $u, 'type' => 'enum', 'options' => ['western', 'eastern'], 'default' => 'western', 'req' => 'REQ-0363'],
-            'numbers.currency_display' => ['levels' => $u, 'type' => 'enum', 'options' => ['symbol', 'abbreviation'], 'default' => 'abbreviation', 'decision' => 'Q10 settled 2026-11-23', 'req' => 'REQ-0364'],
+            'numbers.currency_display' => ['levels' => $u, 'type' => 'enum', 'options' => ['symbol', 'abbreviation'], 'default' => 'symbol', 'decision' => 'Q10 amended by the owner 2026-11-23: the official riyal sign U+20C1', 'req' => 'REQ-0364'],
 
             // ز) Accessibility — REQ-0373
             'a11y.font_size' => ['levels' => ['user'], 'type' => 'enum', 'options' => ['normal', 'large', 'larger'], 'default' => 'normal', 'req' => 'REQ-0373'],

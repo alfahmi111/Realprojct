@@ -6,7 +6,7 @@
     <title>{{ $page['building_ar'] }} — {{ $page['publisher_ar'] }}</title>
     <link rel="stylesheet" href="{{ asset('fonts/fonts.css') }}"><style>{!! app(\App\Theming\ThemeService::class)->css() !!} body{font-family:'Tajawal','Cairo',sans-serif;background:var(--color-bg)!important;color:var(--color-ink)!important} h1,h2{font-family:'Cairo',sans-serif;color:var(--color-deep,var(--color-ink))} button{background:var(--color-primary);color:var(--color-on-primary,#fff);border:0;border-radius:10px;font-weight:700;cursor:pointer} .card{border-radius:14px!important;border-color:var(--color-line)!important;background:var(--color-surface)!important}</style>
     <style>
-        body { font-family: system-ui, sans-serif; margin: 0; background: #FBF7F2; color: #2A1E17; }
+        body { font-family: 'Tajawal', 'Cairo', sans-serif; margin: 0; background: #FBF7F2; color: #2A1E17; }
         main { max-width: 720px; margin: 0 auto; padding: 16px; }
         .license { font-weight: 700; padding: 8px 12px; border: 2px solid currentColor; display: inline-block; border-radius: 8px; }
         .card { background: #fff; border: 1px solid #E8DDD2; border-radius: 10px; padding: 12px; margin: 8px 0; }
@@ -34,7 +34,7 @@
         @forelse ($page['vacant'] as $u)
             <div class="card"><span class="vacant">شاغر</span> {{ $u['code'] }} — {{ \App\Properties\UnitTypes::get($u['type'])['ar'] }}
                 @if ($u['area_sqm']) — {{ $u['area_sqm'] }} م² @endif
-                @if ($u['annual_price']) — {{ $u['annual_price'] }} ر.س سنوياً @endif
+                @if ($u['annual_price']) — {{ \App\Support\Dates\NumberFormatter::money(\App\Support\Money\Money::parse($u['annual_price'])) }} سنوياً @endif
             </div>
         @empty
             <p>لا توجد وحدات شاغرة الآن.</p>
@@ -56,7 +56,7 @@
             <label>الجوال <input name="phone" required maxlength="30"></label>
             <label>البريد الإلكتروني <input name="email" type="email"></label>
             <label>نوع الوحدة <input name="unit_type" maxlength="30"></label>
-            <label>الميزانية السنوية (ر.س) <input name="budget" inputmode="decimal"></label>
+            <label>الميزانية السنوية ({{ \App\Support\Dates\NumberFormatter::currencyLabel() }})<input name="budget" inputmode="decimal"></label>
             <label>الشهر المطلوب <input name="desired_month" type="month"></label>
             <label><input type="checkbox" name="consent" value="1" required style="width:auto">
                 أوافق على استخدام بياناتي للتواصل بشأن الوحدات في هذا المبنى فقط، وأعلم أنها تُحذف إن لم أؤكد اهتمامي دورياً، ولي حق طلب حذفها.</label>

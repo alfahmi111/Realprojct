@@ -72,7 +72,7 @@ class LeaseResource extends Resource
                 TextEntry::make('unit.code')->label('الوحدة'), TextEntry::make('tenant.name_ar')->label('المستأجر'),
                 TextEntry::make('status')->label('الحالة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge(),
                 TextEntry::make('ejar_contract_number')->label('رقم عقد إيجار'), TextEntry::make('starts_on')->label('البداية')->date(), TextEntry::make('ends_on')->label('النهاية')->date(),
-                TextEntry::make('annual_rent_minor')->label('الإيجار السنوي')->formatStateUsing(fn ($state) => $state->toDecimalString() . ' ر.س'),
+                TextEntry::make('annual_rent_minor')->label('الإيجار السنوي')->formatStateUsing(fn ($state) => \App\Support\Dates\NumberFormatter::money($state)),
                 TextEntry::make('notice')->label('موعد مهلة الإشعار')->state(fn (Lease $r) => app(LeasingService::class)->noticeDeadline($r)->toDateString()),
             ])->columns(4),
             Section::make('جدول الدفعات')->schema([

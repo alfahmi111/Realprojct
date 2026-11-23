@@ -60,7 +60,7 @@ class MyPreferencesPage extends Page
                 Select::make('date__display')->label('عرض التاريخ')->options(['both_hijri_first' => 'كلاهما — الهجري أولاً', 'both_gregorian_first' => 'كلاهما — الميلادي أولاً', 'hijri' => 'هجري', 'gregorian' => 'ميلادي'])->disabled($l('date.display')),
                 Select::make('locale__interface')->label('اللغة')->options(['ar' => 'العربية', 'en' => 'English'])->disabled($l('locale.interface')),
                 Select::make('numbers__digits')->label('الأرقام')->options(['western' => '1 2 3', 'eastern' => '١ ٢ ٣'])->disabled($l('numbers.digits')),
-                Select::make('numbers__currency_display')->label('عرض العملة')->options(['symbol' => '﷼', 'abbreviation' => 'ر.س'])->disabled($l('numbers.currency_display')),
+                Select::make('numbers__currency_display')->label('عرض العملة')->options(['symbol' => "رمز الريال الرسمي (⃁)", 'abbreviation' => 'الاختصار (ر.س)'])->disabled($l('numbers.currency_display')),
             ])->columns(3),
             Section::make('إمكانية الوصول')->schema([
                 Select::make('a11y__font_size')->label('حجم الخط')->options(['normal' => 'عادي', 'large' => 'كبير', 'larger' => 'أكبر']),

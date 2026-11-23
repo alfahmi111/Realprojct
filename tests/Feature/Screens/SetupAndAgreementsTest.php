@@ -80,7 +80,7 @@ class SetupAndAgreementsTest extends TestCase
         $this->assertSame(25000, $a->fee_fixed_minor->minor());
         $this->assertSame(100000, $a->spend_cap_minor->minor());
         $this->assertSame([$p->id], $a->properties->pluck('id')->all());
-        $this->assertSame('7.50% + ' . \App\Support\Dates\NumberFormatter::amount($a->fee_fixed_minor, 'western', 'abbreviation'), AgreementsRelationManager::feeText($a));
+        $this->assertSame('7.50% + ' . \App\Support\Dates\NumberFormatter::money($a->fee_fixed_minor), AgreementsRelationManager::feeText($a));
         $this->assertTrue(collect(app(HomeOverview::class)->setupSteps($this->manager))->firstWhere('key', 'agreement')['done']);
     }
 

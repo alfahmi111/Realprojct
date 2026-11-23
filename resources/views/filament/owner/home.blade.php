@@ -1,5 +1,5 @@
 @php
-    $sar = fn ($m) => \App\Support\Dates\NumberFormatter::amount($m, 'western', 'abbreviation');
+    $sar = fn ($m) => \App\Support\Dates\NumberFormatter::money($m);
     $collected = $statement ? max(1, $statement['collected_rent']->minor()) : 1;
     $share = fn ($m) => min(100, round($m->minor() * 100 / $collected, 1)) . '%';
 @endphp

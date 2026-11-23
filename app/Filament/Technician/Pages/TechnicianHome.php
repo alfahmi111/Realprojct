@@ -104,7 +104,7 @@ class TechnicianHome extends Page
     {
         $r = Ui::attempt(fn () => app(TechnicianApp::class)->scan(auth()->user(), trim($this->scan)), 'تم المسح');
         // Livewire state must be plain values: money is kept as a decimal string.
-        $this->scanned = $r ? ['asset' => array_map(fn ($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v, $r['asset']), 'cumulative' => $r['history']['cumulative_cost']->toDecimalString()] : null;
+        $this->scanned = $r ? ['asset' => array_map(fn ($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v, $r['asset']), 'cumulative' => \App\Support\Dates\NumberFormatter::money($r['history']['cumulative_cost'])] : null;
     }
 
     public function startCount(): void

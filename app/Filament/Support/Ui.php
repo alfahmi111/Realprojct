@@ -19,7 +19,7 @@ final class Ui
     {
         return TextInput::make($name)->label($label)
             ->regex('/^\d{1,12}(\.\d{1,2})?$/')
-            ->suffix('ر.س')
+            ->suffix(fn () => NumberFormatter::currencyLabel())
             ->formatStateUsing(fn ($state) => $state instanceof Money ? $state->toDecimalString() : ($state === null ? null : Money::of((int) $state)->toDecimalString()))
             ->dehydrateStateUsing(fn ($state) => $state === null || $state === '' ? null : Money::parse((string) $state)->minor());
     }
@@ -27,7 +27,7 @@ final class Ui
     public static function moneyColumn(string $name, string $label): TextColumn
     {
         return TextColumn::make($name)->label($label)
-            ->formatStateUsing(fn ($state) => $state instanceof Money ? NumberFormatter::amount($state, 'western', 'abbreviation') : ($state === null ? '—' : NumberFormatter::amount(Money::of((int) $state), 'western', 'abbreviation')));
+            ->formatStateUsing(fn ($state) => NumberFormatter::money($state instanceof Money ? $state : ($state === null ? null : (int) $state)));
     }
 
     /** Archive (never delete) — hidden once archived. */

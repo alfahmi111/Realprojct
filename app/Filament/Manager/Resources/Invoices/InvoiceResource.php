@@ -57,7 +57,7 @@ class InvoiceResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        $m = fn ($v) => $v->toDecimalString() . ' ر.س';
+        $m = fn ($v) => \App\Support\Dates\NumberFormatter::money($v);
         return $schema->components([
             Section::make('الفاتورة')->schema([
                 TextEntry::make('number')->label('الرقم'), TextEntry::make('issue_date')->label('التاريخ')->date(), TextEntry::make('status')->label('الحالة')->badge(),

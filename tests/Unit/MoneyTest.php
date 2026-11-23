@@ -123,10 +123,41 @@ class MoneyTest extends TestCase
         $m = Money::parse('1250.50');
         $this->assertSame('1,250.50 SAR', NumberFormatter::amount($m));
         $this->assertSame('1,250.50 ر.س', NumberFormatter::amount($m, 'western', 'abbreviation'));
-        $this->assertSame('1,250.50 ﷼', NumberFormatter::amount($m, 'western', 'symbol'));
+        // The official Saudi riyal sign U+20C1 — not U+FDFC "﷼", which renders the word «ریال».
+        $this->assertSame("1,250.50 \u{20C1}", NumberFormatter::amount($m, 'western', 'symbol'));
+        $this->assertStringNotContainsString("\u{FDFC}", NumberFormatter::amount($m, 'western', 'symbol'));
         $this->assertSame('١٬٢٥٠٫٥٠ ر.س', NumberFormatter::amount($m, 'eastern', 'abbreviation'));
-        $this->assertSame('-0.05 SAR', NumberFormatter::amount(Money::of(-5)));
+        // A negative number is isolated so the minus stays at its start inside Arabic text; the sign stays to its left.
+        $this->assertSame("\u{2066}-0.05\u{2069} SAR", NumberFormatter::amount(Money::of(-5)));
         $this->assertSame('1,000,000.00 SAR', NumberFormatter::amount(Money::parse('1000000')));
+    }
+
+    /** REQ-0364 — the platform ships the official sign's glyph and loads it for U+20C1 only, last in the font sheet. */
+    public function test_req_0364_the_riyal_sign_glyph_is_shipped_and_mapped(): void
+    {
+        $root = dirname(__DIR__, 2);   // plain PHPUnit test: no Laravel helpers
+        $ttf = (string) file_get_contents("$root/public/fonts/saudi-riyal.ttf");
+        $this->assertSame("\x00\x01\x00\x00", substr($ttf, 0, 4), 'TrueType header');
+        $tables = [];
+        $n = unpack('n', substr($ttf, 4, 2))[1];
+        for ($i = 0; $i < $n; $i++) {
+            $rec = substr($ttf, 12 + 16 * $i, 16);
+            $tables[substr($rec, 0, 4)] = unpack('Noff/Nlen', substr($rec, 8, 8));
+        }
+        foreach (['cmap', 'glyf', 'head', 'hhea', 'hmtx', 'loca', 'maxp', 'name', 'OS/2', 'post'] as $t) {
+            $this->assertArrayHasKey($t, $tables, $t);
+        }
+        $cmap = substr($ttf, $tables['cmap']['off'], $tables['cmap']['len']);
+        $this->assertStringContainsString(pack('n2', 0x20C1, 0xFFFF), $cmap, 'format-4 segment for U+20C1');
+        $this->assertGreaterThan(100, $tables['glyf']['len'], 'the sign has an outline');
+
+        $css = (string) file_get_contents("$root/public/fonts/fonts.css");
+        $last = substr($css, strrpos($css, '@font-face', -1) - 400);
+        $this->assertStringContainsString("src: url('saudi-riyal.ttf')", $last);
+        $this->assertStringContainsString('unicode-range: U+20C1;', $last);
+        foreach (['Tajawal', 'Cairo'] as $family) {
+            $this->assertMatchesRegularExpression("/font-family: '$family';[^}]*saudi-riyal\.ttf[^}]*U\+20C1;/", $css, $family);
+        }
     }
 
     /** REQ-0363 — digits conversion both ways. */

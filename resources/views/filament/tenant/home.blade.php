@@ -1,5 +1,5 @@
 @php
-    $sar = fn ($m) => \App\Support\Dates\NumberFormatter::amount($m, 'western', 'abbreviation');
+    $sar = fn ($m) => \App\Support\Dates\NumberFormatter::money($m);
     $statusAr = \App\Filament\Manager\Resources\WorkOrders\WorkOrderResource::STATUS_AR;
     $tone = ['completed' => 'wq-s-paid', 'closed' => 'wq-s-paid', 'in_progress' => 'wq-s-maint', 'assigned' => 'wq-s-maint', 'confirmed' => 'wq-s-paid', 'reported' => 'wq-s-soon', 'triaged' => 'wq-s-soon', 'estimated' => 'wq-s-soon', 'awaiting_owner_approval' => 'wq-s-vacant', 'rejected' => 'wq-s-late'];
     $due = collect($invoices)->filter(fn ($i) => $i['outstanding']->isPositive());

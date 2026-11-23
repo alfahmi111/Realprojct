@@ -94,7 +94,7 @@ class AgreementsRelationManager extends RelationManager
             return 'بلا أتعاب (المالك هو المدير)';
         }
         $pct = intdiv($a->fee_percentage_bp, 100) . ($a->fee_percentage_bp % 100 ? '.' . str_pad((string) ($a->fee_percentage_bp % 100), 2, '0', STR_PAD_LEFT) : '') . '%';
-        $fixed = \App\Support\Dates\NumberFormatter::amount($a->fee_fixed_minor, 'western', 'abbreviation');
+        $fixed = \App\Support\Dates\NumberFormatter::money($a->fee_fixed_minor);
         return match ($a->fee_type) {
             'percentage' => $pct,
             'fixed' => $fixed,

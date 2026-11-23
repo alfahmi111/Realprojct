@@ -153,7 +153,7 @@ class SettingsTest extends TestCase
         // Q10 settled by the owner (2026-11-23):
         $this->assertSame(120, $d('security.session_minutes'));                // REQ-0370
         $this->assertSame(['min_length' => 12], $d('security.password_policy')); // REQ-0370
-        $this->assertSame('abbreviation', $d('numbers.currency_display'));    // REQ-0364 (ر.س)
+        $this->assertSame('symbol', $d('numbers.currency_display'));          // REQ-0364: the official riyal sign U+20C1 (owner 2026-11-23)
         $this->assertSame('normal', $d('a11y.font_size'));                   // REQ-0373
         $this->assertSame('comfortable', $d('a11y.table_density'));          // REQ-0373
         $this->assertFalse($d('a11y.high_contrast'));

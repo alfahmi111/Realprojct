@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     @php($bp = fn ($v) => $v === null ? '—' : number_format(intdiv($v, 100)) . '.' . str_pad((string) ($v % 100), 2, '0', STR_PAD_LEFT) . '%')
-    @php($m = fn ($v) => $v === null ? '—' : \App\Support\Dates\NumberFormatter::amount($v, 'western', 'abbreviation'))
+    @php($m = fn ($v) => \App\Support\Dates\NumberFormatter::money($v))
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
         <x-filament::section heading="نسبة الإشغال الفعلية">{{ $bp($kpis['physical_occupancy_bp']) }}</x-filament::section>
         <x-filament::section heading="نسبة الإشغال المالية">{{ $bp($kpis['financial_occupancy_bp']) }}</x-filament::section>
