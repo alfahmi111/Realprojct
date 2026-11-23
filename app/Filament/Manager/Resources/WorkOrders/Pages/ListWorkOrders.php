@@ -16,11 +16,11 @@ class ListWorkOrders extends ListRecords
     {
         $counts = WorkOrder::selectRaw('status, count(*) n')->groupBy('status')->pluck('n', 'status');
         $tabs = ['open' => Tab::make('المفتوحة')->badge($counts->except(['closed', 'rejected'])->sum() ?: null)
-            ->modifyQueryUsing(fn ($q) => $q->whereNotIn('status', ['closed', 'rejected']))];
+            ->modifyQueryUsing(fn ($query) => $query->whereNotIn('status', ['closed', 'rejected']))];
         foreach (WorkOrderResource::STAGES as $key => $stage) {
             $n = $counts->only($stage['statuses'])->sum();
             $tabs[$key] = Tab::make($stage['label'])->badge($n ?: null)->badgeColor($key === 'triage' ? 'danger' : ($key === 'owner' ? 'warning' : 'gray'))
-                ->modifyQueryUsing(fn ($q) => $q->whereIn('status', $stage['statuses']));
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', $stage['statuses']));
         }
         return $tabs + ['all' => Tab::make('الكل')];
     }

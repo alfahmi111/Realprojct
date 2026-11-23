@@ -16,7 +16,7 @@
         </div>
         <div class="wq-contract-stamp">
             <span class="wq-chip {{ $w->status === 'reported' ? 'wq-s-late' : (in_array($w->status, ['completed', 'confirmed', 'closed'], true) ? 'wq-st-active' : 'wq-st-draft') }}">{{ $R::STATUS_AR[$w->status] ?? $w->status }}</span>
-            <strong>{{ $R::TYPE_AR[$w->type] ?? $w->type }}@if ($w->priority)، {{ $R::PRIORITY_AR[$w->priority] }}@endif</strong>
+            <strong>{{ $R::TYPE_AR[$w->type] ?? $w->type }}@if ($w->priority && ! ($w->priority === 'emergency' && $w->type === 'emergency'))، {{ $R::PRIORITY_AR[$w->priority] }}@endif</strong>
             <small>{{ $w->reported_at?->format('Y-m-d H:i') }}</small>
         </div>
     </header>
