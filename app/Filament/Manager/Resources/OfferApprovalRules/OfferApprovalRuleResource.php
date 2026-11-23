@@ -63,10 +63,11 @@ class OfferApprovalRuleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('لا قواعد اعتماد بعد')->emptyStateDescription('حدّد من يعتمد عرض التأجير إذا تجاوز الخصم نسبة معينة. دون قواعد تُعتمد العروض مباشرة.')
             ->columns([
                 TextColumn::make('step')->label('الخطوة'),
-                TextColumn::make('approver_role')->label('الدور'),
-                TextColumn::make('min_discount_bp')->label('الخصم الأدنى (bp)'),
+                TextColumn::make('approver_role')->label('المعتمِد')->formatStateUsing(fn ($state) => \App\Authorization\Role::tryFrom($state)?->labelAr() ?? $state),
+                TextColumn::make('min_discount_bp')->label('يُطلب عند خصم من')->formatStateUsing(fn ($state) => rtrim(rtrim(number_format($state / 100, 2), '0'), '.') . '%'),
             ])
             ->recordActions([EditAction::make(), ]);
     }

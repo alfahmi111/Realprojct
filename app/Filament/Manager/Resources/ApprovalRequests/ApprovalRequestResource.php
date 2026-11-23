@@ -61,11 +61,12 @@ class ApprovalRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->with('maker')->latest())
+            ->emptyStateHeading('لا قيود تنتظر المراجعة')->emptyStateDescription('إلغاء فاتورة أو تعديل دفعة أو صرف من الأمانات يدخله موظف ويعتمده موظف آخر. ما ينتظر اعتمادك يظهر هنا.')
             ->columns([
                 TextColumn::make('action')->label('الإجراء')->formatStateUsing(fn ($state) => self::ACTIONS_AR[$state] ?? $state),
                 TextColumn::make('maker.name')->label('المُدخِل'),
-                TextColumn::make('payload')->label('التفاصيل')->formatStateUsing(fn ($state) => json_encode($state, JSON_UNESCAPED_UNICODE))->limit(80),
-                TextColumn::make('status')->label('الحالة')->badge(), TextColumn::make('created_at')->label('التاريخ')->dateTime(),
+                TextColumn::make('payload')->label('التفاصيل')->formatStateUsing(fn ($state) => \App\Filament\Support\Ui::details((array) $state))->wrap(),
+                TextColumn::make('status')->label('الحالة')->badge()->formatStateUsing(fn ($state) => ['pending' => 'بانتظار المراجِع', 'approved' => 'معتمد', 'rejected' => 'مرفوض'][$state] ?? $state)->color(fn ($state) => ['pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger'][$state] ?? 'gray'), TextColumn::make('created_at')->label('التاريخ')->dateTime(),
             ])
             ->filters([SelectFilter::make('status')->label('الحالة')->options(['pending' => 'معلّق', 'approved' => 'معتمد', 'rejected' => 'مرفوض'])->default('pending')])
             ->recordActions([

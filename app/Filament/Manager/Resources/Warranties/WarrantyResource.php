@@ -68,10 +68,11 @@ class WarrantyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+            ->emptyStateHeading('لا ضمانات ولا عقود صيانة بعد')->emptyStateDescription('سجّل ضمان المصنّع أو عقد الصيانة السنوي لكل جهاز، فيُوجَّه البلاغ عن الجهاز المضمون إلى جهة الضمان تلقائياً وتصلك تذكرة قبل انتهائه.')
             ->columns([
                 TextColumn::make('scope_ar')->label('النطاق'),
-                TextColumn::make('kind')->label('النوع'),
-                TextColumn::make('ends_on')->label('ينتهي')->date()->sortable(),
+                TextColumn::make('kind')->label('النوع')->badge()->color('gray')->formatStateUsing(fn ($state) => ['manufacturer' => 'ضمان المصنّع', 'supplier' => 'ضمان المورّد', 'annual_contract' => 'عقد صيانة سنوي'][$state] ?? $state),
+                TextColumn::make('ends_on')->label('ينتهي')->date('Y-m-d')->sortable()->badge()->color(fn ($state) => $state < now() ? 'gray' : ($state < now()->addDays(60) ? 'warning' : 'success'))->description(fn ($record) => $record->ends_on < now() ? 'انتهى' : 'باقٍ ' . (int) now()->diffInDays($record->ends_on) . ' يوماً'),
             ])
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }

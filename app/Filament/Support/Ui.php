@@ -34,6 +34,38 @@ final class Ui
             ->helperText('تظهر في الرئيسية وصفحة العقار ومحتوى المبنى. JPG أو PNG حتى 4 ميغابايت.');
     }
 
+    /** Key → Arabic label for the details stored with approvals and reconciliation issues. */
+    public const DETAIL_KEYS = [
+        'invoice_id' => 'الفاتورة', 'payment_id' => 'الدفعة', 'owner_id' => 'المالك', 'lease_id' => 'العقد', 'reason' => 'السبب',
+        'amount' => 'المبلغ', 'amount_minor' => 'المبلغ', 'due_on' => 'الاستحقاق', 'number' => 'الرقم', 'invoice' => 'مبلغ الفاتورة',
+        'schedule' => 'مبلغ الجدول', 'receipt' => 'السند', 'unallocated' => 'غير المخصص', 'ejar' => 'الحالة في إيجار', 'ours' => 'الحالة عندنا',
+    ];
+
+    /**
+     * Stored details as one readable Arabic line: «المالك: عبدالله الشهري، المبلغ: 1,500.00». Ids of owners, invoices,
+     * payments and leases are shown by name or number; *_minor amounts as money. Unknown keys keep their name.
+     */
+    public static function details(?array $d): string
+    {
+        if (! $d) {
+            return '—';
+        }
+        $out = [];
+        foreach ($d as $k => $v) {
+            $val = match ($k) {
+                'owner_id' => \App\Models\Owner::find($v)?->name_ar ?? '#' . $v,
+                'invoice_id' => \App\Models\Invoice::find($v)?->number ?? '#' . $v,
+                'payment_id' => \App\Models\Payment::find($v)?->receipt_number ?? '#' . $v,
+                'lease_id' => ($l = \App\Models\Lease::with('unit')->find($v)) ? 'الوحدة ' . $l->unit?->code . ($l->ejar_contract_number ? ' (' . $l->ejar_contract_number . ')' : '') : '#' . $v,
+                'amount_minor' => \App\Support\Dates\NumberFormatter::money((int) $v),
+                'ejar', 'ours' => \App\Filament\Manager\Resources\Leases\LeaseResource::STATUS_AR[$v] ?? $v,
+                default => is_scalar($v) ? (string) $v : json_encode($v, JSON_UNESCAPED_UNICODE),
+            };
+            $out[] = (self::DETAIL_KEYS[$k] ?? str_replace('_', ' ', (string) $k)) . ': ' . $val;
+        }
+        return implode('، ', $out);
+    }
+
     public static function moneyColumn(string $name, string $label): TextColumn
     {
         return TextColumn::make($name)->label($label)

@@ -66,10 +66,11 @@ class PpmPlanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at'))
+            ->emptyStateHeading('لا خطط صيانة وقائية بعد')->emptyStateDescription('أنشئ خطة لعمل يتكرر (تنظيف فلاتر المكيفات كل ثلاثة أشهر مثلاً)، فيُنشئ النظام أمر العمل في موعده دون متابعة منك.')
             ->columns([
                 TextColumn::make('title_ar')->label('العمل'),
-                TextColumn::make('every_months')->label('كل (شهر)'),
-                TextColumn::make('next_due_on')->label('القادم')->date()->sortable(),
+                TextColumn::make('every_months')->label('التكرار')->formatStateUsing(fn ($state) => [1 => 'شهرياً', 2 => 'كل شهرين', 3 => 'كل ثلاثة أشهر', 6 => 'كل ستة أشهر', 12 => 'سنوياً'][(int) $state] ?? 'كل ' . $state . ' أشهر'),
+                TextColumn::make('next_due_on')->label('الموعد القادم')->date('Y-m-d')->sortable()->badge()->color(fn ($state) => $state < now() ? 'danger' : ($state < now()->addDays(14) ? 'warning' : 'gray')),
             ])
             ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
     }
