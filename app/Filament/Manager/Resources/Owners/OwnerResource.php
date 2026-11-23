@@ -91,8 +91,8 @@ class OwnerResource extends Resource
                 TextColumn::make('fee')->label('أتعاب الإدارة')->placeholder('لا عقد إدارة ساري')
                     ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->fee_type === 'percentage' ? rtrim(rtrim(number_format($a->fee_percentage_bp / 100, 2), '0'), '.') . '%' : $money($a->fee_fixed_minor)) : null)
                     ->description(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->collector === 'manager' ? 'المكتب يحصّل' : 'المالك يحصّل') : null),
-                TextColumn::make('cap')->label('سقف الصرف دون موافقته')->placeholder('—')
-                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) && $a->spend_cap_minor ? $money($a->spend_cap_minor) : null),
+                TextColumn::make('cap')->label('موافقته على الصرف')->placeholder('—')
+                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? RelationManagers\AgreementsRelationManager::ruleText($a->spend_cap_minor) : null),
                 TextColumn::make('net')->label('صافي الشهر الماضي')->placeholder('—')
                     ->state(fn (\App\Models\Owner $o) => ($n = $net($o)) ? $money($n) : null)
                     ->url(fn () => \App\Filament\Manager\Pages\OwnerStatementPage::getUrl()),

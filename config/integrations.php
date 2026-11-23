@@ -17,4 +17,5 @@ return [
     'yaqeen' => env('INTEGRATION_YAQEEN', 'none'),
     'wathq' => env('INTEGRATION_WATHQ', 'none'),
     'sadad' => env('INTEGRATION_SADAD', 'none'),
+    'national_address' => env('INTEGRATION_NATIONAL_ADDRESS', 'none'),   // SPL (REQ-0448)
 ];

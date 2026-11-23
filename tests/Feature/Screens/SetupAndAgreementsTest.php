@@ -41,12 +41,12 @@ class SetupAndAgreementsTest extends TestCase
     public function test_req_0315_a_new_office_sees_its_setup_steps_until_they_are_done(): void
     {
         $steps = collect(app(HomeOverview::class)->setupSteps($this->manager))->keyBy('key');
-        $this->assertSame(['settings', 'owner', 'property', 'agreement', 'team', 'lease'], $steps->keys()->all());
+        $this->assertSame(['settings', 'identity', 'official', 'owner', 'property', 'agreement', 'team', 'lease'], $steps->keys()->all());
         $this->assertFalse($steps->contains('done', true));
 
         $html = $this->actingAs($this->manager)->get('/manage')->assertOk()->getContent();
         $this->assertStringContainsString('جهّز مكتبك للعمل', $html);
-        $this->assertStringContainsString('0 من 6 خطوات', $html);
+        $this->assertStringContainsString('0 من 8 خطوات', $html);
 
         $owner = Owner::create(['kind' => 'individual', 'name_ar' => 'مالك']);
         app(BuildingWizard::class)->createProperty(Portfolio::create(['name_ar' => 'أ']), ['name_ar' => 'عمارة'], [['owner' => $owner, 'numerator' => 1, 'denominator' => 1]], 'residential_building');
@@ -54,7 +54,7 @@ class SetupAndAgreementsTest extends TestCase
         $this->assertTrue($steps['owner']['done']);
         $this->assertTrue($steps['property']['done']);
         $this->assertFalse($steps['agreement']['done']);
-        $this->assertStringContainsString('2 من 6 خطوات', $this->actingAs($this->manager)->get('/manage')->getContent());
+        $this->assertStringContainsString('2 من 8 خطوات', $this->actingAs($this->manager)->get('/manage')->getContent());
     }
 
     public function test_req_0315_a_technician_never_sees_office_setup_steps(): void

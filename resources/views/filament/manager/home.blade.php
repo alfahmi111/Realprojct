@@ -27,6 +27,7 @@
         </div>
     </section>
 
+
     {{-- First-run setup: shown until every step the user may do is done --}}
     @php($setupDone = collect($setup)->where('done', true)->count())
     @if (count($setup) && $setupDone < count($setup))

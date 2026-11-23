@@ -55,10 +55,14 @@ class AgreementsRelationManager extends RelationManager
             Ui::money('fee_fixed_minor', 'المبلغ الثابت')->required()
                 ->helperText('يُحتسب كل فترة حسب إعدادات المكتب (شهر، 3 أشهر، 6 أشهر، سنة)')
                 ->visible(fn (Get $get) => ! $get('is_self') && in_array($get('fee_type'), ['fixed', 'mixed'], true)),
-            Ui::money('spend_cap_minor', 'سقف الصرف دون موافقة المالك')->helperText('اتركه فارغاً إن لم يُتفق على سقف؛ كل صرف يحتاج موافقة المالك'),
+            // owner request 2026-11-24: the owner decides whether spending needs his approval, and above what amount
+            \Filament\Forms\Components\Radio::make('approval_rule')->label('موافقة المالك على صرف الصيانة')->live()->default('up_to')->visible(fn (Get $get) => ! $get('is_self'))
+                ->options(['all' => 'كل صرف يحتاج موافقته', 'up_to' => 'يصرف المكتب حتى مبلغ محدد دون موافقته، وما فوقه بموافقته', 'none' => 'لا يشترط موافقته على الصرف'])
+                ->helperText('يحددها المالك ويُسجَّل اختياره في العقد. ما يحتاج موافقته يصله في واجهته ليوافق أو يرفض.'),
+            Ui::money('spend_cap_minor', 'المبلغ الذي يُصرف دون موافقته')->visible(fn (Get $get) => ! $get('is_self') && $get('approval_rule') === 'up_to')->required(fn (Get $get) => ! $get('is_self') && $get('approval_rule') === 'up_to'),
             Select::make('collector')->label('من يحصّل الإيجار')->options(self::COLLECTORS)->default('manager')->required(),
-            DatePicker::make('starts_on')->label('يبدأ في')->required()->native(true),
-            DatePicker::make('ends_on')->label('ينتهي في')->native(true)->afterOrEqual('starts_on')->helperText('فارغ = مفتوح المدة'),
+            DatePicker::make('starts_on')->label('يبدأ في')->required(),
+            DatePicker::make('ends_on')->label('ينتهي في')->afterOrEqual('starts_on')->helperText('فارغ = مفتوح المدة'),
             CheckboxList::make('property_ids')->label('العقارات المشمولة')->required()->columnSpanFull()
                 ->options(fn () => $this->ownerProperties())
                 ->helperText('العقارات التي يملك فيها هذا المالك حصة'),
@@ -74,7 +78,7 @@ class AgreementsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('fee')->label('الأتعاب')->state(fn (ManagementAgreement $r) => self::feeText($r)),
                 TextColumn::make('collector')->label('التحصيل')->formatStateUsing(fn ($state) => self::COLLECTORS[$state] ?? $state),
-                Ui::moneyColumn('spend_cap_minor', 'سقف الصرف'),
+                TextColumn::make('spend_cap_minor')->label('موافقة المالك على الصرف')->state(fn ($record) => self::ruleText($record->spend_cap_minor)),
                 TextColumn::make('properties.name_ar')->label('العقارات')->badge(),
                 TextColumn::make('starts_on')->label('من')->date('Y-m-d'),
                 TextColumn::make('ends_on')->label('إلى')->date('Y-m-d')->placeholder('مفتوح'),
@@ -122,10 +126,31 @@ class AgreementsRelationManager extends RelationManager
         $terms = [
             'is_self' => $self, 'fee_type' => $type, 'fee_percentage_bp' => $bp,
             'fee_fixed_minor' => ! $self && in_array($type, ['fixed', 'mixed'], true) ? (int) $data['fee_fixed_minor'] : 0,
-            'spend_cap_minor' => $data['spend_cap_minor'] ?? null, 'collector' => $data['collector'],
+            'spend_cap_minor' => $self ? null : self::cap($data), 'collector' => $data['collector'],
             'starts_on' => $data['starts_on'], 'ends_on' => $data['ends_on'] ?? null,
         ];
         $properties = Property::whereIn('id', array_keys($this->ownerProperties()))->whereIn('id', $data['property_ids'] ?? [])->get()->all();
         return app(BuildingWizard::class)->createAgreement($this->getOwnerRecord(), $properties, $terms);
+    }
+
+    /** all → 0 (every spend above zero needs approval); up_to → the amount; none → null (never). Matches MaintenanceService::estimate(). */
+    public static function cap(array $data): ?int
+    {
+        $rule = $data['approval_rule'] ?? (($data['spend_cap_minor'] ?? null) !== null && ($data['spend_cap_minor'] ?? '') !== '' ? 'up_to' : 'none');
+        return match ($rule) {
+            'all' => 0,
+            'up_to' => (int) ($data['spend_cap_minor'] ?? 0),
+            default => null,
+        };
+    }
+
+    public static function ruleText($cap): string
+    {
+        $m = $cap instanceof \App\Support\Money\Money ? $cap->minor() : $cap;
+        return match (true) {
+            $m === null => 'لا يشترط موافقته',
+            (int) $m === 0 => 'كل صرف بموافقته',
+            default => 'بموافقته فوق ' . \App\Support\Dates\NumberFormatter::money((int) $m),
+        };
     }
 }

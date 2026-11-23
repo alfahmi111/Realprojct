@@ -180,7 +180,7 @@ class IdentityVaultSadadTest extends TestCase
             $this->assertStringContainsString($n, $html, $n);
         }
         Tenant::create(['kind' => 'individual', 'name_ar' => 'خالد', 'national_id' => '1016860767']);
-        $this->assertStringContainsString('تحقّق', $this->get('/manage/tenants')->assertOk()->getContent());
+        \Livewire\Livewire::test(\App\Filament\Manager\Resources\Tenants\Pages\ListTenants::class)->set('mode', 'table')->assertSee('تحقّق');
         $this->assertStringContainsString('تحقّق من سجل المكتب عبر واثق', $this->get('/manage/subscriber-settings')->assertOk()->getContent());
     }
 }

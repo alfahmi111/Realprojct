@@ -238,6 +238,11 @@ class HomeOverview
         $steps = [
             ['key' => 'settings', 'perm' => 'settings.subscriber', 'url' => 'subscriber-settings', 'label' => 'راجع إعدادات المكتب', 'hint' => 'التسجيل الضريبي وطريقة تحصيل الأتعاب والتقويم',
                 'done' => DB::table('subscriber_settings')->exists()],
+            // office identity and official data (owner request 2026-11-24)
+            ['key' => 'identity', 'perm' => 'settings.subscriber', 'url' => 'subscriber-settings', 'label' => 'أضف شعار مكتبك', 'hint' => 'يظهر لموظفيك وملاكك ومستأجريك وفي صفحة المبنى',
+                'done' => (bool) app(\App\Settings\Settings::class)->get('theme.logo_light')],
+            ['key' => 'official', 'perm' => 'settings.subscriber', 'url' => 'subscriber-settings', 'label' => 'سجّل السجل التجاري ورخصة المكتب', 'hint' => 'يظهران في العقود، وينبّهك النظام قبل انتهاء الرخصة',
+                'done' => (bool) ($sub = app(\App\Tenancy\TenantContext::class)->run(null, fn () => \App\Models\Subscriber::find($user->subscriber_id))) && $sub->commercial_registration && $sub->license_no],
             ['key' => 'owner', 'perm' => 'properties.create', 'url' => 'owners/create', 'label' => 'أضف أول مالك', 'hint' => 'فرد أو ورثة أو شركة',
                 'done' => \App\Models\Owner::exists()],
             ['key' => 'property', 'perm' => 'properties.create', 'url' => 'add-building', 'label' => 'أضف أول عقار', 'hint' => 'المعالج يبني الأدوار والوحدات والأسعار',

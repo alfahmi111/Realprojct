@@ -411,3 +411,25 @@
 .wq-doclog h3 { margin: 6px 0 0; font-family: 'Cairo', sans-serif; font-size: .95rem; color: var(--color-deep, var(--color-ink)); }
 .wq-doclog ul { margin: 0; padding-inline-start: 18px; color: var(--color-ink); }
 .wq-doclog a { color: var(--color-primary); font-weight: 700; }
+
+/* Quick migration: template banner */
+.wq-template { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; max-width: none; }
+.wq-page button.wq-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; }
+
+/* Tenants tree */
+.wq-tenantlist { padding: 8px 14px 12px; }
+.wq-unitrow-main a strong { color: var(--color-primary); }
+.wq-owes { color: var(--status-late-fg) !important; }
+.wq-tl-group { padding: 10px 16px 6px; font-family: 'Cairo', sans-serif; font-weight: 700; color: var(--color-deep, var(--color-ink)); background: var(--color-soft); border-bottom: 1px solid var(--color-line); }
+
+/* Map picker and portfolio map (owner request 2026-11-24) */
+.wq-mappick { display: grid; gap: 8px; }
+.wq-mappick-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .85rem; color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.wq-mappick-map { height: 340px; border-radius: var(--wq-radius-md); border: 1px solid var(--color-line); z-index: 0; }
+.wq-mappick-msg { color: var(--status-soon-fg); }
+.wq-pmap { height: 460px; z-index: 0; }
+.wq-pmap-pop { font-family: 'Tajawal', sans-serif; direction: rtl; text-align: right; min-width: 170px; }
+.wq-pmap-pop strong { display: block; font-family: 'Cairo', sans-serif; font-size: .95rem; }
+.wq-pmap-pop a { color: var(--color-primary); font-weight: 700; }
+.wq-citygroup { margin: 8px 2px 0; font-family: 'Cairo', sans-serif; font-size: 1.15rem; color: var(--color-deep, var(--color-ink)); }
+.wq-citygroup small { font-family: 'Tajawal', sans-serif; font-size: .8rem; color: var(--color-muted); font-weight: 400; }

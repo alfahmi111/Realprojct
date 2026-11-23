@@ -38,7 +38,7 @@ class SubscriberSettingsPage extends Page
 
     public ?array $data = [];
 
-    private const KEYS = ['theme.preset', 'theme.custom_primary', 'date.documents', 'date.week_start', 'date.timezone', 'finance.fiscal_year_start_month', 'finance.vat_registered', 'finance.tax_period',
+    private const KEYS = ['theme.preset', 'theme.custom_primary', 'theme.logo_light', 'theme.logo_dark', 'date.documents', 'date.week_start', 'date.timezone', 'finance.fiscal_year_start_month', 'finance.vat_registered', 'finance.tax_period',
         'finance.fee.collection', 'finance.fee.percentage_basis', 'finance.fee.fixed_period', 'waitlist.long_threshold', 'security.session_minutes',
         'leasing.non_renewal_notice_days', 'leasing.renewal_survey_days', 'maintenance.owner_approval_cap', 'waitlist.confirm_interval_days', 'security.dual_approval', 'notifications.quiet_hours'];
 
@@ -119,9 +119,18 @@ class SubscriberSettingsPage extends Page
             Section::make('التكاملات')
                 ->description('حالة الربط بكل جهة خارجية. المزوّد الفعلي يُختار ويُربط بقرار من إدارة المنصة.')
                 ->schema([\Filament\Schemas\Components\View::make('filament.manager.integrations-status')->viewData(fn () => ['rows' => \App\Integrations\IntegrationStatus::all()])]),
-            Section::make('الهوية والسمة')->schema([
+            Section::make('هوية المكتب')->description('شعار مكتبك ولونه يظهران لموظفيك وملاكك ومستأجريك في كل الواجهات، وفي صفحة المبنى العامة. الشعار مربع أو أفقي، PNG أو SVG بخلفية شفافة.')->schema([
+                \Filament\Forms\Components\FileUpload::make('theme__logo_light')->label('الشعار')->image()->disk('local')->visibility('private')
+                    ->directory(fn () => 'branding/' . (auth()->user()?->subscriber_id ?? 'x'))->maxSize(1024)->acceptedFileTypes(['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'])
+                    ->helperText('حتى 1 ميغابايت.'),
+                \Filament\Forms\Components\FileUpload::make('theme__logo_dark')->label('الشعار للوضع الداكن (اختياري)')->image()->disk('local')->visibility('private')
+                    ->directory(fn () => 'branding/' . (auth()->user()?->subscriber_id ?? 'x'))->maxSize(1024)->acceptedFileTypes(['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'])
+                    ->helperText('إن تُرك يظهر الشعار العادي على خلفية فاتحة صغيرة.'),
+            ])->columns(2),
+            Section::make('السمة والألوان')->schema([
                 Select::make('theme__preset')->label('السمة الجاهزة')->options(['withaq' => 'وِثاق (الأساسية)', 'clay' => 'طين نجدي', 'ink' => 'حبر ونحاس', 'plum' => 'برقوق']),
-                TextInput::make('theme__custom_primary')->label('اللون الأساسي المخصص (#RRGGBB)')->regex('/^#[0-9A-Fa-f]{6}$/'),
+                \Filament\Forms\Components\ColorPicker::make('theme__custom_primary')->label('لون المكتب (اختياري)')->hex()->regex('/^#[0-9A-Fa-f]{6}$/')
+                    ->helperText('يحل محل لون السمة. يُرفض اللون الفاتح الذي لا يُقرأ عليه النص الأبيض.'),
             ])->columns(2),
             Section::make('التاريخ')->schema([
                 Select::make('date__documents')->label('التاريخ في المستندات الرسمية')->options(['hijri' => 'هجري', 'gregorian' => 'ميلادي', 'both' => 'كلاهما']),

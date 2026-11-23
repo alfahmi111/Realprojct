@@ -76,18 +76,26 @@ class AvailabilityPage extends Page
     protected function getViewData(): array
     {
         $properties = Property::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id');
-        $pid = $properties->has($this->property) ? $this->property : $properties->keys()->first();
+        // several properties (owner request 2026-11-24): «كل العقارات» by default, each property under its own heading
+        $pid = $properties->has($this->property) ? $this->property : ($properties->count() > 1 ? 0 : $properties->keys()->first());
         $span = $this->span();
         $start = $this->start();
         $end = $start->addDays($span - 1);
-        $grid = $pid ? app(LeasingService::class)->availability($pid, $start, $end) : [];
-        uksort($grid, fn ($a, $b) => strnatcmp((string) $a, (string) $b));
-        $leases = $pid ? Lease::whereIn('leasable_unit_id', collect($grid)->pluck('unit_id'))->whereNotIn('status', ['cancelled'])
+        $grid = [];
+        foreach ($pid === 0 ? $properties->keys()->all() : array_filter([$pid]) as $one) {
+            $part = app(LeasingService::class)->availability($one, $start, $end);
+            uksort($part, fn ($a, $b) => strnatcmp((string) $a, (string) $b));
+            foreach ($part as $code => $row) {
+                $grid[$one . '|' . $code] = $row + ['property_id' => $one, 'code' => $code];
+            }
+        }
+        $leases = $grid ? Lease::whereIn('leasable_unit_id', collect($grid)->pluck('unit_id'))->whereNotIn('status', ['cancelled'])
             ->where('starts_on', '<=', $end->toDateString())->where('ends_on', '>=', $start->toDateString())->with('tenant')->get()->groupBy('leasable_unit_id') : collect();
 
         $lanes = [];
         $totals = ['leased' => 0, 'vacant' => 0, 'held' => 0, 'maintenance' => 0];
-        foreach ($grid as $code => $row) {
+        foreach ($grid as $row) {
+            $code = $row['code'];
             $segs = [];
             $i = 0;
             foreach ($row['days'] as $day => $state) {
@@ -109,7 +117,7 @@ class AvailabilityPage extends Page
                 }
             }
             unset($s);
-            $lanes[] = ['code' => $code, 'unit_id' => $row['unit_id'], 'segs' => $segs, 'vacating' => $row['vacating']];
+            $lanes[] = ['code' => $code, 'unit_id' => $row['unit_id'], 'segs' => $segs, 'vacating' => $row['vacating'], 'property' => $properties[$row['property_id']] ?? ''];
         }
 
         // axis: month starts and week ticks inside the window

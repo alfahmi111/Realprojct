@@ -42,7 +42,7 @@ class FormsAndIntegrationsTest extends TestCase
         $this->assertSame('none', $rows['sms']['state']);
         $this->assertSame('live', $rows['whatsapp']['state']);
         $this->assertSame('none', $rows['nafath']['state']);   // P2 layer: not linked until a provider is chosen
-        $this->assertCount(11, $rows);
+        $this->assertCount(12, $rows);
     }
 
     public function test_q31_office_licence_alerts_managers_30_and_7_days_before_only(): void

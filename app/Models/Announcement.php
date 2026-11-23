@@ -16,11 +16,11 @@ class Announcement extends Model
 {
     use Auditable, BelongsToSubscriber;
 
-    protected $fillable = ['building_id', 'building_ids', 'excluded_unit_ids', 'title_ar', 'body_ar', 'published_at', 'expires_at'];
+    protected $fillable = ['building_id', 'building_ids', 'excluded_unit_ids', 'title_ar', 'body_ar', 'published_at', 'expires_at', 'attachments'];
 
     protected function casts(): array
     {
-        return ['published_at' => 'datetime', 'expires_at' => 'datetime', 'building_ids' => 'array', 'excluded_unit_ids' => 'array'];
+        return ['published_at' => 'datetime', 'expires_at' => 'datetime', 'building_ids' => 'array', 'excluded_unit_ids' => 'array', 'attachments' => 'array'];
     }
 
     /** Ids are stored as integers so JSON containment matches (forms send strings). */
