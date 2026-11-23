@@ -98,4 +98,38 @@ class DateServiceTest extends TestCase
         }
         $this->assertStringNotContainsString('hijri_correction', file_get_contents($ref->getFileName()) === false ? '' : preg_replace('#/\*.*?\*/#s', '', file_get_contents($ref->getFileName())));
     }
+    /** REQ-0345 — the anchors of the owner's previous system are reproduced, so the server is trusted to show Hijri. */
+    public function test_req_0345_umm_al_qura_anchors_from_the_previous_system_are_reproduced(): void
+    {
+        foreach (DateService::HIJRI_ANCHORS as $g => [$y, $m, $day]) {
+            $this->assertSame(['year' => $y, 'month' => $m, 'day' => $day], $this->d->hijriOfDate($g), $g);
+        }
+        $this->assertTrue($this->d->hijriTrusted());
+    }
+
+    /** REQ-0350 — a calendar date (lease end, due date) never slips a day whatever the office timezone. */
+    public function test_req_0350_calendar_date_does_not_slip_with_the_timezone(): void
+    {
+        $this->assertSame(['year' => 1448, 'month' => 6, 'day' => 13], $this->d->hijriOfDate('2026-11-23'));
+        $this->assertSame($this->d->formatDate('2026-11-23', 'hijri'), $this->d->formatDate(CarbonImmutable::parse('2026-11-23', 'America/New_York'), 'hijri'));
+        $this->assertStringContainsString('13 جمادى الآخرة 1448', $this->d->formatDate('2026-11-23', 'hijri'));
+    }
+
+    /** REQ-0656 — one API: every day for twenty years converts Gregorian → Hijri → Gregorian back to itself. */
+    public function test_req_0656_round_trip_is_exact_for_every_day_2015_to_2035(): void
+    {
+        for ($day = CarbonImmutable::parse('2015-01-01'); $day->year < 2036; $day = $day->addDay()) {
+            $h = $this->d->hijriOfDate($day);
+            $this->assertSame($day->toDateString(), $this->d->hijriToGregorian($h['year'], $h['month'], $h['day']));
+        }
+    }
+
+    /** REQ-0345 — browser and server must agree on a posted Hijri date, or nothing is saved (previous system's cross-check). */
+    public function test_req_0345_browser_and_server_hijri_must_agree(): void
+    {
+        $this->d->crossCheck('2026-11-23', '1448-06-13');
+        $this->d->crossCheck('2026-11-23', '');   // nothing posted: nothing compared
+        $this->expectException(\App\Support\Dates\HijriMismatchException::class);
+        $this->d->crossCheck('2026-11-23', '1448-06-12');
+    }
 }

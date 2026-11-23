@@ -53,6 +53,7 @@
 .wq-fall-minus .wq-fall-amt { color: var(--status-late-fg); }
 .wq-fall-bar { grid-column: 1 / -1; height: 6px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
 .wq-fall-bar span { display: block; height: 100%; width: var(--p); border-radius: inherit; background: var(--status-late-fg); opacity: .55; }
+.wq-fall-info .wq-fall-amt { color: var(--color-muted); font-weight: 600; }
 .wq-fall-in .wq-fall-bar span { background: var(--color-primary); opacity: 1; }
 .wq-fall-net { border-bottom: 0 !important; margin-top: 6px; padding: 16px 18px !important; border-radius: var(--wq-radius-lg);
     background: linear-gradient(120deg, var(--color-soft), transparent); border: 1px solid var(--color-line) !important; }

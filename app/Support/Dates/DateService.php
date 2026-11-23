@@ -21,6 +21,82 @@ final class DateService
 {
     public const HIJRI_CALENDAR = 'islamic-umalqura';
 
+    /**
+     * Umm al-Qura anchors (Gregorian => Hijri), taken from the owner's previous system (special-center-system,
+     * includes/helpers.php HIJRI_ANCHORS, verified against ICU). If the server's ICU does not reproduce them, it is
+     * not applying Umm al-Qura and no Hijri date is shown or printed — a dash instead of a wrong number.
+     */
+    public const HIJRI_ANCHORS = [
+        '2026-09-04' => [1448, 3, 22],
+        '2000-01-01' => [1420, 9, 24],
+        '2030-06-15' => [1452, 2, 13],
+    ];
+
+    private static ?bool $trusted = null;
+
+    private static string $untrustedReason = '';
+
+    /** Is ICU really applying Umm al-Qura on this server? Measured once per process against the anchors. */
+    public function hijriTrusted(?string &$reason = null): bool
+    {
+        if (self::$trusted === null) {
+            self::$trusted = true;
+            self::$untrustedReason = '';
+            if (! class_exists(IntlCalendar::class)) {
+                [self::$trusted, self::$untrustedReason] = [false, 'intl extension is missing'];
+            } else {
+                foreach (self::HIJRI_ANCHORS as $g => [$y, $m, $d]) {
+                    $got = $this->hijriOfDate($g);
+                    if ($got !== ['year' => $y, 'month' => $m, 'day' => $d]) {
+                        [self::$trusted, self::$untrustedReason] = [false, sprintf('Umm al-Qura anchor %s should be %04d-%02d-%02d, ICU gives %04d-%02d-%02d', $g, $y, $m, $d, $got['year'], $got['month'], $got['day'])];
+                        break;
+                    }
+                }
+            }
+            if (! self::$trusted) {
+                \Illuminate\Support\Facades\Log::warning('Hijri calendar not trusted: ' . self::$untrustedReason);
+            }
+        }
+        $reason = self::$untrustedReason;
+        return self::$trusted;
+    }
+
+    /**
+     * Hijri parts of a calendar DATE (no time), independent of any timezone. Converted at noon, as the previous
+     * system did, so a date never slips to the neighbouring day (e.g. a lease end date viewed from UTC−5).
+     */
+    public function hijriOfDate(DateTimeInterface|string $date): array
+    {
+        $ymd = $date instanceof DateTimeInterface ? $date->format('Y-m-d') : substr(trim($date), 0, 10);
+        return $this->hijriParts(CarbonImmutable::parse($ymd . ' 12:00:00', 'UTC'), 'UTC');
+    }
+
+    /**
+     * When a form posts both a Gregorian date and the Hijri the browser computed, they must agree; otherwise the
+     * operation stops and shows both values (previous system: hijriCrossCheck). Nothing is compared if one is empty.
+     *
+     * @throws HijriMismatchException
+     */
+    public function crossCheck(?string $gregorian, ?string $postedHijri): void
+    {
+        $g = trim((string) $gregorian);
+        $h = trim((string) $postedHijri);
+        if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $g) || ! preg_match('/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/', $h, $m)) {
+            return;
+        }
+        $server = $this->hijriOfDate($g);
+        if ($server !== ['year' => (int) $m[1], 'month' => (int) $m[2], 'day' => (int) $m[3]]) {
+            throw new HijriMismatchException(sprintf('تعارض في التاريخ: المتصفح يقول %s هـ والخادم يقول %04d-%02d-%02d هـ للتاريخ الميلادي %s. لم يُحفظ شيء؛ أعد تحميل الصفحة وحاول مرة أخرى.', $h, $server['year'], $server['month'], $server['day'], $g));
+        }
+    }
+
+    /** Display a calendar DATE (no time) — same modes as format(), never shifted by a timezone. */
+    public function formatDate(DateTimeInterface|string $date, string $mode, string $locale = 'ar', string $digits = 'western'): string
+    {
+        $ymd = $date instanceof DateTimeInterface ? $date->format('Y-m-d') : substr(trim($date), 0, 10);
+        return $this->format(CarbonImmutable::parse($ymd . ' 12:00:00', 'UTC'), $mode, 'UTC', $locale, $digits);
+    }
+
     /** Normalise any input to an immutable UTC instant — the only form that is stored or compared. */
     public function toUtc(DateTimeInterface|string $value, ?string $fromTimezone = null): CarbonImmutable
     {
@@ -68,7 +144,10 @@ final class DateService
     public function format(DateTimeInterface $instant, string $mode, string $timezone, string $locale = 'ar', string $digits = 'western', bool $withTime = false): string
     {
         $g = $this->formatCalendar($instant, 'gregorian', $timezone, $locale, $withTime);
-        $h = $this->formatCalendar($instant, self::HIJRI_CALENDAR, $timezone, $locale, $withTime) . ($locale === 'ar' ? ' هـ' : ' AH');
+        // A dash is visible; a wrong Hijri number looks right. Never print one the server cannot vouch for.
+        $h = $mode === 'gregorian' ? '' : ($this->hijriTrusted()
+            ? $this->formatCalendar($instant, self::HIJRI_CALENDAR, $timezone, $locale, $withTime) . ($locale === 'ar' ? ' هـ' : ' AH')
+            : '—');
         $text = match ($mode) {
             'hijri' => $h,
             'gregorian' => $g,

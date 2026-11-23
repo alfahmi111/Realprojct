@@ -100,8 +100,16 @@ class TrustAccounting
             $collectedNet = $collectedNet->plus($a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor())));
         }
 
-        $feePct = $agreement->fee_type === 'fixed' ? Money::zero() : $collectedNet->percentage($agreement->fee_percentage_bp);
-        $feeFixed = $agreement->fee_type === 'percentage' ? Money::zero() : $agreement->fee_fixed_minor;   // per statement month — QUESTIONS.md Q13
+        // Fee terms are office settings (owner's decision 2026-11-23): basis of the percentage, period of the fixed
+        // amount, and whether the fee is deducted from the owner's transfer or invoiced to the owner separately.
+        $basis = $this->settings->get('finance.fee.percentage_basis') ?? 'collected';
+        $period = $this->settings->get('finance.fee.fixed_period') ?? 'monthly';
+        $collection = $this->settings->get('finance.fee.collection') ?? 'deduct_from_remittance';
+        $base = $basis === 'due'
+            ? Money::sum(Invoice::where('seller_owner_id', $owner->id)->where('kind', 'rent')->where('status', 'issued')->whereBetween('issue_date', [$from, $to])->get()->map(fn ($i) => $i->subtotal_minor)->all())
+            : $collectedNet;
+        $feePct = $agreement->fee_type === 'fixed' ? Money::zero() : $base->percentage($agreement->fee_percentage_bp);
+        $feeFixed = $agreement->fee_type === 'percentage' || ! $this->fixedFeeDue($agreement, $month, $period) ? Money::zero() : $agreement->fee_fixed_minor;
         $fee = $feePct->plus($feeFixed);
         $managerRegistered = (bool) $this->settings->get('finance.vat_registered');
         $feeTreatment = $this->vat->treatment('management_fee', null, $managerRegistered, 'long', $month->endOfMonth());
@@ -114,11 +122,13 @@ class TrustAccounting
         $maintTotal = Money::sum($maintenance->pluck('amount')->all());
         $marginTotal = Money::sum($margins->pluck('amount')->all());
 
-        $net = $collectedGross->minus($fee)->minus($feeVat)->minus($maintTotal)->minus($marginTotal);
+        $deducted = $collection === 'deduct_from_remittance';
+        $net = $collectedGross->minus($deducted ? $fee->plus($feeVat) : Money::zero())->minus($maintTotal)->minus($marginTotal);
         return [
             'owner_id' => $owner->id, 'month' => $month->format('Y-m'),
             'collected_rent' => $collectedGross, 'collected_rent_net_of_vat' => $collectedNet,
-            'management_fee' => ['type' => $agreement->fee_type, 'percentage_bp' => $agreement->fee_percentage_bp, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code']],
+            'management_fee' => ['type' => $agreement->fee_type, 'percentage_bp' => $agreement->fee_percentage_bp, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
+                'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
             'vendor_margin' => $margins->all(), 'vendor_margin_total' => $marginTotal,
             'net_to_owner' => $net,
@@ -133,8 +143,10 @@ class TrustAccounting
             return;
         }
         $date = CarbonImmutable::parse($statement['month'] . '-01')->endOfMonth()->toDateString();
+        // Deducted from the transfer → charged against the owner's trust balance; invoiced separately → owed by the owner.
+        $debit = ($fee['deducted'] ?? true) ? "fee_expense:{$owner->id}" : "fee_receivable:{$owner->id}";
         $this->ledger->post($date, 'management_fee', 'أتعاب إدارة ' . $statement['month'], [
-            ["fee_expense:{$owner->id}", $fee['amount']->plus($fee['vat']), null],
+            [$debit, $fee['amount']->plus($fee['vat']), null],
             ['manager_revenue', null, $fee['amount']],
             ['vat_payable:manager', null, $fee['vat']],
         ], null, $owner->id);
@@ -155,6 +167,15 @@ class TrustAccounting
     public function managerRevenue(string $from, string $to): Money
     {
         return $this->ledger->movements('manager_revenue', $from, $to)['credit'];
+    }
+
+    /** The fixed fee is charged once per period, counted from the agreement's start month (monthly = every month). */
+    private function fixedFeeDue(ManagementAgreement $agreement, CarbonImmutable $month, string $period): bool
+    {
+        $every = ['monthly' => 1, 'quarterly' => 3, 'semiannual' => 6, 'annual' => 12][$period] ?? 1;
+        $start = CarbonImmutable::parse($agreement->starts_on)->startOfMonth();
+        $elapsed = ($month->year - $start->year) * 12 + ($month->month - $start->month);
+        return $elapsed >= 0 && $elapsed % $every === 0;
     }
 
     private function monthKeys(CarbonImmutable $from, CarbonImmutable $to): array

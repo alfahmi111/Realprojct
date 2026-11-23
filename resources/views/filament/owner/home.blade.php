@@ -44,16 +44,25 @@
                         <span class="wq-fall-amt">{{ $sar($statement['collected_rent']) }}</span>
                         <span class="wq-fall-bar"><span style="--p:100%"></span></span>
                     </li>
-                    <li class="wq-fall-minus">
-                        <span class="wq-fall-label">أتعاب الإدارة <small>{{ intdiv($statement['management_fee']['percentage_bp'], 100) }}.{{ str_pad((string) ($statement['management_fee']['percentage_bp'] % 100), 2, '0', STR_PAD_LEFT) }}% حسب عقد الإدارة</small></span>
-                        <span class="wq-fall-amt">− {{ $sar($statement['management_fee']['amount']) }}</span>
-                        <span class="wq-fall-bar"><span style="--p:{{ $share($statement['management_fee']['amount']) }}"></span></span>
-                    </li>
-                    <li class="wq-fall-minus">
-                        <span class="wq-fall-label">ضريبة الأتعاب</span>
-                        <span class="wq-fall-amt">− {{ $sar($statement['management_fee']['vat']) }}</span>
-                        <span class="wq-fall-bar"><span style="--p:{{ $share($statement['management_fee']['vat']) }}"></span></span>
-                    </li>
+                    @php($fee = $statement['management_fee'])
+                    @php($feeNote = intdiv($fee['percentage_bp'], 100) . '.' . str_pad((string) ($fee['percentage_bp'] % 100), 2, '0', STR_PAD_LEFT) . '% من ' . (($fee['basis'] ?? 'collected') === 'due' ? 'الإيجار المستحق' : 'المحصَّل') . ' حسب عقد الإدارة')
+                    @if ($fee['deducted'] ?? true)
+                        <li class="wq-fall-minus">
+                            <span class="wq-fall-label">أتعاب الإدارة <small>{{ $feeNote }}</small></span>
+                            <span class="wq-fall-amt">− {{ $sar($fee['amount']) }}</span>
+                            <span class="wq-fall-bar"><span style="--p:{{ $share($fee['amount']) }}"></span></span>
+                        </li>
+                        <li class="wq-fall-minus">
+                            <span class="wq-fall-label">ضريبة الأتعاب</span>
+                            <span class="wq-fall-amt">− {{ $sar($fee['vat']) }}</span>
+                            <span class="wq-fall-bar"><span style="--p:{{ $share($fee['vat']) }}"></span></span>
+                        </li>
+                    @else
+                        <li class="wq-fall-info">
+                            <span class="wq-fall-label">أتعاب الإدارة <small>{{ $feeNote }} — تصلك بفاتورة منفصلة ولا تُخصم من هذا المبلغ</small></span>
+                            <span class="wq-fall-amt">{{ $sar($fee['amount']->plus($fee['vat'])) }}</span>
+                        </li>
+                    @endif
                     @foreach ($statement['maintenance'] as $m)
                         <li class="wq-fall-minus">
                             <span class="wq-fall-label">صيانة: {{ $m['description'] }} <small>{{ $m['work_order'] ?? '' }} · {{ $m['date'] ?? '' }}</small></span>

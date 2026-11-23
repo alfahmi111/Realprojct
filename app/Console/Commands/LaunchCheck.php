@@ -21,6 +21,9 @@ class LaunchCheck extends Command
     public function handle(ThemeService $themes, Settings $settings): int
     {
         $problems = $themes->launchProblems();
+        if (! app(\App\Support\Dates\DateService::class)->hijriTrusted($why)) {
+            $problems[] = "Hijri calendar is not Umm al-Qura on this server ($why) — REQ-0345";
+        }
         if ($settings->get('launch.penetration_test_passed') !== true) {
             $problems[] = 'launch.penetration_test_passed is not set — a penetration test is required before launch (REQ-0508)';
         }

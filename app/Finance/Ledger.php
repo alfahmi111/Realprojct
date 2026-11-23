@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\DB;
  *   rent_income:{owner}        owner's recognised rent
  *   vat_payable:{party}        output VAT of the issuer (owner:{id} or manager)
  *   deposit_liability:{lease}  deposits are liabilities, not revenue (REQ-0189, REQ-0433)
- *   fee_expense:{owner}        manager fees charged to the owner
+ *   fee_expense:{owner}        manager fees deducted from the owner's transfer
+ *   fee_receivable:{owner}     manager fees invoiced to the owner separately (setting finance.fee.collection)
  *   expense_on_behalf:{owner}  maintenance and other costs paid for the owner
  *   manager_revenue            the manager's ONLY revenue: fees (REQ-0430)
  *   owner_payable:{owner}      net amounts transferred to the owner

@@ -242,6 +242,38 @@ class FinanceTest extends TestCase
         $this->assertSame(112500 + 5000, $ta->managerRevenue('2027-01-01', '2027-01-31')->minor());   // fees + margin only
     }
 
+    /** REQ-0066, REQ-0305 — fee terms are office settings (owner's decision 2026-11-23): basis, fixed period, collection. */
+    public function test_req_0066_fee_terms_follow_the_office_settings(): void
+    {
+        $s = app(Settings::class);
+        $ta = app(TrustAccounting::class);
+        $i = $this->inv()->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));
+        $jan = CarbonImmutable::parse('2027-01-01');
+        // Default: percentage of what was COLLECTED — nothing paid yet, no fee.
+        $this->assertSame(0, $ta->statement($this->owner, $jan)['management_fee']['amount']->minor());
+        // Office charges on rent DUE: the issued invoice counts even before payment.
+        $s->setSubscriber('finance.fee.percentage_basis', 'due');
+        $this->assertSame($i->subtotal_minor->percentage(750)->minor(), $ta->statement($this->owner, $jan)['management_fee']['amount']->minor());
+        $s->setSubscriber('finance.fee.percentage_basis', 'collected');
+
+        // Fixed amount every three months, counted from the agreement start (2027-01).
+        \App\Models\ManagementAgreement::where('owner_id', $this->owner->id)->first()->forceFill(['fee_type' => 'fixed', 'fee_percentage_bp' => 0, 'fee_fixed_minor' => 300000])->save();
+        $s->setSubscriber('finance.fee.fixed_period', 'quarterly');
+        $fixed = fn (string $m) => $ta->statement($this->owner, CarbonImmutable::parse($m))['management_fee']['fixed_part']->minor();
+        $this->assertSame([300000, 0, 0, 300000], [$fixed('2027-01-01'), $fixed('2027-02-01'), $fixed('2027-03-01'), $fixed('2027-04-01')]);
+        $s->setSubscriber('finance.fee.fixed_period', 'monthly');
+        $this->assertSame(300000, $fixed('2027-02-01'));
+
+        // Invoiced to the owner separately: not deducted from the transfer, booked as owed by the owner.
+        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager');
+        $s->setSubscriber('finance.fee.collection', 'invoice_owner');
+        $st = $ta->statement($this->owner, $jan);
+        $this->assertFalse($st['management_fee']['deducted']);
+        $this->assertSame($st['collected_rent']->minor(), $st['net_to_owner']->minor());
+        $ta->postFee($this->owner, $st);
+        $this->assertSame(300000, app(Ledger::class)->balance("fee_receivable:{$this->owner->id}")->minor());
+        $this->assertSame(300000, $ta->managerRevenue('2027-01-01', '2027-01-31')->minor());
+    }
     public function test_req_0069_invoice_cancellation_needs_a_checker_and_reverses_the_journal(): void
     {
         $i = $this->inv()->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));

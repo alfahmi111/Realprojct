@@ -69,6 +69,10 @@ final class SettingsRegistry
             'finance.fiscal_year_start_month' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 12, 'default' => 1, 'req' => 'REQ-0366'],
             'finance.vat_registered' => ['levels' => ['subscriber'], 'type' => 'bool', 'default' => null, 'req' => 'REQ-0366'],
             'finance.tax_period' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['monthly', 'quarterly'], 'default' => 'quarterly', 'req' => 'REQ-0366'],
+            // Management fee terms differ from office to office — the owner's decision (2026-11-23): set per subscriber.
+            'finance.fee.collection' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['deduct_from_remittance', 'invoice_owner'], 'default' => 'deduct_from_remittance', 'req' => 'REQ-0066, REQ-0305'],
+            'finance.fee.percentage_basis' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['collected', 'due'], 'default' => 'collected', 'req' => 'REQ-0066, REQ-0305'],
+            'finance.fee.fixed_period' => ['levels' => ['subscriber'], 'type' => 'enum', 'options' => ['monthly', 'quarterly', 'semiannual', 'annual'], 'default' => 'monthly', 'decision' => 'Q13: monthly by default, editable', 'req' => 'REQ-0066'],
             'finance.numbering' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0366'],
             'finance.document_templates' => ['levels' => ['subscriber'], 'type' => 'object', 'default' => null, 'req' => 'REQ-0366'],
             'leasing.non_renewal_notice_days' => ['levels' => ['subscriber'], 'type' => 'int', 'min' => 1, 'max' => 3650, 'default' => 60, 'req' => 'REQ-0367'],

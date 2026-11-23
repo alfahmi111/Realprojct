@@ -74,7 +74,7 @@ class OwnerStatementPage extends Page
         $m = fn ($v) => $v->toDecimalString();
         return [
             'month' => $s['month'], 'collected' => $m($s['collected_rent']), 'fee_pct' => intdiv($s['management_fee']['percentage_bp'], 100) . '.' . str_pad((string) ($s['management_fee']['percentage_bp'] % 100), 2, '0', STR_PAD_LEFT),
-            'fee' => $m($s['management_fee']['amount']), 'fee_vat' => $m($s['management_fee']['vat']),
+            'fee' => $m($s['management_fee']['amount']), 'fee_deducted' => $s['management_fee']['deducted'], 'fee_basis' => $s['management_fee']['basis'] === 'due' ? 'الإيجار المستحق' : 'المحصَّل', 'fee_vat' => $m($s['management_fee']['vat']),
             'maintenance' => array_map(fn ($x) => ['date' => $x['date'], 'description' => $x['description'], 'work_order' => $x['work_order'], 'amount' => $m($x['amount'])], $s['maintenance']),
             'maintenance_total' => $m($s['maintenance_total']), 'margin_total' => $m($s['vendor_margin_total']), 'net' => $m($s['net_to_owner']),
         ];
