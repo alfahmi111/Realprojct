@@ -366,7 +366,7 @@
 | REQ-0359 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0360 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php |  |
 | REQ-0361 | §7.6د | BUILD | MVP | DONE | app/Notifications/ | tests/Feature/Notifications/NotificationsTest.php | العدّاد منجز؛ حصة الباقة غير محددة في الوثيقة |
-| REQ-0362 | §7.6هـ | BUILD | MVP | IN-PROGRESS | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php | أُعيد فتحه 2026-11-23: الإعداد يبدّل لغة Filament فقط، وتسميات شاشاتنا مكتوبة بالعربية في الكود؛ تبقى ترجمة الواجهة إلى الإنجليزية |
+| REQ-0362 | §7.6هـ | BUILD | MVP | OWNER | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Feature/Foundation/SettingsTest.php, tests/Unit/MoneyTest.php | أُعيد فتحه 2026-11-23: الإعداد يبدّل لغة Filament فقط وتسميات شاشاتنا عربية في الكود. قرار المالك 2026-11-23: الإنجليزية تُؤجَّل حتى يكتمل المشروع بالعربية |
 | REQ-0363 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
 | REQ-0364 | §7.6هـ | BUILD | MVP | DONE | app/Support/Dates/NumberFormatter.php, app/Settings/SettingsRegistry.php | tests/Unit/MoneyTest.php |  |
 | REQ-0365 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
