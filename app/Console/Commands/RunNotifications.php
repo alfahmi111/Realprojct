@@ -28,6 +28,7 @@ class RunNotifications extends Command
                     app(MaintenanceService::class)->generatePreventive($now->startOfDay());
                     app(\App\BuildingQr\BuildingQrService::class)->alertLongWaitlistWhileVacant($now->startOfDay());   // REQ-0409
                     app(\App\Plans\SubscriptionNotices::class)->run($now->startOfDay());                              // Q24
+                    app(\App\Compliance\ExpiryAlerts::class)->run($now->startOfDay());                               // 6.7, Q31
                 }
                 app(NotificationCenter::class)->escalate($now);
                 app(NotificationCenter::class)->deliver($now);

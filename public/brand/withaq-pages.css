@@ -367,6 +367,32 @@
 .wq-facade-units .wq-unitrow-code { width: 64px; height: 38px; }
 @media (max-width: 800px) { .wq-prophead { grid-template-columns: 90px 1fr; } .wq-prophead-photo { width: 90px; height: 72px; } .wq-prophead .wq-pager { grid-column: 1 / -1; } }
 
+/* Integrations status (office settings) */
+.wq-integ { list-style: none; margin: 0; padding: 0; display: grid; }
+.wq-integ-row { display: grid; grid-template-columns: minmax(170px, 1fr) 150px 2fr; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--color-line); }
+.wq-integ-row:last-child { border-bottom: 0; }
+.wq-integ-name { display: grid; gap: 1px; }
+.wq-integ-name small, .wq-integ-note { font-size: .8rem; color: var(--color-muted); line-height: 1.6; }
+.wq-integ-state { justify-self: start; padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 700; background: var(--color-bg); color: var(--color-muted); }
+.wq-integ-success { background: var(--status-paid-bg); color: var(--status-paid-fg); }
+.wq-integ-info { background: var(--status-soon-bg); color: var(--status-soon-fg); }
+.wq-integ-warning { background: var(--status-vacant-bg); color: var(--status-vacant-fg); }
+@media (max-width: 800px) { .wq-integ-row { grid-template-columns: 1fr auto; } .wq-integ-note { grid-column: 1 / -1; } }
+
+/* Create / edit forms (all resources): sections as numbered-feeling cards with a tinted head, calmer fields */
+.fi-resource-create-record-page .fi-section, .fi-resource-edit-record-page .fi-section, .fi-page .fi-sc-form .fi-section {
+    border-radius: var(--wq-radius-lg); border: 1px solid var(--color-line); box-shadow: var(--wq-shadow-md); overflow: hidden;
+}
+.fi-resource-create-record-page .fi-section-header, .fi-resource-edit-record-page .fi-section-header, .fi-page .fi-sc-form .fi-section-header {
+    background: linear-gradient(180deg, var(--color-soft), transparent); border-bottom: 1px solid var(--color-line); padding-block: 14px;
+}
+.fi-section-header-heading { font-family: 'Cairo', sans-serif; font-weight: 700; color: var(--color-deep, var(--color-ink)); }
+.fi-section-header-description { line-height: 1.7; }
+.fi-fo-field-label-content { font-weight: 700; }
+.fi-resource-create-record-page .fi-sc-form > .fi-sc-actions, .fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions {
+    position: sticky; bottom: 0; z-index: 5; padding: 12px 0; background: linear-gradient(0deg, var(--color-bg) 70%, transparent);
+}
+
 @media (max-width: 1100px) { .wq-two { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
     .wq-ledger { grid-template-columns: 1fr 1fr; }

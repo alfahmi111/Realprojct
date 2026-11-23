@@ -58,15 +58,20 @@ class OwnerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-                Select::make('kind')->label('النوع')->options(['individual' => 'فرد', 'heirs' => 'ورثة', 'company' => 'شركة'])->required(),
+            Section::make('من المالك؟')->description('فرد، أو ورثة يمثّلهم وكيل، أو شركة. الاسم يظهر في كشف الحساب والفواتير.')->schema([
+                \Filament\Forms\Components\ToggleButtons::make('kind')->label('النوع')->options(self::KIND_AR)->icons(['individual' => 'heroicon-o-user', 'heirs' => 'heroicon-o-user-group', 'company' => 'heroicon-o-building-office'])->inline()->required()->live()->default('individual'),
                 TextInput::make('name_ar')->label('الاسم بالعربية')->required(),
                 TextInput::make('name_en')->label('الاسم بالإنجليزية'),
-                TextInput::make('national_id')->label('رقم الهوية')->password()->revealable(),
-                TextInput::make('commercial_registration')->label('السجل التجاري'),
-                Toggle::make('vat_registered')->label('مسجّل في ضريبة القيمة المضافة'),
-                TextInput::make('vat_number')->label('الرقم الضريبي')->maxLength(20),
-                Toggle::make('resident')->label('مقيم')->default(true),
-            ])->columns(2);
+                TextInput::make('national_id')->label('رقم الهوية')->password()->revealable()->hidden(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company')->helperText('يُخزَّن مشفّراً.'),
+                TextInput::make('commercial_registration')->label('السجل التجاري')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company'),
+                Toggle::make('resident')->label('مقيم في المملكة')->default(true)->helperText('غير المقيم قد تختلف معاملته الضريبية.'),
+            ])->columns(2),
+            Section::make('الضريبة')->description('إن كان المالك مسجّلاً في ضريبة القيمة المضافة، تحمل فواتير الإيجار التجاري ضريبة 15% باسمه.')->schema([
+                Toggle::make('vat_registered')->label('مسجّل في ضريبة القيمة المضافة')->live(),
+                TextInput::make('vat_number')->label('الرقم الضريبي')->regex('/^3\d{13}3$/')->validationMessages(['regex' => 'الرقم الضريبي 15 رقماً يبدأ بـ 3 وينتهي بـ 3.'])
+                    ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => (bool) $get('vat_registered'))->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => (bool) $get('vat_registered')),
+            ])->columns(2),
+        ])->columns(1);
     }
 
     public static function table(Table $table): Table

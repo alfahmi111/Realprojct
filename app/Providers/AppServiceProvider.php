@@ -58,6 +58,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Dates: Filament's own picker instead of the browser's native one, whose placeholder shows reversed in RTL Arabic
+        // ("yyyy/رهش/موي"). Stored value stays Y-m-d; the week starts on Sunday as in Saudi Arabia (M14).
+        \Filament\Forms\Components\DatePicker::configureUsing(fn (\Filament\Forms\Components\DatePicker $c) => $c->native(false)->displayFormat('Y-m-d')->firstDayOfWeek(7)->closeOnDateSelection());
         // Each queued job starts with an empty tenant context; tenant jobs set their own (TenantAware jobs).
         Queue::before(fn () => app(TenantContext::class)->clear());
         Queue::after(fn () => app(TenantContext::class)->clear());

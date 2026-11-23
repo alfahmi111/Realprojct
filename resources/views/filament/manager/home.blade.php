@@ -156,8 +156,8 @@
                         @php($vacantBp = max(0, 10000 - $w['staying_bp'] - $w['vacating_bp']))
                         <li>
                             <strong class="wq-outlook-days">خلال {{ $days }} يوماً</strong>
-                            <span class="wq-stack" role="img" aria-label="يستمر {{ $pct($w['staying_bp']) }}%، سيشغر {{ $pct($w['vacating_bp']) }}%">
-                                <span class="wq-stack-stay" style="--p: {{ $pct($w['staying_bp']) }}%"></span><span class="wq-stack-go" style="--p: {{ $pct($w['vacating_bp']) }}%"></span>
+                            <span class="wq-occbar" role="img" aria-label="يستمر {{ $pct($w['staying_bp']) }}%، سيشغر {{ $pct($w['vacating_bp']) }}%">
+                                <span class="wq-occbar-stay" style="--p: {{ $pct($w['staying_bp']) }}%"></span><span class="wq-occbar-go" style="--p: {{ $pct($w['vacating_bp']) }}%"></span>
                             </span>
                             <span class="wq-outlook-figs">
                                 <span><b class="wq-c-stay">{{ $pct($w['staying_bp']) }}%</b> يستمر إشغاله</span>

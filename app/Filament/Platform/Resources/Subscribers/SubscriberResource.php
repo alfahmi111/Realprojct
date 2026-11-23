@@ -107,6 +107,10 @@ class SubscriberResource extends Resource
                         $u = $admin->usage($r);
                         return $u['units'] . ' من ' . ($u['max_units'] ?? 'غير محدود');
                     }),
+                TextColumn::make('license_expires_on')->label('رخصة المكتب')->placeholder('لم تُسجَّل')->badge()
+                    ->formatStateUsing(fn ($state) => ($d = (int) now()->startOfDay()->diffInDays($state, false)) < 0 ? 'منتهية' : 'باقٍ ' . $d . ' يوماً')
+                    ->color(fn ($state) => ($d = (int) now()->startOfDay()->diffInDays($state, false)) < 0 ? 'danger' : ($d <= 30 ? 'warning' : 'success'))
+                    ->description(fn ($record) => $record->license_no),
                 TextColumn::make('created_at')->label('أُنشئ')->date('Y-m-d')->sortable(),
             ])
             ->filters([

@@ -55,18 +55,29 @@ class TenantResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $company = fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company';
         return $schema->components([
-                Select::make('kind')->label('النوع')->options(['individual' => 'فرد', 'company' => 'منشأة'])->required(),
+            Section::make('من المستأجر؟')->description('فرد بهويته أو منشأة بسجلها التجاري. الاسم كما في الهوية أو السجل، فهو يظهر في العقد والفواتير.')->schema([
+                \Filament\Forms\Components\ToggleButtons::make('kind')->label('النوع')->options(['individual' => 'فرد', 'company' => 'منشأة'])->icons(['individual' => 'heroicon-o-user', 'company' => 'heroicon-o-building-office'])->inline()->required()->live()->default('individual'),
                 TextInput::make('name_ar')->label('الاسم بالعربية')->required(),
-                TextInput::make('name_en')->label('الاسم بالإنجليزية'),
-                TextInput::make('national_id')->label('رقم الهوية')->password()->revealable(),
-                TextInput::make('commercial_registration')->label('السجل التجاري'),
-                TextInput::make('vat_number')->label('الرقم الضريبي (للمنشآت)')->maxLength(20),
-                TextInput::make('phone')->label('الجوال')->tel(),
-                TextInput::make('email')->label('البريد')->email(),
-                Select::make('messages_locale')->label('لغة الرسائل')->options(['ar' => 'العربية', 'en' => 'English']),
-                Section::make('العنوان الوطني')->schema([TextInput::make('national_address.building_no')->label('رقم المبنى')->regex('/^\\d{4}$/'), TextInput::make('national_address.street')->label('الشارع'), TextInput::make('national_address.district')->label('الحي'), TextInput::make('national_address.city')->label('المدينة'), TextInput::make('national_address.postal_code')->label('الرمز البريدي')->regex('/^\\d{5}$/'), TextInput::make('national_address.additional_no')->label('الرقم الإضافي')->regex('/^\\d{4}$/')])->columns(3),
-            ])->columns(2);
+                TextInput::make('name_en')->label('الاسم بالإنجليزية')->helperText('اختياري؛ للمستأجر غير الناطق بالعربية.'),
+                TextInput::make('national_id')->label('رقم الهوية أو الإقامة')->password()->revealable()->hidden($company)->regex('/^[12]\d{9}$/')
+                    ->validationMessages(['regex' => 'رقم الهوية أو الإقامة 10 أرقام يبدأ بـ 1 أو 2.'])->helperText('يُخزَّن مشفّراً ولا يظهر إلا لمن له الصلاحية.'),
+                TextInput::make('commercial_registration')->label('السجل التجاري')->visible($company)->maxLength(20),
+                TextInput::make('vat_number')->label('الرقم الضريبي')->visible($company)->regex('/^3\d{13}3$/')
+                    ->validationMessages(['regex' => 'الرقم الضريبي 15 رقماً يبدأ بـ 3 وينتهي بـ 3.'])->helperText('إن كانت المنشأة مسجّلة؛ يظهر في فواتيرها.'),
+            ])->columns(2),
+            Section::make('التواصل')->description('تصله التذكيرات والفواتير على واتساب بلغته المختارة.')->schema([
+                TextInput::make('phone')->label('الجوال')->tel()->placeholder('9665XXXXXXXX')->extraInputAttributes(['dir' => 'ltr']),
+                TextInput::make('email')->label('البريد الإلكتروني')->email()->extraInputAttributes(['dir' => 'ltr']),
+                Select::make('messages_locale')->label('لغة الرسائل')->options(['ar' => 'العربية', 'en' => 'English'])->default('ar'),
+            ])->columns(3),
+            Section::make('العنوان الوطني')->description('إلزامي في الفواتير الضريبية للمنشآت، ومفيد في العقد.')->collapsible()->schema([
+                TextInput::make('national_address.building_no')->label('رقم المبنى')->regex('/^\\d{4}$/'), TextInput::make('national_address.street')->label('الشارع'),
+                TextInput::make('national_address.district')->label('الحي'), TextInput::make('national_address.city')->label('المدينة'),
+                TextInput::make('national_address.postal_code')->label('الرمز البريدي')->regex('/^\\d{5}$/'), TextInput::make('national_address.additional_no')->label('الرقم الإضافي')->regex('/^\\d{4}$/'),
+            ])->columns(3),
+        ])->columns(1);
     }
 
     public static function table(Table $table): Table
