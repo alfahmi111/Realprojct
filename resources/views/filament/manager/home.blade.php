@@ -162,6 +162,7 @@
                             <span class="wq-outlook-figs">
                                 <span><b class="wq-c-stay">{{ $pct($w['staying_bp']) }}%</b> يستمر إشغاله</span>
                                 <span><b class="wq-c-go">{{ $pct($w['vacating_bp']) }}%</b> سيشغر ({{ $w['vacating'] }} {{ $w['vacating'] === 1 ? 'وحدة' : ($w['vacating'] === 2 ? 'وحدتان' : 'وحدات') }})</span>
+                                <span><b>{{ $pct($vacantBp) }}%</b> شاغرة</span>
                                 @if ($w['renewing'])<span class="wq-outlook-renew">{{ $w['renewing'] }} {{ $w['renewing'] === 1 ? 'عقد ينتهي ويتجدد' : 'عقود تنتهي وتتجدد' }} تلقائياً ما لم يُشعر أحد</span>@endif
                             </span>
                         </li>

@@ -24,6 +24,16 @@ final class Ui
             ->dehydrateStateUsing(fn ($state) => $state === null || $state === '' ? null : Money::parse((string) $state)->minor());
     }
 
+    /** Optional property photo (owner request 2026-11-23): private disk, per-subscriber folder, served through RLS. */
+    public static function propertyPhoto(): \Filament\Forms\Components\FileUpload
+    {
+        return \Filament\Forms\Components\FileUpload::make('photo_path')->label('صورة المبنى (اختيارية)')
+            ->image()->imageEditor(false)->disk('local')->visibility('private')
+            ->directory(fn () => 'properties/' . (auth()->user()?->subscriber_id ?? 'x'))
+            ->maxSize(4096)->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->helperText('تظهر في الرئيسية وصفحة العقار ومحتوى المبنى. JPG أو PNG حتى 4 ميغابايت.');
+    }
+
     public static function moneyColumn(string $name, string $label): TextColumn
     {
         return TextColumn::make($name)->label($label)

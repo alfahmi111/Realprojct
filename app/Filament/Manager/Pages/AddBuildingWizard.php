@@ -65,8 +65,10 @@ class AddBuildingWizard extends Page
                 Step::make('بيانات العقار')->schema([
                     Select::make('portfolio_id')->label('المحفظة')->options(fn () => Portfolio::pluck('name_ar', 'id'))->required()
                         ->createOptionForm([TextInput::make('name_ar')->label('اسم المحفظة')->required()])
-                        ->createOptionUsing(fn (array $data) => Portfolio::create(['name_ar' => $data['name_ar']])->id),
+                        ->createOptionUsing(fn (array $data) => Portfolio::create(['name_ar' => $data['name_ar']])->id)
+                        ->helperText('مجموعة تنظّم بها مبانيك، مثل «محفظة عائلة الشهري». تُعرض تقاريرها معاً ويُسند كلٌّ منها لموظفيه. يكفي محفظة واحدة إن لم تحتج التقسيم.'),
                     TextInput::make('name_ar')->label('اسم العقار')->required(),
+                    \App\Filament\Support\Ui::propertyPhoto()->columnSpanFull(),
                     TextInput::make('name_en')->label('الاسم بالإنجليزية'),
                     TextInput::make('deed_number')->label('رقم الصك'),
                     TextInput::make('ejar_property_number')->label('رقم العقار في إيجار'),
@@ -135,6 +137,9 @@ class AddBuildingWizard extends Page
         $property = Ui::attempt(fn () => DB::transaction(function () use ($w, $d) {
             $owners = collect($d['owners'])->map(fn ($o) => ['owner' => Owner::findOrFail($o['owner_id']), 'numerator' => (int) $o['numerator'], 'denominator' => (int) $o['denominator']])->all();
             $property = $w->createProperty(Portfolio::findOrFail($d['portfolio_id']), collect($d)->only(['name_ar', 'name_en', 'deed_number', 'ejar_property_number', 'real_estate_registry_number', 'national_address', 'region', 'city', 'within_urban_boundary', 'latitude', 'longitude'])->all(), $owners, $d['template']);
+            if (! empty($d['photo_path'])) {
+                $property->forceFill(['photo_path' => $d['photo_path']])->save();
+            }
             $floors = collect($d['floors'] ?? [])->map(fn ($f) => ['number' => (int) $f['number'], 'name_ar' => $f['name_ar'] ?: null, 'units' => collect($f['units'])->map(fn ($u) => ['type' => $u['type'], 'count' => (int) $u['count']])->all()])->all();
             $w->generate($property, ['name_ar' => $d['building_name'], 'numbering' => $d['numbering'], 'code_prefix' => $d['code_prefix'] ?? null, 'floors' => $floors, 'common_areas' => $d['common_areas'] ?? []]);
             if ($d['apply_default_assets'] ?? false) {
