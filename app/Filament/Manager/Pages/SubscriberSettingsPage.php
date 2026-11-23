@@ -158,6 +158,27 @@ class SubscriberSettingsPage extends Page
         ]);
     }
 
+    /** Wathq check of the office's own commercial registration (REQ-0447 «والمشترك نفسه»). */
+    protected function getHeaderActions(): array
+    {
+        $svc = fn () => app(\App\Identity\IdentityService::class);
+        return [
+            Action::make('wathqOffice')->label('تحقّق من سجل المكتب عبر واثق')->icon(\Filament\Support\Icons\Heroicon::OutlinedShieldCheck)->color('gray')
+                ->visible(fn () => $svc()->available('wathq'))
+                ->badge(fn () => ($v = $this->subscriber() ? $svc()->latest($this->subscriber()) : null) && $v->status === 'verified' ? '✓' : null)
+                ->action(function () use ($svc) {
+                    try {
+                        $v = $svc()->wathq($this->subscriber(), auth()->user());
+                        \Filament\Notifications\Notification::make()->title('واثق: ' . \App\Identity\IdentityService::STATUS_AR[$v->status])
+                            ->body($v->status === 'mismatch' ? 'الاسم في السجل: ' . $v->returned_name : ($v->details['cr_expires_on'] ?? null ? 'ينتهي السجل ' . $v->details['cr_expires_on'] : null))
+                            ->{$v->status === 'verified' ? 'success' : 'warning'}()->send();
+                    } catch (\Throwable $e) {
+                        \Filament\Notifications\Notification::make()->title('تعذّر التحقق')->body($e->getMessage())->danger()->send();
+                    }
+                }),
+        ];
+    }
+
     public function content(Schema $schema): Schema
     {
         return $schema->components([

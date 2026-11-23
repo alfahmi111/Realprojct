@@ -70,7 +70,7 @@ enum Role: string
             // REQ-0059: self-managed ("ذاتي") agreement — full operations for its own team.
             self::InstitutionalOwner => array_merge(self::Manager->permissions(), ['owner.dashboard', 'owner.statement', 'owner.budget', 'owner.approve_above_cap']),
             // REQ-0060: everything operational within the management agreement.
-            self::Manager => ['properties.*', 'leasing.*', 'finance.*', 'maintenance.*', 'assets.*', 'prospects.*', 'reports.*', 'settings.subscriber', 'users.manage', 'approvals.decide'],
+            self::Manager => ['properties.*', 'leasing.*', 'finance.*', 'maintenance.*', 'assets.*', 'prospects.*', 'reports.*', 'settings.subscriber', 'users.manage', 'approvals.decide', 'documents.parties'],
             // REQ-0061: staff permissions by role.
             self::Accountant => ['finance.*', 'reports.finance', 'properties.view', 'leasing.view'],
             self::LeasingOfficer => ['leasing.*', 'prospects.*', 'properties.view'],

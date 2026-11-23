@@ -45,3 +45,18 @@ if (app()->environment('local')) {
         return redirect($data['path']);
     })->middleware('web');
 }
+
+// Vault document (REQ-0270): private disk, through RLS; party documents need documents.parties; every open is logged.
+Route::get('/media/document/{id}', function (int $id) {
+    $user = auth()->user();
+    abort_unless($user && $user->subscriber_id, 403);
+    $doc = \App\Models\Document::find($id);   // RLS: another office's document is simply not found
+    abort_unless($doc, 404);
+    $vault = app(\App\Documents\DocumentVault::class);
+    abort_unless($vault->canSee($user, $doc) && ($user->hasPermission('properties.view') || $user->hasPermission('properties.*')), 403);
+    $path = $vault->open($doc, $user, request()->boolean('download') ? 'download' : 'view');
+    abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
+    return request()->boolean('download')
+        ? \Illuminate\Support\Facades\Storage::disk('local')->download($path, $doc->title_ar . '.' . pathinfo($path, PATHINFO_EXTENSION))
+        : \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, no-store']);
+})->middleware(['web', 'auth'])->name('media.document');

@@ -88,7 +88,7 @@ class TenantResource extends Resource
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->orderBy('name_ar'))
             ->columns([
                 TextColumn::make('name_ar')->label('المستأجر')->searchable(['name_ar', 'phone', 'national_id', 'commercial_registration'])->weight('bold')
-                    ->description(fn (Tenant $t) => $t->kind === 'company' ? 'منشأة' . ($t->commercial_registration ? '، سجل ' . $t->commercial_registration : '') : 'فرد'),
+                    ->description(fn (Tenant $t) => implode(' · ', array_filter([$t->kind === 'company' ? 'منشأة' . ($t->commercial_registration ? '، سجل ' . $t->commercial_registration : '') : 'فرد', \App\Filament\Support\IdentityActions::badge($t)]))),
                 TextColumn::make('unit')->label('يسكن الآن')->state(fn (Tenant $t) => ($x = $p($t)) && $x['unit'] ? 'الوحدة ' . $x['unit'] : null)
                     ->description(fn (Tenant $t) => $p($t)['property'] ?? null)->placeholder('بلا عقد ساري')
                     ->url(fn (Tenant $t) => ($id = $p($t)['lease_id'] ?? null) ? $base() . '/leases/' . $id : null),
@@ -123,6 +123,7 @@ class TenantResource extends Resource
             ->recordActions([
                 \Filament\Actions\Action::make('whatsapp')->label('واتساب')->icon(Heroicon::OutlinedChatBubbleLeftRight)->color('success')
                     ->visible(fn (Tenant $t) => (bool) $t->phone)->url(fn (Tenant $t) => $wa($t->phone), shouldOpenInNewTab: true),
+                \App\Filament\Support\IdentityActions::group(),
                 EditAction::make(), \App\Filament\Support\Ui::archive(),
             ]);
     }

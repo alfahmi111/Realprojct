@@ -66,7 +66,7 @@ class TenantPortal
     {
         return Invoice::where('tenant_id', $this->tenantOf($user)->id)->whereIn('status', ['issued'])->orderBy('period_start')->get()->map(fn ($i) => [
             'id' => $i->id, 'number' => $i->number, 'total' => $i->total_minor, 'outstanding' => $this->invoices->outstanding($i),
-            'einvoice_uuid' => $i->einvoice_uuid, 'einvoice_status' => $i->einvoice_status, 'period' => [$i->period_start?->toDateString(), $i->period_end?->toDateString()],
+            'einvoice_uuid' => $i->einvoice_uuid, 'einvoice_status' => $i->einvoice_status, 'period' => [$i->period_start?->toDateString(), $i->period_end?->toDateString()], 'sadad' => $i->sadad_bill_number,
         ])->all();
     }
 

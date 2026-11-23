@@ -78,6 +78,7 @@
                         <div>
                             <strong><bdi>{{ $i['number'] }}</bdi></strong>
                             <div class="wq-muted">{{ $i['period'][0] }} — {{ $i['period'][1] }}</div>
+                            @if (! empty($i['sadad']) && $i['outstanding']->isPositive())<div class="wq-muted">ادفع عبر سداد من تطبيق بنكك برقم: <bdi><strong>{{ $i['sadad'] }}</strong></bdi></div>@endif
                         </div>
                         <div style="text-align:end">
                             @if ($i['outstanding']->isPositive())
