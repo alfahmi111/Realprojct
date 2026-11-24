@@ -35,8 +35,8 @@
     ];
     $panelId = filament()->getCurrentPanel()?->getId() ?? 'manager';
     $door = $doors[$panelId] ?? $doors['manager'];
-    // The public page's hand-drawn sketch that fits the door (original drawings, public/site/v2/art).
-    $art = ['owner' => 'slide-owner', 'tenant' => 'slide-tenant', 'technician' => 'slide-tenant'][$panelId] ?? 'slide-office';
+    // The public page's pencil sketch that fits the door (original drawings, public/site/v2/art).
+    $art = ['owner' => 'sketch-villa', 'tenant' => 'sketch-block', 'technician' => 'sketch-block'][$panelId] ?? 'sketch-offices';
 @endphp
 {{-- Identity panel beside the sign-in card (layout of the owner's design; no third-party logos). --}}
 <aside class="wq-auth-aside" aria-label="وِثاق">
@@ -49,7 +49,7 @@
     <span class="wq-auth-door">{{ $door['door'] }}</span>
 
     {{-- The same original sketch as the public page (decorative: the door label says who this is for) --}}
-    <img class="wq-auth-art" src="{{ asset('site/v2/art/' . $art . '.svg') }}" width="640" height="520" alt="" aria-hidden="true" decoding="async">
+    <img class="wq-auth-art" src="{{ asset('site/v2/art/' . $art . '.svg') }}" alt="" aria-hidden="true" decoding="async">
 
     <ul class="wq-auth-points">
         @foreach ($door['points'] as [$icon, $text])

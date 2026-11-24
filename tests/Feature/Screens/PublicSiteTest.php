@@ -60,13 +60,13 @@ class PublicSiteTest extends TestCase
             $this->assertFileExists(public_path("site/v2/shots/$shot.webp"));
         }
         $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
-        // the opening keeps the slogan while three stories slide under it, each with an original sketch (owner, office, tenant + technician)
-        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/slide-owner.svg', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح'] as $needle) {
+        // the opening keeps the slogan while three stories slide under it, each with a pencil sketch and cards shaped like the system (owner, office, tenant + technician)
+        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/sketch-villa.svg', 'w2-float', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح'] as $needle) {
             $this->assertStringContainsString($needle, $html, $needle);
         }
-        foreach (['slide-owner', 'slide-office', 'slide-tenant', 'skyline', 'who-owner', 'who-office', 'who-tenant'] as $art) {
+        foreach (['sketch-villa', 'sketch-offices', 'sketch-block', 'sketch-street'] as $art) {   // pencil sketches drawn for the page
             $svg = file_get_contents(public_path("site/v2/art/$art.svg"));
-            $this->assertStringNotContainsString('<image', $svg, $art);   // drawn vector sketches, no embedded photos
+            $this->assertStringNotContainsString('<image', $svg, $art);   // vector drawings, no embedded photos
             $this->assertStringContainsString('<title>', $svg, $art);
         }
         // the current page is untouched and still at «/»

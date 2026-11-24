@@ -23,3 +23,8 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Compress text assets when the server has mod_deflate (the public page's pencil sketches are SVG: ~300 KB raw, ~70 KB gzipped)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE image/svg+xml text/css application/javascript
+</IfModule>

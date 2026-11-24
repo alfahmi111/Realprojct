@@ -2,10 +2,11 @@
     /*
      * The new public page (preview at /preview, owner request 2026-11-25). Same facts as the current page; nothing on it
      * is invented: every feature is built, the screenshots are the system itself (demo data), the reconciliation figure is
-     * marked as an illustration. Art direction (revised 2026-11-25 at the owner's request): a light, sunny page; the slogan
-     * «كل وحدة، بكل ما فيها» stays while three short stories slide under it, each with an original hand-drawn sketch (no stock,
-     * no AI imagery) of Saudi people and buildings whose windows use the platform's unit-status colours. The Kufic-cell
-     * building held by the logo's «embrace» follows as its own section.
+     * marked as an illustration. Art direction (revised twice on 2026-11-25 at the owner's request): a light, sunny page;
+     * the slogan «كل وحدة، بكل ما فيها» stays while three stories slide under it. Each story shows an architectural pencil
+     * sketch drawn for the page (two-point perspective, hatching, a light watercolour wash with the unit-status colours on
+     * windows) with glass cards shaped like the system's screens floating over it, and room for a licensed photo of a person.
+     * The Kufic-cell building held by the logo's «embrace» follows as its own section.
      */
     $st = ['paid' => 'مؤجرة ومسددة', 'late' => 'عليها متأخرات', 'vacant' => 'شاغرة', 'maint' => 'في الصيانة', 'soon' => 'ستُخلى قريباً'];
     $floors = [
@@ -15,17 +16,33 @@
         ['الدور الأول', [['101', 'paid', 'عقد حتى جمادى الآخرة 1449'], ['102', 'paid', 'عقد حتى رمضان 1448'], ['103', 'late', 'فاتورة غير مسددة'], ['104', 'paid', 'عقد حتى ذي القعدة 1448']]],
     ];
     $shops = [['محل 1', 'paid', 'صيدلية، عقد تجاري حتى 1450'], ['محل 2', 'vacant', 'شاغر منذ 20 يوماً'], ['محل 3', 'paid', 'مغسلة، عقد حتى 1449']];
+    // Each story: a pencil sketch drawn for the page, glass cards shaped like the system's own screens (sample text, no
+    // figures), and an optional photo of a person: drop a licensed cut-out at public/site/v2/people/{key}.webp and it appears.
     $slides = [
-        ['who' => 'للمالك', 'art' => 'slide-owner', 'h' => 'كشف شهري يفصّل كل ريال في مبناك.',
+        ['key' => 'owner', 'who' => 'للمالك', 'art' => 'sketch-villa', 'wh' => [744, 364], 'h' => 'كشف شهري يفصّل كل ريال في مبناك.',
          'p' => 'ما حُصّل، وما دُفع لك مباشرة، وأتعاب المكتب بنص عقد الإدارة، وكل مصروف صيانة برقم أمره. تقرؤه من جوالك.',
-         'alt' => 'رسم: مالك سعودي بثوب وشماغ يقرأ كشف حسابه على جواله أمام مبناه'],
-        ['who' => 'للمكتب', 'art' => 'slide-office', 'h' => 'العقود والتحصيل والصيانة في مكان واحد.',
+         'alt' => 'سكتش بالقلم الرصاص لفيلا حديثة',
+         'cards' => [
+             ['paid', 'وصل كشف حساب نوفمبر', 'الإيجار والأتعاب والصيانة وصافي الشهر', null],
+             ['vacant', 'طلب موافقة على صيانة', 'مكيف شقة 203، فوق سقف الصرف', ['وافق', 'ارفض']],
+         ]],
+        ['key' => 'office', 'who' => 'للمكتب', 'art' => 'sketch-offices', 'wh' => [567, 466], 'h' => 'العقود والتحصيل والصيانة في مكان واحد.',
          'p' => 'صندوق مهام بما ينتظر قرارك، والمتأخرات، والعقود التي اقترب موعد إشعارها، ولكل وحدة سجل أصولها.',
-         'alt' => 'رسم: موظفة مكتب عقاري بعباءة تتابع حالة الوحدات على جهازها اللوحي'],
-        ['who' => 'للمستأجر والفني', 'art' => 'slide-tenant', 'h' => 'بلاغ بصورة، وفني يعرف تاريخ الجهاز.',
+         'alt' => 'سكتش بالقلم الرصاص لمبنى مكاتب بواجهات زجاجية',
+         'cards' => [
+             ['soon', 'ينتظرك اليوم 3 أمور', 'بلاغ جديد، ودفعة متأخرة، وعقد يقترب إشعاره', null],
+             ['cells', 'عمارة النخيل', 'كل وحدة بلون حالتها اليوم', null],
+         ]],
+        ['key' => 'tenant', 'who' => 'للمستأجر والفني', 'art' => 'sketch-block', 'wh' => [547, 428], 'h' => 'بلاغ بصورة، وفني يعرف تاريخ الجهاز.',
          'p' => 'يبلّغ المستأجر عن العطل من جواله بصورة أو مقطع، ويستلم الفني أمر العمل ومعه سجل الأصل، ولو انقطع الإنترنت.',
-         'alt' => 'رسم: مستأجر يصوّر مكيفاً معطلاً بجواله ليبلّغ عنه، وفني صيانة يصل بصندوق عدته'],
+         'alt' => 'سكتش بالقلم الرصاص لعمارة سكنية فوق محلات',
+         'cards' => [
+             ['late', 'بلاغ جديد: تسرب من المكيف', 'شقة 203، مع صورة', null],
+             ['paid', 'أُسند البلاغ إلى الفني', 'تتابع حالته من بوابتك', null],
+         ]],
     ];
+    foreach ($slides as &$sl) { $sl['person'] = is_file(public_path("site/v2/people/{$sl['key']}.webp")); }
+    unset($sl);
     $svg = fn (string $f) => file_get_contents(public_path("brand/$f.svg"));
     $i = 0;
 @endphp
@@ -97,8 +114,26 @@
         </div>
         <div class="w2-hero-art">
             @foreach ($slides as $n => $sl)
-                <img class="w2-art{{ $n === 0 ? ' is-on' : '' }}" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="640" height="520" alt="{{ $sl['alt'] }}" @if ($n) aria-hidden="true" @else fetchpriority="high" @endif decoding="async">
+                <figure class="w2-scene{{ $n === 0 ? ' is-on' : '' }}" @if ($n) aria-hidden="true" @endif>
+                    <img class="w2-sketch" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="{{ $sl['wh'][0] }}" height="{{ $sl['wh'][1] }}" alt="{{ $sl['alt'] }}" fetchpriority="{{ $n ? 'low' : 'high' }}" decoding="async">
+                    @if ($sl['person'])
+                        <img class="w2-person" src="{{ asset('site/v2/people/' . $sl['key'] . '.webp') }}" alt="" loading="lazy" decoding="async">
+                    @endif
+                    @foreach ($sl['cards'] as $c => [$tone, $title, $sub, $acts])
+                        <div class="w2-float w2-float-{{ $c + 1 }}" aria-hidden="true">
+                            @if ($tone === 'cells')
+                                <span class="w2-mini" aria-hidden="true">@foreach (['paid','paid','late','paid','vacant','paid','maint','paid','paid','soon','paid','paid'] as $m)<i class="w2-s-{{ $m }}"></i>@endforeach</span>
+                            @else
+                                <span class="w2-float-ic w2-s-{{ $tone }}" aria-hidden="true"></span>
+                            @endif
+                            <span class="w2-float-t"><b>{{ $title }}</b><small>{{ $sub }}</small>
+                                @if ($acts)<span class="w2-float-acts"><em>{{ $acts[0] }}</em><em>{{ $acts[1] }}</em></span>@endif
+                            </span>
+                        </div>
+                    @endforeach
+                </figure>
             @endforeach
+            <p class="w2-art-note">رسم بالقلم، والبطاقات أمثلة من واجهات النظام.</p>
         </div>
     </div>
 </section>
@@ -141,9 +176,9 @@
     <div class="w2-wrap">
         <h2 id="voices-h" class="w2-eyebrow-h">مبنى واحد، وثلاث روايات</h2>
         <ol class="w2-voice-list">
-            <li><img class="w2-face" src="{{ asset('site/v2/art/who-owner.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المالك</span><p>لا يعرف كم أدرّ مبناه هذا الشهر، ولا كم أخذ المكتب منه.</p></li>
-            <li><img class="w2-face" src="{{ asset('site/v2/art/who-office.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المكتب</span><p>يدير العقود والدفعات بين ملف Excel ومحادثات واتساب.</p></li>
-            <li><img class="w2-face" src="{{ asset('site/v2/art/who-tenant.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المستأجر</span><p>لا يعرف إلى من يتوجه حين يتعطل المكيف.</p></li>
+            <li><span class="w2-who">المالك</span><p>لا يعرف كم أدرّ مبناه هذا الشهر، ولا كم أخذ المكتب منه.</p></li>
+            <li><span class="w2-who">المكتب</span><p>يدير العقود والدفعات بين ملف Excel ومحادثات واتساب.</p></li>
+            <li><span class="w2-who">المستأجر</span><p>لا يعرف إلى من يتوجه حين يتعطل المكيف.</p></li>
         </ol>
         <p class="w2-resolve">وِثاق يجعلها رواية واحدة: سجل لكل وحدة، يراه كل طرف من نافذته.</p>
     </div>
@@ -334,8 +369,8 @@
     </div>
 </section>
 
-{{-- the kinds of property an office runs, sketched, sitting on the request band --}}
-<div class="w2-skyline" aria-hidden="true"><img src="{{ asset('site/v2/art/skyline.svg') }}" width="1200" height="260" alt="" loading="lazy"></div>
+{{-- the kinds of property an office runs, in pencil, sitting on the request band --}}
+<div class="w2-skyline" aria-hidden="true"><img src="{{ asset('site/v2/art/sketch-street.svg') }}" width="1400" height="440" alt="" loading="lazy" decoding="async"></div>
 
 {{-- 9. Demo request --}}
 <section class="w2-demo" id="demo" aria-labelledby="demo-h">
@@ -389,7 +424,7 @@
     // the opening: three stories under the slogan. Auto-advances every 7s; pauses on hover, on focus, with the button,
     // when the tab is hidden, and never starts under reduced motion. Swipe on touch.
     const root = document.querySelector('[data-slider]');
-    const slides = [...root.querySelectorAll('.w2-slide')], arts = [...root.querySelectorAll('.w2-art')], dots = [...root.querySelectorAll('.w2-dot')];
+    const slides = [...root.querySelectorAll('.w2-slide')], arts = [...root.querySelectorAll('.w2-scene')], dots = [...root.querySelectorAll('.w2-dot')];
     const pause = root.querySelector('.w2-pause');
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let at = 0, timer = null, stopped = still, held = false;
@@ -417,6 +452,9 @@
     art.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
     art.addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(at + (dx > 0 ? 1 : -1)); });   // RTL: swipe right = next
     setStopped(stopped);
+    // a story can be linked directly: /preview#story-2
+    const m = /^#story-(\d)$/.exec(location.hash);
+    if (m && +m[1] >= 1 && +m[1] <= slides.length) go(+m[1] - 1);
     // the facade: hovering, focusing or tapping a cell explains it
     const cap = document.querySelector('.w2-cap');
     const u = cap.querySelector('.w2-cap-unit'), n = cap.querySelector('.w2-cap-note');
