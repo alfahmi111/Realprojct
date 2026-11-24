@@ -113,3 +113,6 @@ Route::get('/media/work-order/{id}/{kind}/{n}', function (int $id, string $kind,
     abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
     return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, max-age=3600']);
 })->middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->whereNumber(['id', 'n'])->whereIn('kind', ['report', 'before', 'after'])->name('media.work_order');
+
+// Header heartbeat: task and unread counts, for the notification sound (owner request 2026-11-24).
+Route::get('/pulse', \App\Http\Controllers\PulseController::class)->middleware(['web', 'auth', 'throttle:30,1'])->name('pulse');
