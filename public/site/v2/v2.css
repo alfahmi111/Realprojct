@@ -368,3 +368,44 @@ body.w2 { margin: 0; background: var(--paper); color: var(--text); font: 400 1.0
     .w2-slide, .w2-scene { transition: none; transform: none; }
     .w2-scene.is-on .w2-sketch, .w2-scene.is-on .w2-float-1, .w2-scene.is-on .w2-float-2 { animation: none; }
 }
+
+/* ───────── round 5: a real photo in the first story, and the portfolio map ───────── */
+/* the photo sits in an arch (a Najdi doorway), with that story's sketch drawn faintly behind it */
+.w2-scene-photo { min-height: 520px; display: grid; place-items: center; }
+.w2-scene-ghost { position: absolute; inset: auto 0 6% 0; width: 100%; opacity: .32; pointer-events: none; }
+.w2-portrait { position: relative; width: min(74%, 360px); aspect-ratio: 4 / 5; border-radius: 999px 999px 22px 22px; overflow: hidden;
+    box-shadow: 0 40px 70px -40px rgba(13, 79, 92, .55), 0 0 0 10px rgba(255, 255, 255, .55); background: var(--sky); }
+.w2-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.w2-scene-photo.is-on .w2-portrait { animation: w2-rise-in .8s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes w2-rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.w2-scene-photo .w2-float-1 { top: 12%; inset-inline-start: auto; inset-inline-end: 0; }
+.w2-scene-photo .w2-float-2 { bottom: 8%; inset-inline-start: auto; inset-inline-end: 2%; }
+.w2-float-3 { top: 42%; inset-inline-start: -1%; }
+.w2-scene.is-on .w2-float-3 { animation: w2-pop .5s cubic-bezier(.2, .7, .2, 1) 1.35s both; }
+.w2-art-note { position: absolute; bottom: -26px; inset-inline-end: 0; margin: 0; }
+
+.w2-map { background: var(--paper); padding: clamp(72px, 9vw, 120px) 0; }
+.w2-map-in { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.w2-map h2 { margin-top: 14px; font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 800; line-height: 1.35; color: var(--deep); }
+.w2-map-text > p { margin-top: 14px; color: var(--mute); font-size: 1.06rem; }
+.w2-map-legend { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .9rem; color: var(--mute); }
+.w2-map-legend li { display: flex; align-items: center; gap: 7px; }
+.w2-map-legend i { width: 13px; height: 13px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0, 0, 0, .08); }
+.w2-map-shot { margin: 0; position: relative; }
+.w2-map-frame { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--chalk); box-shadow: 0 40px 70px -44px rgba(13, 79, 92, .5); }
+.w2-map-shot figcaption { margin-top: 12px; font-size: .85rem; color: var(--mute); }
+.w2-map-pop { top: 22%; inset-inline-start: 6%; }
+@media (max-width: 900px) {
+    .w2-map-in { grid-template-columns: 1fr; }
+    .w2-art-note { position: static; margin-top: 8px; }
+    .w2-scene-photo { min-height: 440px; }
+}
+@media (max-width: 600px) {
+    .w2-scene-photo { min-height: 400px; }
+    .w2-portrait { width: 62%; }
+    .w2-float-3 { display: none; }
+    .w2-map-pop { position: static; margin-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .w2-scene-photo.is-on .w2-portrait, .w2-scene.is-on .w2-float-3 { animation: none; }
+}

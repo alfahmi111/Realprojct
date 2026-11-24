@@ -19,8 +19,10 @@
         ['الدور الأول', [['101', 'paid', 'عقد حتى جمادى الآخرة 1449'], ['102', 'paid', 'عقد حتى رمضان 1448'], ['103', 'late', 'فاتورة غير مسددة'], ['104', 'paid', 'عقد حتى ذي القعدة 1448']]],
     ];
     $shops = [['محل 1', 'paid', 'صيدلية، عقد تجاري حتى 1450'], ['محل 2', 'vacant', 'شاغر منذ 20 يوماً'], ['محل 3', 'paid', 'مغسلة، عقد حتى 1449']];
-    // Each story: a pencil sketch drawn for the page, glass cards shaped like the system's own screens (sample text, no
-    // figures), and an optional photo of a person: drop a licensed cut-out at public/site/v2/people/{key}.webp and it appears.
+    // Each story: a pencil sketch drawn for the page and glass cards shaped like the system's own screens (sample text, no
+    // figures). A real photo replaces the sketch when public/site/v2/people/{key}-photo.webp exists (portrait, 4:5).
+    // owner-photo.webp: Pexels photo 16001638 (Pexels licence: free use, no attribution required; the person must not be
+    // presented as endorsing the product — confirm or replace with a licensed shoot before the page goes public).
     $slides = [
         ['key' => 'owner', 'who' => 'للمالك', 'art' => 'sketch-villa', 'wh' => [744, 364], 'h' => 'كشف شهري يفصّل كل ريال في مبناك.',
          'p' => 'ما حُصّل، وما دُفع لك مباشرة، وأتعاب المكتب بنص عقد الإدارة، وكل مصروف صيانة برقم أمره. تقرؤه من جوالك.',
@@ -28,7 +30,9 @@
          'cards' => [
              ['paid', 'وصل كشف حساب نوفمبر', 'الإيجار والأتعاب والصيانة وصافي الشهر', null],
              ['vacant', 'طلب موافقة على صيانة', 'مكيف شقة 203، فوق سقف الصرف', ['وافق', 'ارفض']],
-         ]],
+             ['soon', 'تذكير قبل موعد الإشعار', 'عقد شقة 403 ينتهي في رمضان', null],
+         ],
+         'photo_alt' => 'مالك سعودي بثوب وشماغ يتابع جواله وهو يشرب الشاي'],
         ['key' => 'office', 'who' => 'للمكتب', 'art' => 'sketch-offices', 'wh' => [567, 466], 'h' => 'العقود والتحصيل والصيانة في مكان واحد.',
          'p' => 'صندوق مهام بما ينتظر قرارك، والمتأخرات، والعقود التي اقترب موعد إشعارها، ولكل وحدة سجل أصولها.',
          'alt' => 'سكتش بالقلم الرصاص لمبنى مكاتب بواجهات زجاجية',
@@ -44,7 +48,7 @@
              ['paid', 'أُسند البلاغ إلى الفني', 'تتابع حالته من بوابتك', null],
          ]],
     ];
-    foreach ($slides as &$sl) { $sl['person'] = is_file(public_path("site/v2/people/{$sl['key']}.webp")); }
+    foreach ($slides as &$sl) { $sl['photo'] = is_file(public_path("site/v2/people/{$sl['key']}-photo.webp")); }
     unset($sl);
     $svg = fn (string $f) => file_get_contents(public_path("brand/$f.svg"));
     $i = 0;
@@ -118,10 +122,13 @@
         </div>
         <div class="w2-hero-art">
             @foreach ($slides as $n => $sl)
-                <figure class="w2-scene{{ $n === 0 ? ' is-on' : '' }}" @if ($n) aria-hidden="true" @endif>
-                    <img class="w2-sketch" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="{{ $sl['wh'][0] }}" height="{{ $sl['wh'][1] }}" alt="{{ $sl['alt'] }}" fetchpriority="{{ $n ? 'low' : 'high' }}" decoding="async">
-                    @if ($sl['person'])
-                        <img class="w2-person" src="{{ asset('site/v2/people/' . $sl['key'] . '.webp') }}" alt="" loading="lazy" decoding="async">
+                <figure class="w2-scene{{ $n === 0 ? ' is-on' : '' }}{{ $sl['photo'] ? ' w2-scene-photo' : '' }}" @if ($n) aria-hidden="true" @endif>
+                    @if ($sl['photo'])
+                        {{-- a real photo in an arch (the doorway of a Najdi house), the sketch of the same story drawn faintly behind it --}}
+                        <img class="w2-scene-ghost" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="{{ $sl['wh'][0] }}" height="{{ $sl['wh'][1] }}" alt="" decoding="async">
+                        <div class="w2-portrait"><img src="{{ asset('site/v2/people/' . $sl['key'] . '-photo.webp') }}" width="880" height="1100" alt="{{ $sl['photo_alt'] }}" fetchpriority="{{ $n ? 'low' : 'high' }}" decoding="async"></div>
+                    @else
+                        <img class="w2-sketch" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="{{ $sl['wh'][0] }}" height="{{ $sl['wh'][1] }}" alt="{{ $sl['alt'] }}" fetchpriority="{{ $n ? 'low' : 'high' }}" decoding="async">
                     @endif
                     @foreach ($sl['cards'] as $c => [$tone, $title, $sub, $acts])
                         <div class="w2-float w2-float-{{ $c + 1 }}" aria-hidden="true">
@@ -135,9 +142,9 @@
                             </span>
                         </div>
                     @endforeach
+                    <figcaption class="w2-art-note">{{ $sl['photo'] ? 'صورة توضيحية' : 'رسم بالقلم' }}، والبطاقات أمثلة من واجهات النظام.</figcaption>
                 </figure>
             @endforeach
-            <p class="w2-art-note">رسم بالقلم، والبطاقات أمثلة من واجهات النظام.</p>
         </div>
     </div>
 </section>
@@ -247,6 +254,35 @@
                     <span class="w2-door" aria-hidden="true"><svg viewBox="0 0 7 7" class="w2-qr-mark"><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="currentColor"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#fff"/></svg></span>
                 </div>
             </div>
+        </figure>
+    </div>
+</section>
+
+{{-- 6b. Every managed property on the map: the portfolio map in the office's properties screen (real screen, demo data) --}}
+<section class="w2-map" id="map" aria-labelledby="map-h">
+    <div class="w2-wrap w2-map-in">
+        <div class="w2-map-text">
+            <span class="w2-tag">خريطة العقارات</span>
+            <h2 id="map-h">كل عقار تديره، في مكانه على الخريطة</h2>
+            <p>في شاشة العقارات خريطة بكل ما يديره المكتب، من الرياض إلى جدة. لون الدبوس يقول الإشغال قبل أن تفتح العقار.</p>
+            <ul class="w2-map-legend" aria-label="ألوان الدبابيس">
+                <li><i style="background:#2E6B3A"></i>إشغال 90% فأكثر</li>
+                <li><i style="background:#B07A12"></i>من 60% إلى 89%</li>
+                <li><i style="background:#9B2C2C"></i>أقل من 60%</li>
+            </ul>
+            <ul class="w2-checks w2-checks-one">
+                <li>اضغط الدبوس: اسم العقار ومدينته وإشغاله وعدد الشاغر، ورابط يفتحه</li>
+                <li>يُحدَّد الموقع على الخريطة عند إضافة المبنى أو تعديله</li>
+                <li>العقار الذي لم يُحدَّد موقعه يُذكر تحت الخريطة لتكمله</li>
+            </ul>
+        </div>
+        <figure class="w2-map-shot">
+            <div class="w2-map-frame"><img src="{{ asset('site/v2/shots/map.webp') }}" width="1400" height="760" alt="خريطة العقارات في شاشة المكتب: عقار في الرياض وآخر في جدة، بلون إشغال كل منهما" loading="lazy" decoding="async"></div>
+            <div class="w2-float w2-map-pop" aria-hidden="true">
+                <span class="w2-float-ic w2-s-late"></span>
+                <span class="w2-float-t"><b>عمارة النخيل، الرياض</b><small>الإشغال والشاغر في نافذة الدبوس</small></span>
+            </div>
+            <figcaption>من شاشة النظام ببيانات تجريبية. الخريطة من OpenStreetMap.</figcaption>
         </figure>
     </div>
 </section>
@@ -438,7 +474,7 @@
                 <span class="w2-foot-logo" aria-hidden="true">{!! $svg('withaq-stacked') !!}</span>
                 <p>كل وحدة، بكل ما فيها. مزوّد برمجيات لإدارة الأملاك في المملكة العربية السعودية؛ لا نستلم أموالاً ولا ندير العقارات بأنفسنا.</p>
             </div>
-            <nav class="w2-foot-col" aria-label="النظام"><b>النظام</b><a href="#why">لماذا وِثاق</a><a href="#roles">الواجهات</a><a href="#features">المزايا</a><a href="#building">واجهة المبنى</a></nav>
+            <nav class="w2-foot-col" aria-label="النظام"><b>النظام</b><a href="#why">لماذا وِثاق</a><a href="#roles">الواجهات</a><a href="#features">المزايا</a><a href="#building">واجهة المبنى</a><a href="#map">خريطة العقارات</a></nav>
             <nav class="w2-foot-col" aria-label="البدء"><b>البدء</b><a href="#who">لمن صُمّم</a><a href="#plans">الباقات</a><a href="#faq">أسئلة شائعة</a><a href="#demo">اطلب عرضاً</a></nav>
             <nav class="w2-foot-col" aria-label="الدخول"><b>الدخول</b><a href="{{ $loginUrl }}">دخول المكاتب والملاك</a></nav>
         </div>

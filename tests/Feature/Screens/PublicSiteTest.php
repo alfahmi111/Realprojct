@@ -56,14 +56,16 @@ class PublicSiteTest extends TestCase
         }
         $this->assertStringNotContainsString('fonts.googleapis.com', $html);   // fonts are local
         $this->assertStringNotContainsString('ريال شهرياً', $html);            // no invented prices (Q36)
-        foreach (['dashboard', 'statement', 'assets', 'facade', 'tenant', 'tech'] as $shot) {   // the real screens it shows
+        foreach (['dashboard', 'statement', 'assets', 'facade', 'tenant', 'tech', 'map'] as $shot) {   // the real screens it shows
             $this->assertFileExists(public_path("site/v2/shots/$shot.webp"));
         }
         $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
         // the opening keeps the slogan while three stories slide under it, each with a pencil sketch and cards shaped like the system (owner, office, tenant + technician)
         foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/sketch-villa.svg', 'w2-float', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح',
                      // the mamarat-like structure, in our own terms: why, apps in device frames, features, who, plans without prices (Q36)
-                     'لماذا وِثاق؟', 'المزايا الأساسية', 'لمن صُمّم وِثاق؟', 'كل الباقات تشمل', 'السعر يُعلن عند الإطلاق', 'site/v2/shots/tenant.webp'] as $needle) {
+                     'لماذا وِثاق؟', 'المزايا الأساسية', 'لمن صُمّم وِثاق؟', 'كل الباقات تشمل', 'السعر يُعلن عند الإطلاق', 'site/v2/shots/tenant.webp',
+                     // a real photo in the first story, and the portfolio map (a real screen)
+                     'site/v2/people/owner-photo.webp', 'صورة توضيحية', 'كل عقار تديره، في مكانه على الخريطة', 'site/v2/shots/map.webp', 'OpenStreetMap'] as $needle) {
             $this->assertStringContainsString($needle, $html, $needle);
         }
         foreach (['sketch-villa', 'sketch-offices', 'sketch-block', 'sketch-street'] as $art) {   // pencil sketches drawn for the page
