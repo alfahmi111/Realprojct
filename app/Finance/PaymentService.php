@@ -73,6 +73,10 @@ class PaymentService
     /** Editing a recorded payment is a sensitive entry: maker/checker, executed as a reversal (REQ-0069). */
     public function requestReversal(Payment $payment, User $maker, string $reason): ApprovalRequest
     {
+        if ($payment->status !== 'recorded') {
+            throw new FinanceException('الدفعة معكوسة من قبل.');
+        }
+        $this->approvals->assertNonePending('payment', (string) $payment->id);   // review M18
         return $this->approvals->submit($maker, 'payment.edit', ['payment_id' => $payment->id, 'reason' => $reason], function () use ($payment) {
             DB::transaction(function () use ($payment) {
                 $payment->forceFill(['status' => 'reversed'])->save();

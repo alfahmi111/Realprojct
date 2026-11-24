@@ -139,9 +139,10 @@ class InvoiceService
         if ($invoice->status !== 'issued') {
             throw new FinanceException('Only issued invoices can be cancelled.');
         }
-        if ($invoice->allocations()->exists()) {
-            throw new FinanceException('An invoice with allocated payments cannot be cancelled; reverse the payment first.');
+        if ($this->hasLiveAllocations($invoice)) {   // allocations of reversed payments do not count (review M18)
+            throw new FinanceException('لا تُلغى فاتورة عليها دفعات مسجّلة؛ اعكس الدفعة أولاً.');
         }
+        $this->approvals->assertNonePending('invoice', (string) $invoice->id);
         return $this->approvals->submit($maker, 'invoice.cancel', ['invoice_id' => $invoice->id, 'reason' => $reason], fn () => $this->executeCancellation($invoice), 'invoice', (string) $invoice->id);
     }
 
@@ -174,5 +175,11 @@ class InvoiceService
             throw new FinanceException('Invoice issuer for multi-owner properties awaits the tax opinion (REQ-0561) and multi-owner support (phase 2).');
         }
         return $shares->first()->owner;
+    }
+
+    /** Allocations of payments that are still recorded (a reversed payment's rows stay, append-only). */
+    public function hasLiveAllocations(Invoice $invoice): bool
+    {
+        return $invoice->allocations()->whereHas('payment', fn ($q) => $q->where('status', 'recorded'))->exists();
     }
 }

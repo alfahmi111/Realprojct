@@ -101,7 +101,7 @@ class OwnerResource extends Resource
                 TextColumn::make('properties')->label('عقاراته وحصصه')->wrap()->placeholder('لم يُربط بعقار')
                     ->state(fn (\App\Models\Owner $o) => $o->shares->map(fn ($s) => $s->property?->name_ar . ($s->share_numerator == $s->share_denominator ? '' : ' (' . $s->share_numerator . '/' . $s->share_denominator . ')'))->filter()->implode('، ') ?: null),
                 TextColumn::make('fee')->label('أتعاب الإدارة')->placeholder('لا عقد إدارة ساري')
-                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->fee_type === 'percentage' ? rtrim(rtrim(number_format($a->fee_percentage_bp / 100, 2), '0'), '.') . '%' : $money($a->fee_fixed_minor)) : null)
+                    ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? RelationManagers\AgreementsRelationManager::feeText($a) : null)
                     ->description(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->collector === 'manager' ? 'المكتب يحصّل' : 'المالك يحصّل') : null),
                 TextColumn::make('cap')->label('موافقته على الصرف')->placeholder('—')
                     ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? RelationManagers\AgreementsRelationManager::ruleText($a->spend_cap_minor) : null),

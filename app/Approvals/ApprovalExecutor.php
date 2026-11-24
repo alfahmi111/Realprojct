@@ -42,7 +42,7 @@ class ApprovalExecutor
         $today = CarbonImmutable::today()->toDateString();
         DB::transaction(function () use ($r, $p, $today) {
             match ($r->action) {
-                'invoice.cancel' => $this->invoices->executeCancellation(Invoice::findOrFail($p['invoice_id'])),
+                'invoice.cancel' => $this->cancelInvoice(Invoice::findOrFail($p['invoice_id'])),
                 'payment.edit' => $this->reversePayment(Payment::findOrFail($p['payment_id']), $today),
                 'trust.disburse' => isset($p['cost_minor']) ? $this->expense($p, $today) : $this->disburse($p, $today),
                 'deposit.refund' => $this->depositRefund($p, $today),
@@ -51,8 +51,20 @@ class ApprovalExecutor
         });
     }
 
+    /** Re-check at approval time (review M18): a payment may have been allocated to the invoice while it waited. */
+    private function cancelInvoice(Invoice $invoice): void
+    {
+        if ($invoice->status !== 'issued' || $this->invoices->hasLiveAllocations($invoice)) {
+            throw new FinanceException('تغيّرت الفاتورة منذ الطلب (سُددت أو أُلغيت)؛ لا يمكن إلغاؤها الآن.');
+        }
+        $this->invoices->executeCancellation($invoice);
+    }
+
     private function reversePayment(Payment $payment, string $date): void
     {
+        if ($payment->status !== 'recorded') {
+            throw new FinanceException('الدفعة معكوسة من قبل.');   // never reverse twice (review M18)
+        }
         $payment->forceFill(['status' => 'reversed'])->save();
         foreach (JournalEntry::where('source_type', 'Payment')->where('source_id', (string) $payment->id)->get() as $e) {
             $this->ledger->reverse($e, $date, 'عكس سند قبض ' . $payment->receipt_number);
