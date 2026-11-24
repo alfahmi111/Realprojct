@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 // One app: every user lands on their role's interface (REQ-0271).
 // Visitors see the public website; a signed-in user lands on their role's interface (REQ-0271).
 Route::get('/', [\App\Http\Controllers\SiteController::class, 'home'])->name('site.home');
+Route::get('/preview', [\App\Http\Controllers\SiteController::class, 'preview'])->name('site.preview');   // the new public page, for review beside «/»
 Route::post('/demo', [\App\Http\Controllers\SiteController::class, 'demo'])->middleware('throttle:5,1')->name('site.demo');
 Route::get('/manifest.webmanifest', ManifestController::class)->name('manifest');
 

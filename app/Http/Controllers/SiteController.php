@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiteLead;
+use App\Support\Dates\DateService;
+use Carbon\CarbonImmutable;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 
@@ -22,10 +24,27 @@ class SiteController extends Controller
         return view('site.home', ['loginUrl' => Filament::getPanel('manager')->getLoginUrl(), 'units' => self::UNITS]);
     }
 
+    /**
+     * The new public page, shown at /preview beside the current one until the owner approves it (2026-11-25). It does
+     * not redirect a signed-in user, so the page can be reviewed from any session. Today's date is the platform's own.
+     */
+    public function preview(DateService $dates)
+    {
+        $now = CarbonImmutable::now();
+        return view('site.v2', [
+            'loginUrl' => Filament::getPanel('manager')->getLoginUrl(),
+            'units' => self::UNITS,
+            'hijri' => $dates->format($now, 'hijri', 'Asia/Riyadh'),
+            'greg' => $dates->format($now, 'gregorian', 'Asia/Riyadh'),
+        ]);
+    }
+
     public function demo(Request $request)
     {
+        // back to the page the request came from: the current page, or the new one under review
+        $back = ($request->input('from') === 'preview' ? route('site.preview') : route('site.home')) . '#demo';
         if (filled($request->input('website'))) {   // honeypot: people never see this field
-            return redirect()->to(route('site.home') . '#demo')->with('demo_sent', true);
+            return redirect()->to($back)->with('demo_sent', true);
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
@@ -45,6 +64,6 @@ class SiteController extends Controller
         ]);
         unset($data['consent']);
         SiteLead::create($data + ['consented_at' => now()]);
-        return redirect()->to(route('site.home') . '#demo')->with('demo_sent', true);
+        return redirect()->to($back)->with('demo_sent', true);
     }
 }

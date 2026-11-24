@@ -35,28 +35,21 @@
     ];
     $panelId = filament()->getCurrentPanel()?->getId() ?? 'manager';
     $door = $doors[$panelId] ?? $doors['manager'];
-    // A small façade: windows in the five fixed unit-status colours (the signature of the manager's home).
-    $windows = ['paid','paid','late','paid','vacant', 'paid','maint','paid','paid','paid', 'soon','paid','paid','vacant','paid', 'paid','paid','paid','late','paid'];
+    // The public page's pencil sketch that fits the door (original drawings, public/site/v2/art).
+    $art = ['owner' => 'sketch-villa', 'tenant' => 'sketch-block', 'technician' => 'sketch-block'][$panelId] ?? 'sketch-offices';
 @endphp
 {{-- Identity panel beside the sign-in card (layout of the owner's design; no third-party logos). --}}
 <aside class="wq-auth-aside" aria-label="وِثاق">
     <div class="wq-auth-brand">
-        {{-- The stacked logo (Kufic wordmark over Withaq), white on the identity panel; its aria-label names the platform. --}}
+        {{-- The stacked logo (Kufic wordmark over Withaq), deep teal on the morning mint; its aria-label names the platform. --}}
         <h1 class="wq-auth-title"><span class="wq-auth-logo">{!! file_get_contents(public_path('brand/withaq-stacked.svg')) !!}</span></h1>
         <div class="wq-auth-kicker">منصة إدارة الأملاك والأصول العقارية</div>
     </div>
 
     <span class="wq-auth-door">{{ $door['door'] }}</span>
 
-    <figure class="wq-auth-facade" aria-hidden="true">
-        <div class="wq-facade-roof"></div>
-        <div class="wq-facade-grid">
-            @foreach ($windows as $i => $w)
-                <span class="wq-win wq-win-{{ $w }}" style="--i: {{ $i }}"></span>
-            @endforeach
-        </div>
-        <div class="wq-facade-door"></div>
-    </figure>
+    {{-- The same original sketch as the public page (decorative: the door label says who this is for) --}}
+    <img class="wq-auth-art" src="{{ asset('site/v2/art/' . $art . '.svg') }}" alt="" aria-hidden="true" decoding="async">
 
     <ul class="wq-auth-points">
         @foreach ($door['points'] as [$icon, $text])

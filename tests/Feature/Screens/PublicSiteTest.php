@@ -47,6 +47,48 @@ class PublicSiteTest extends TestCase
         $this->assertSame(1, SiteLead::count());
     }
 
+    public function test_req_0271_the_new_page_is_previewed_at_its_own_path_and_the_current_page_stays(): void
+    {
+        $html = $this->get('/preview')->assertOk()->getContent();
+        foreach (['كل وحدة،', 'تعرف أين ذهب مالك', 'أربع نوافذ على سجل واحد', 'ما لا تفعله المنصة', 'الباقات', 'site/v2/v2.css', 'fonts/fonts.css',
+                     'site/v2/shots/dashboard.webp', 'name="from" value="preview"', 'noindex', 'مثال توضيحي'] as $needle) {
+            $this->assertStringContainsString($needle, $html, $needle);
+        }
+        $this->assertStringNotContainsString('fonts.googleapis.com', $html);   // fonts are local
+        $this->assertStringNotContainsString('ريال شهرياً', $html);            // no invented prices (Q36)
+        foreach (['dashboard', 'statement', 'assets', 'facade', 'tenant', 'tech', 'map'] as $shot) {   // the real screens it shows
+            $this->assertFileExists(public_path("site/v2/shots/$shot.webp"));
+        }
+        $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
+        // the opening keeps the slogan while three stories slide under it, each with a pencil sketch and cards shaped like the system (owner, office, tenant + technician)
+        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/sketch-villa.svg', 'w2-float', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح',
+                     // the mamarat-like structure, in our own terms: why, apps in device frames, features, who, plans without prices (Q36)
+                     'لماذا وِثاق؟', 'المزايا الأساسية', 'لمن صُمّم وِثاق؟', 'كل الباقات تشمل', 'السعر يُعلن عند الإطلاق', 'site/v2/shots/tenant.webp',
+                     // a real photo in the first story, and the portfolio map (a real screen)
+                     'site/v2/people/owner-photo.webp', 'صورة توضيحية', 'كل عقار تديره، في مكانه على الخريطة', 'site/v2/shots/map.webp', 'OpenStreetMap'] as $needle) {
+            $this->assertStringContainsString($needle, $html, $needle);
+        }
+        foreach (['sketch-villa', 'sketch-offices', 'sketch-block', 'sketch-street'] as $art) {   // pencil sketches drawn for the page
+            $svg = file_get_contents(public_path("site/v2/art/$art.svg"));
+            $this->assertStringNotContainsString('<image', $svg, $art);   // vector drawings, no embedded photos
+            $this->assertStringContainsString('<title>', $svg, $art);
+        }
+        // the current page is untouched and still at «/»
+        $this->get('/')->assertOk()->assertSee('ثلاثة أشياء تعرفها دون أن تسأل أحداً')->assertDontSee('site/v2/v2.css', false);
+        // a signed-in user can still review the preview (only «/» sends them to their interface)
+        $s = $this->makeSubscriber();
+        $this->actingAs($this->makeUser($s, 'manager'))->get('/preview')->assertOk();
+    }
+
+    public function test_the_demo_form_on_the_new_page_returns_to_the_new_page(): void
+    {
+        $this->post('/demo', ['name' => 'سعد', 'phone' => '0512345678', 'consent' => '1', 'from' => 'preview'])
+            ->assertRedirect(route('site.preview') . '#demo')->assertSessionHas('demo_sent');
+        $this->assertSame(1, SiteLead::count());
+        $this->post('/demo', ['name' => 'سعد', 'phone' => '0512345678', 'consent' => '1', 'from' => 'elsewhere'])
+            ->assertRedirect(route('site.home') . '#demo');   // anything else goes back to the current page
+    }
+
     public function test_the_platform_admin_reads_the_requests(): void
     {
         SiteLead::create(['name' => 'نورة', 'phone' => '0555555555', 'consented_at' => now()]);

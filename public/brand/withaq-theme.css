@@ -59,93 +59,72 @@ input:focus-visible + label.fi-btn { outline: 3px solid color-mix(in srgb, var(-
 .fi-sidebar-item-active .fi-sidebar-item-label, .fi-sidebar-item.fi-active .fi-sidebar-item-label { color: var(--color-deep, inherit) !important; font-weight: 700; }
 .fi-topbar > nav, .fi-topbar { background-color: var(--color-surface, #FFFFFF); }
 
-/* ---------- Sign-in pages: gradient + soft circles + identity panel + white card ---------- */
+/* ---------- Sign-in pages: the morning mint of the public page, a faint Kufic grid, and the same hand-drawn sketch ---------- */
 .fi-simple-layout {
     min-height: 100vh;
     display: flex;
     flex-direction: row;           /* RTL: the identity panel (first child) sits on the right, the card on the left */
     align-items: center;
     justify-content: center;
-    gap: 56px;
+    gap: clamp(40px, 7vw, 110px);
     padding: 24px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--color-primary, #0D8A7A) 0%, var(--color-secondary, #1A5F5A) 100%);
+    background: #E4F3EE;
+    isolation: isolate;
 }
-.fi-simple-layout::before, .fi-simple-layout::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-}
-.fi-simple-layout::before { width: 600px; height: 600px; background: rgba(255, 255, 255, .05); top: -300px; inset-inline-start: -200px; }
-.fi-simple-layout::after { width: 400px; height: 400px; background: rgba(255, 255, 255, .04); bottom: -200px; inset-inline-end: -100px; }
-.fi-simple-main-ctn { position: relative; z-index: 1; flex: 0 1 480px; }
+/* the Kufic grid, faint, fading out from the identity panel */
+.fi-simple-layout::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .6;
+    background-image: linear-gradient(rgba(13, 79, 92, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(13, 79, 92, .07) 1px, transparent 1px);
+    background-size: 64px 64px; background-position: center top;
+    -webkit-mask-image: radial-gradient(ellipse at 70% 50%, #000 0%, transparent 65%); mask-image: radial-gradient(ellipse at 70% 50%, #000 0%, transparent 65%); }
+.fi-simple-main-ctn { position: relative; z-index: 1; flex: 0 1 460px; }
 .fi-simple-main {
-    border-radius: var(--wq-radius-xl) !important;
-    box-shadow: var(--wq-shadow-xl) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 30px 60px -30px rgba(13, 79, 92, .35) !important;
     background: var(--color-surface, #FFFFFF) !important;
-    padding: 36px 32px !important;
+    padding: 40px 36px !important;
 }
 /* panel header logo: the Kufic wordmark fills the logo box */
 .wq-logo-word svg { display: block; width: 100%; height: 100%; }
 .fi-simple-header .fi-logo { display: none; }   /* the identity panel carries the brand */
-.fi-simple-header-heading { color: var(--color-deep, #0D4F5C); text-align: start; }
+.fi-simple-header-heading { color: #15302F; text-align: start; font-family: 'Noto Kufi Arabic', 'Cairo', sans-serif !important; font-weight: 800 !important; }
 
-.wq-auth-aside { position: relative; z-index: 1; color: #fff; max-width: 440px; text-align: start; display: grid; gap: 20px; justify-items: start; }
+.wq-auth-aside { position: relative; z-index: 1; color: #15302F; max-width: 440px; text-align: start; display: grid; gap: 22px; justify-items: start; }
 .wq-auth-brand { display: grid; gap: 14px; justify-items: inherit; }
-.wq-auth-logo { display: block; width: 150px; color: #fff; }
+.wq-auth-logo { display: block; width: 128px; color: #0D4F5C; }
 .wq-auth-logo svg { display: block; width: 100%; height: auto; }
-.wq-auth-kicker { font-size: .92rem; font-weight: 600; opacity: .9; }
-.wq-auth-title { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 3rem; line-height: 1.3; margin: 0; }
-.wq-auth-sub { font-size: 1.05rem; opacity: .92; margin: 0 0 22px; }
-.wq-auth-door { padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: .95rem; color: var(--color-deep, #0D4F5C); background: #fff; box-shadow: var(--wq-shadow-lg); }
+.wq-auth-kicker { font-size: .98rem; font-weight: 700; color: #0A6E62; }
+.wq-auth-title { margin: 0; line-height: 0; }
+.wq-auth-door { font-weight: 700; font-size: 1.02rem; color: #0D4F5C; background: #FCEBC4; padding: 3px 12px; border-radius: 3px; line-height: 1.6; }
+/* the sketch: the same original drawing as the public page's opening, chosen by the door */
+.wq-auth-art { display: block; width: 100%; max-width: 420px; height: auto; margin: -4px 0 -8px; animation: wq-art-in .6s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes wq-art-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
 
-/* The façade: the platform's signature — every unit, its status colour, lit one after another once */
-.wq-auth-facade { margin: 4px 0 0; width: 260px; }
-.wq-facade-roof { height: 10px; margin: 0 14px; border-radius: 10px 10px 0 0; background: rgba(255, 255, 255, .35); }
-.wq-facade-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 14px; border-radius: 6px 6px 0 0;
-    background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .28); border-bottom: 0; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-.wq-win { aspect-ratio: 1 / 1.25; border-radius: 4px; background: var(--w); box-shadow: 0 0 0 1px rgba(255, 255, 255, .25) inset;
-    animation: wq-light .5s ease-out both; animation-delay: calc(var(--i) * 60ms + 200ms); }
-.wq-win-paid { --w: var(--status-paid-bg, #DCF2E6); }
-.wq-win-late { --w: var(--status-late-bg, #F8DADA); }
-.wq-win-vacant { --w: var(--status-vacant-bg, #FDF0D5); }
-.wq-win-maint { --w: var(--status-maint-bg, #E4E0F5); }
-.wq-win-soon { --w: var(--status-soon-bg, #E2EEF9); }
-.wq-facade-door { height: 26px; margin: 0; border-radius: 0 0 6px 6px; border: 1px solid rgba(255, 255, 255, .28); border-top: 0;
-    background: linear-gradient(90deg, transparent 42%, rgba(255, 255, 255, .45) 42% 58%, transparent 58%), rgba(255, 255, 255, .12); }
-@keyframes wq-light { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
-
-.wq-auth-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.wq-auth-points li { display: flex; align-items: center; gap: 10px; font-size: .98rem; }
-.wq-auth-point-icon { width: 22px; height: 22px; flex: none; opacity: .95; }
+.wq-auth-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; width: 100%; }
+.wq-auth-points li { display: flex; align-items: center; gap: 12px; font-size: .98rem; color: #4E6662; padding: 10px 0; border-bottom: 1px solid rgba(13, 79, 92, .12); }
+.wq-auth-point-icon { width: 20px; height: 20px; flex: none; color: #0D8A7A; }
 
 /* Caps Lock warning under a password field */
 .wq-caps { margin: 6px 0 0; padding: 6px 10px; border-radius: 8px; font-size: .82rem; font-weight: 600;
     color: var(--status-soon-fg, #9A5B00); background: var(--status-soon-bg, #FFF3DC); border-inline-start: 3px solid currentColor; }
-.wq-auth-today {
-    display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px;
-    padding: 12px 16px; border-radius: var(--wq-radius-lg);
-    background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .28);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: var(--wq-shadow-lg);
-}
-.wq-today-day { font-weight: 800; font-size: 1.05rem; }
-.wq-today-hijri { font-weight: 700; }
+.wq-auth-today { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding-top: 4px; color: #4E6662; font-size: .95rem; }
+.wq-today-day { font-weight: 500; }
+.wq-today-hijri { font-weight: 700; color: #0D4F5C; }
 .wq-today-greg { font-size: .86rem; opacity: .9; }
 .wq-today-greg::before { content: '·'; margin-inline-end: 10px; opacity: .8; }
 
 @media (max-width: 900px) {
     .fi-simple-layout { flex-direction: column; gap: 24px; }
     .wq-auth-aside { text-align: center; justify-items: center; gap: 14px; }
-    .wq-auth-logo { width: 112px; }
-    .wq-auth-title { font-size: 2.2rem; }
-    .wq-auth-facade, .wq-auth-points { display: none; }   /* on phones the sign-in card comes first */
+    .wq-auth-logo { width: 96px; }
+    .wq-auth-door { border-inline-start: 0; padding-inline-start: 0; }
+    .wq-auth-art, .wq-auth-points { display: none; }   /* on phones the sign-in card comes first */
 }
 
 @media (prefers-reduced-motion: reduce) {
     .fi-btn { transition: none; }
-    .wq-win { animation: none; }
+    .wq-auth-art { animation: none; }
 }
 
 /* Header (owner request 2026-11-24, like the owner's other app): logo · page title and date ... new · circulars ·
