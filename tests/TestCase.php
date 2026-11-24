@@ -12,6 +12,12 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // The app's «today» is Riyadh's date (Today::date()); tests often write CarbonImmutable::today() (UTC). From 21:00
+        // to midnight UTC the two differ by a day, so a run in that window pins the clock to 20:00 UTC of the same day.
+        if ((int) gmdate('G') >= 21) {
+            \Carbon\Carbon::setTestNow(\Carbon\Carbon::now('UTC')->setTime(20, 0));
+            \Carbon\CarbonImmutable::setTestNow(\Carbon\CarbonImmutable::now('UTC')->setTime(20, 0));
+        }
         if (in_array(\Illuminate\Foundation\Testing\RefreshDatabase::class, class_uses_recursive(static::class), true)) {
             app(TenantContext::class)->clear();
         }

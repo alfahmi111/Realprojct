@@ -88,6 +88,15 @@ class OwnerDecisionsM19Test extends TestCase
         $this->assertSame(0, app(LeaseLifecycle::class)->run($today)['renewal_alerts']);
     }
 
+    public function test_req_0193_q35_a_lease_that_ended_long_ago_is_not_renewed_back_in_time(): void
+    {
+        $old = $this->lease('101', CarbonImmutable::parse('2025-01-01'), CarbonImmutable::parse('2025-12-31'));
+        $r = app(LeaseLifecycle::class)->run(CarbonImmutable::parse('2026-03-01'));   // two months after its end
+        $this->assertSame([0, 1], [$r['renewed'], $r['renewal_alerts']]);
+        $this->assertSame('active', $old->fresh()->status);
+        $this->assertSame(0, Lease::where('parent_lease_id', $old->id)->count());
+    }
+
     public function test_req_0193_q35_auto_renewal_can_be_ended_early_with_proration(): void
     {
         $old = $this->lease('101', CarbonImmutable::parse('2026-01-01'), CarbonImmutable::parse('2026-12-31'));

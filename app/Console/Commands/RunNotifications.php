@@ -8,6 +8,7 @@ use App\Notifications\NotificationCenter;
 use App\Notifications\PaymentReminders;
 use App\Tenancy\TenantContext;
 use Carbon\CarbonImmutable;
+use App\Support\Dates\Today;
 use Illuminate\Console\Command;
 
 /** Every few minutes: deliver due notifications and escalate; daily: reminders, digests, preventive work orders. */
@@ -25,13 +26,13 @@ class RunNotifications extends Command
             try {   // one office's error must not stop the run for the others (review M18)
             $ctx->run($sid, function () use ($now) {
                 if ($this->option('daily')) {
-                    app(PaymentReminders::class)->run($now->startOfDay());
-                    app(MaintenanceService::class)->generatePreventive($now->startOfDay());
-                    app(\App\BuildingQr\BuildingQrService::class)->alertLongWaitlistWhileVacant($now->startOfDay());   // REQ-0409
+                    app(PaymentReminders::class)->run(Today::date());
+                    app(MaintenanceService::class)->generatePreventive(Today::date());
+                    app(\App\BuildingQr\BuildingQrService::class)->alertLongWaitlistWhileVacant(Today::date());   // REQ-0409
                     app(\App\BuildingQr\BuildingQrService::class)->prune($now);                                       // waitlist retention (review M18)
-                    app(\App\Plans\SubscriptionNotices::class)->run($now->startOfDay());                              // Q24
-                    app(\App\Compliance\ExpiryAlerts::class)->run($now->startOfDay());                               // 6.7, Q31
-                    app(\App\Leasing\LeaseLifecycle::class)->run($now->startOfDay());                                 // expiry, offers, notice alerts (review M18)
+                    app(\App\Plans\SubscriptionNotices::class)->run(Today::date());                              // Q24
+                    app(\App\Compliance\ExpiryAlerts::class)->run(Today::date());                               // 6.7, Q31
+                    app(\App\Leasing\LeaseLifecycle::class)->run(Today::date());                                 // expiry, offers, notice alerts (review M18)
                 }
                 app(NotificationCenter::class)->escalate($now);
                 app(NotificationCenter::class)->deliver($now);
