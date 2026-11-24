@@ -46,6 +46,23 @@ class QuickMigration
         return ImportBatch::create(['uploaded_by' => $by->id, 'kind' => $kind, 'file_path' => $path, 'extracted' => $fields]);
     }
 
+    /**
+     * A filled Excel template (owner request 2026-11-24): read by the platform itself, one staged batch per row, no AI
+     * reader needed. Nothing is saved to business tables before each row is reviewed and confirmed.
+     * @return list<ImportBatch>
+     */
+    public function stageTemplate(User $by, string $path): array
+    {
+        $batches = [];
+        foreach (app(ExcelTemplate::class)->parse($path) as $row) {
+            $batches[] = ImportBatch::create(['uploaded_by' => $by->id, 'kind' => 'excel', 'file_path' => $path, 'extracted' => $row['fields']]);
+        }
+        if (! $batches) {
+            throw new MigrationException('لا عقود في الملف؛ أضف صفاً لكل عقد تحت العناوين.');
+        }
+        return $batches;
+    }
+
     /** What the review screen shows: each field with its value and confidence, lowest confidence first. */
     public function review(ImportBatch $batch): array
     {

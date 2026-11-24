@@ -7,6 +7,7 @@ use App\Support\Money\Money;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Throwable;
@@ -32,6 +33,72 @@ final class Ui
             ->directory(fn () => 'properties/' . (auth()->user()?->subscriber_id ?? 'x'))
             ->maxSize(4096)->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->helperText('تظهر في الرئيسية وصفحة العقار ومحتوى المبنى. JPG أو PNG حتى 4 ميغابايت.');
+    }
+
+    /**
+     * Location and national address (owner request 2026-11-24; spec 4.5 step 1, REQ-0448): a map instead of typing
+     * latitude/longitude, the short national address, and — once SPL is linked — the full address fetched from the pin.
+     */
+    public static function location(): \Filament\Schemas\Components\Section
+    {
+        $gw = fn () => app(\App\Integrations\NationalAddress\NationalAddressGateway::class);
+        $linked = fn () => in_array(\App\Integrations\IntegrationStatus::driver('national_address'), ['simulator', 'live'], true);
+        $fill = function (?array $a, \Filament\Schemas\Components\Utilities\Set $set) {
+            if (! $a) {
+                \Filament\Notifications\Notification::make()->title('لا عنوان وطني مسجّل في هذا الموقع')->warning()->send();
+                return;
+            }
+            foreach (['short', 'building_no', 'street', 'district', 'city', 'postal_code', 'additional_no'] as $k) {
+                $set('national_address.' . $k, $a[$k] ?? null);
+            }
+            if (! empty($a['city'])) {
+                $set('city', $a['city']);
+            }
+            \Filament\Notifications\Notification::make()->title('جُلب العنوان الوطني: ' . ($a['short'] ?? ''))->success()->send();
+        };
+        return \Filament\Schemas\Components\Section::make('الموقع والعنوان الوطني')
+            // SPL lookup deferred by the owner 2026-11-24 (paid subscription): the buttons below stay hidden while
+            // integrations.national_address is "none"; the short address is typed by hand.
+            ->description(fn () => $linked() ? 'حدّد المبنى على الخريطة، ثم اجلب عنوانه الوطني المختصر من سبل، أو اكتبه.' : 'حدّد المبنى على الخريطة، واكتب عنوانه الوطني المختصر.')
+            ->schema([
+                \Filament\Forms\Components\ViewField::make('map_picker')->view('filament.forms.map-picker')->dehydrated(false)->columnSpanFull(),
+                \Filament\Forms\Components\Hidden::make('latitude'),
+                \Filament\Forms\Components\Hidden::make('longitude'),
+                \Filament\Forms\Components\TextInput::make('national_address.short')->label('العنوان الوطني المختصر')->placeholder('RRRD2929')
+                    ->regex('/^[A-Za-z]{4}\d{4}$/')->validationMessages(['regex' => 'العنوان المختصر أربعة أحرف ثم أربعة أرقام، مثل RRRD2929.'])
+                    ->extraInputAttributes(['dir' => 'ltr', 'style' => 'text-transform:uppercase'])->dehydrateStateUsing(fn ($state) => $state ? strtoupper($state) : null)
+                    ->helperText(fn () => $linked() ? 'أو اجلبه من الموقع بالزر.' : 'تجده في تطبيق «العنوان الوطني» أو على لوحة المبنى.'),
+                \Filament\Schemas\Components\Actions::make([
+                    \Filament\Actions\Action::make('fetchAddress')->label('اجلب العنوان من الموقع')->icon(Heroicon::OutlinedMapPin)->color('gray')
+                        ->visible($linked)
+                        ->action(function (\Filament\Schemas\Components\Utilities\Get $get, \Filament\Schemas\Components\Utilities\Set $set) use ($gw, $fill) {
+                            if (! $get('latitude') || ! $get('longitude')) {
+                                \Filament\Notifications\Notification::make()->title('حدّد الموقع على الخريطة أولاً')->warning()->send();
+                                return;
+                            }
+                            $fill($gw()->byCoordinates((float) $get('latitude'), (float) $get('longitude')), $set);
+                        }),
+                    \Filament\Actions\Action::make('fetchByShort')->label('تحقق من العنوان المختصر')->icon(Heroicon::OutlinedCheckBadge)->color('gray')
+                        ->visible($linked)
+                        ->action(function (\Filament\Schemas\Components\Utilities\Get $get, \Filament\Schemas\Components\Utilities\Set $set) use ($gw, $fill) {
+                            $short = strtoupper((string) $get('national_address.short'));
+                            $a = $gw()->byShortAddress($short);
+                            $fill($a, $set);
+                            if ($a && ! empty($a['latitude'])) {
+                                $set('latitude', $a['latitude']);
+                                $set('longitude', $a['longitude']);
+                            }
+                        }),
+                ])->verticallyAlignEnd(),
+                \Filament\Schemas\Components\Fieldset::make('تفاصيل العنوان')->schema([
+                    \Filament\Forms\Components\TextInput::make('national_address.building_no')->label('رقم المبنى')->regex('/^\d{4}$/'),
+                    \Filament\Forms\Components\TextInput::make('national_address.street')->label('الشارع'),
+                    \Filament\Forms\Components\TextInput::make('national_address.district')->label('الحي'),
+                    \Filament\Forms\Components\TextInput::make('national_address.city')->label('المدينة'),
+                    \Filament\Forms\Components\TextInput::make('national_address.postal_code')->label('الرمز البريدي')->regex('/^\d{5}$/'),
+                    \Filament\Forms\Components\TextInput::make('national_address.additional_no')->label('الرقم الإضافي')->regex('/^\d{4}$/'),
+                ])->columns(3)->columnSpanFull(),
+            ])->columns(2)->columnSpanFull();
     }
 
     /** Key → Arabic label for the details stored with approvals and reconciliation issues. */

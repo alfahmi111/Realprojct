@@ -63,10 +63,11 @@ class AddBuildingWizard extends Page
         return $schema->statePath('data')->components([
             Wizard::make([
                 Step::make('بيانات العقار')->schema([
-                    Select::make('portfolio_id')->label('المحفظة')->options(fn () => Portfolio::pluck('name_ar', 'id'))->required()
+                    Select::make('portfolio_id')->label('المحفظة')->options(fn () => Portfolio::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->placeholder('محفظة المالك (تُنشأ باسمه تلقائياً)')
+                        ->visible(fn () => app(\App\Settings\Settings::class)->get('properties.portfolio_mode') === 'manual')->required(fn () => app(\App\Settings\Settings::class)->get('properties.portfolio_mode') === 'manual')
                         ->createOptionForm([TextInput::make('name_ar')->label('اسم المحفظة')->required()])
                         ->createOptionUsing(fn (array $data) => Portfolio::create(['name_ar' => $data['name_ar']])->id)
-                        ->helperText('مجموعة تنظّم بها مبانيك، مثل «محفظة عائلة الشهري». تُعرض تقاريرها معاً ويُسند كلٌّ منها لموظفيه. يكفي محفظة واحدة إن لم تحتج التقسيم.'),
+                        ->helperText('المحفظة تجميع إداري للعقارات؛ الحساب المالي يبقى لكل مالك. طريقة تنظيم المحافظ تُضبط من «إعدادات المكتب».'),
                     TextInput::make('name_ar')->label('اسم العقار')->required(),
                     \App\Filament\Support\Ui::propertyPhoto()->columnSpanFull(),
                     TextInput::make('name_en')->label('الاسم بالإنجليزية'),
@@ -76,16 +77,7 @@ class AddBuildingWizard extends Page
                     TextInput::make('region')->label('المنطقة (للسياسات النظامية)'),
                     TextInput::make('city')->label('المدينة'),
                     Toggle::make('within_urban_boundary')->label('داخل النطاق العمراني'),
-                    TextInput::make('latitude')->label('خط العرض')->regex('/^-?\d{1,3}(\.\d{1,7})?$/'),
-                    TextInput::make('longitude')->label('خط الطول')->regex('/^-?\d{1,3}(\.\d{1,7})?$/'),
-                    Section::make('العنوان الوطني')->schema([
-                        TextInput::make('national_address.building_no')->label('رقم المبنى')->regex('/^\d{4}$/'),
-                        TextInput::make('national_address.street')->label('الشارع'),
-                        TextInput::make('national_address.district')->label('الحي'),
-                        TextInput::make('national_address.city')->label('المدينة'),
-                        TextInput::make('national_address.postal_code')->label('الرمز البريدي')->regex('/^\d{5}$/'),
-                        TextInput::make('national_address.additional_no')->label('الرقم الإضافي')->regex('/^\d{4}$/'),
-                    ])->columns(3),
+                    \App\Filament\Support\Ui::location(),
                     Repeater::make('owners')->label('الملاك وحصصهم (مجموع الحصص = 1)')->schema([
                         Select::make('owner_id')->label('المالك')->options(fn () => Owner::whereNull('archived_at')->pluck('name_ar', 'id'))->required(),
                         TextInput::make('numerator')->label('البسط')->integer()->minValue(1)->required(),
@@ -136,7 +128,7 @@ class AddBuildingWizard extends Page
         $w = app(BuildingWizard::class);
         $property = Ui::attempt(fn () => DB::transaction(function () use ($w, $d) {
             $owners = collect($d['owners'])->map(fn ($o) => ['owner' => Owner::findOrFail($o['owner_id']), 'numerator' => (int) $o['numerator'], 'denominator' => (int) $o['denominator']])->all();
-            $property = $w->createProperty(Portfolio::findOrFail($d['portfolio_id']), collect($d)->only(['name_ar', 'name_en', 'deed_number', 'ejar_property_number', 'real_estate_registry_number', 'national_address', 'region', 'city', 'within_urban_boundary', 'latitude', 'longitude'])->all(), $owners, $d['template']);
+            $property = $w->createProperty(self::portfolioFor($d), collect($d)->only(['name_ar', 'name_en', 'deed_number', 'ejar_property_number', 'real_estate_registry_number', 'national_address', 'region', 'city', 'within_urban_boundary', 'latitude', 'longitude'])->all(), $owners, $d['template']);
             if (! empty($d['photo_path'])) {
                 $property->forceFill(['photo_path' => $d['photo_path']])->save();
             }
@@ -155,5 +147,26 @@ class AddBuildingWizard extends Page
         if ($property) {
             $this->redirect(\App\Filament\Manager\Resources\Properties\PropertyResource::getUrl('view', ['record' => $property]));
         }
+    }
+
+    /**
+     * Portfolio per client (owner recommendation 2026-11-24, Q32): the chosen one, else the first owner's own portfolio,
+     * created as «محفظة <اسم المالك>» on first use. The accounting entity stays the owner (trust ledger per owner).
+     */
+    public static function portfolioFor(array $d): Portfolio
+    {
+        $mode = app(\App\Settings\Settings::class)->get('properties.portfolio_mode') ?? 'per_owner';   // office settings (owner 2026-11-24)
+        if (! empty($d['portfolio_id'])) {
+            return Portfolio::findOrFail($d['portfolio_id']);
+        }
+        if ($mode === 'office') {
+            $sid = app(\App\Tenancy\TenantContext::class)->subscriberId();
+            $name = 'محفظة ' . app(\App\Tenancy\TenantContext::class)->run(null, fn () => \App\Models\Subscriber::find($sid))?->name_ar;
+            return Portfolio::whereNull('archived_at')->whereNull('owner_id')->where('name_ar', $name)->orderBy('id')->first()
+                ?? Portfolio::create(['name_ar' => $name]);
+        }
+        $owner = Owner::findOrFail($d['owners'][0]['owner_id'] ?? 0);
+        return Portfolio::whereNull('archived_at')->where('owner_id', $owner->id)->orderBy('id')->first()
+            ?? Portfolio::create(['name_ar' => 'محفظة ' . $owner->name_ar, 'owner_id' => $owner->id]);
     }
 }

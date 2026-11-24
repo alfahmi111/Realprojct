@@ -39,5 +39,6 @@
         <env name="INTEGRATION_YAQEEN" value="none" force="true"/>
         <env name="INTEGRATION_WATHQ" value="none" force="true"/>
         <env name="INTEGRATION_SADAD" value="none" force="true"/>
+        <env name="INTEGRATION_NATIONAL_ADDRESS" value="none" force="true"/>
     </php>
 </phpunit>

@@ -25,6 +25,14 @@ class ListProperties extends ListRecords
 
     public string $q = '';
 
+    /** name | occupancy | vacant | roll | open_wo | units (owner request 2026-11-24) */
+    public string $sort = 'name';
+
+    /** none | city */
+    public string $group = 'none';
+
+    public const SORTS = ['name' => 'الاسم', 'occupancy' => 'الأقل إشغالاً', 'vacant' => 'الأكثر شغوراً', 'roll' => 'الأعلى إيجاراً', 'open_wo' => 'الأكثر أوامر عمل', 'units' => 'الأكثر وحدات'];
+
     protected function getHeaderActions(): array
     {
         return [];
@@ -53,10 +61,31 @@ class ListProperties extends ListRecords
                     }
                 }
             }
-            return ['id' => $p->id, 'name' => $p->name_ar, 'city' => $p->city, 'photo' => $p->photoUrl(), 'deed' => $p->deed_number,
+            return ['id' => $p->id, 'name' => $p->name_ar, 'city' => $p->city, 'lat' => $p->latitude !== null ? (float) $p->latitude : null, 'lng' => $p->longitude !== null ? (float) $p->longitude : null, 'photo' => $p->photoUrl(), 'deed' => $p->deed_number,
                 'owners' => $p->shares->map(fn ($s) => $s->owner->name_ar)->unique()->values()->all(), 'buildings' => $p->buildings->count(),
                 'counts' => $t['counts'] ?? ['total' => 0, 'leased' => 0, 'vacant' => 0, 'paid' => 0, 'late' => 0, 'maint' => 0, 'soon' => 0, 'occupancy_bp' => 0],
                 'roll' => $roll, 'open_wo' => (int) ($wo[$p->id] ?? 0)];
-        })->all();
+        })->sortBy(fn ($c) => match ($this->sort) {
+            'occupancy' => $c['counts']['occupancy_bp'],
+            'vacant' => -$c['counts']['vacant'],
+            'roll' => -$c['roll'],
+            'open_wo' => -$c['open_wo'],
+            'units' => -$c['counts']['total'],
+            default => $c['name'],
+        })->values()->all();
+    }
+
+    /** Cards grouped by city when asked: [city => cards]. */
+    public function grouped(array $cards): array
+    {
+        if ($this->group !== 'city') {
+            return ['' => $cards];
+        }
+        $g = [];
+        foreach ($cards as $c) {
+            $g[trim((string) $c['city']) ?: 'بلا مدينة'][] = $c;
+        }
+        uksort($g, fn ($a, $b) => ($a === 'بلا مدينة') <=> ($b === 'بلا مدينة') ?: strcmp($a, $b));
+        return $g;
     }
 }

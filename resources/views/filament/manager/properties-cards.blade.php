@@ -20,11 +20,20 @@
     </header>
 
     @if ($mode === 'cards')
-        @if (count($cards) > 2 || $q !== '')
+        <div class="wq-treebar">
             <label class="wq-search"><x-filament::icon icon="heroicon-m-magnifying-glass" class="wq-search-ic" /><input type="search" wire:model.live.debounce.400ms="q" placeholder="ابحث باسم العقار أو المدينة أو رقم الصك" aria-label="بحث في العقارات"></label>
-        @endif
+            <div class="wq-pager">
+                <label class="wq-idband-pick"><span>الترتيب</span><select class="wq-select" wire:model.live="sort">@foreach (\App\Filament\Manager\Resources\Properties\Pages\ListProperties::SORTS as $k => $l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select></label>
+                <div class="wq-seg" role="group" aria-label="التجميع">
+                    <button type="button" wire:click="$set('group', 'none')" @class(['is-on' => $group === 'none'])>بلا تجميع</button>
+                    <button type="button" wire:click="$set('group', 'city')" @class(['is-on' => $group === 'city'])>حسب المدينة</button>
+                </div>
+            </div>
+        </div>
+        @forelse ($this->grouped($cards) as $city => $groupCards)
+        @if ($city !== '')<h2 class="wq-citygroup">{{ $city }} <small>{{ count($groupCards) }} {{ count($groupCards) === 1 ? 'عقار' : 'عقارات' }}</small></h2>@endif
         <div class="wq-props">
-            @forelse ($cards as $c)
+            @foreach ($groupCards as $c)
                 <article class="wq-prop">
                     <a class="wq-prop-photo" href="{{ $base }}/properties/{{ $c['id'] }}" @if ($c['photo']) style="background-image:url('{{ $c['photo'] }}')" @endif>
                         @unless ($c['photo'])<x-filament::icon icon="heroicon-o-building-office-2" class="wq-prop-ph" /><span>أضف صورة من «تعديل»</span>@endunless
@@ -53,12 +62,17 @@
                         </nav>
                     </div>
                 </article>
-            @empty
-                <section class="wq-panel wq-empty">
-                    @if ($q !== '')<p>لا عقار يطابق «{{ $q }}».</p>@else<p>لا عقارات بعد. المعالج يبني المبنى بأدواره ووحداته وأسعاره في دقيقة.</p><a class="wq-btn" href="{{ $base }}/add-building">إضافة مبنى</a>@endif
-                </section>
-            @endforelse
+            @endforeach
         </div>
+        @empty
+        @endforelse
+        @if (! count($cards))
+            <section class="wq-panel wq-empty">
+                @if ($q !== '')<p>لا عقار يطابق «{{ $q }}».</p>@else<p>لا عقارات بعد. المعالج يبني المبنى بأدواره ووحداته وأسعاره في دقيقة.</p><a class="wq-btn" href="{{ $base }}/add-building">إضافة مبنى</a>@endif
+            </section>
+        @else
+            @include('filament.manager.portfolio-map', ['cards' => $cards, 'base' => $base])
+        @endif
     @else
         {{ $this->table }}
     @endif

@@ -22,7 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
-/** Generated screen: إعلانات للمستأجرين (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
+/** Generated screen: تعاميم للمستأجرين (manager interface). Records are never deleted (REQ-0168); RLS isolates the subscriber. */
 class AnnouncementResource extends Resource
 {
 
@@ -37,9 +37,9 @@ class AnnouncementResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'التأجير';
 
-    protected static ?string $modelLabel = 'الإعلان';
+    protected static ?string $modelLabel = 'تعميم';
 
-    protected static ?string $pluralModelLabel = 'إعلانات للمستأجرين';
+    protected static ?string $pluralModelLabel = 'تعاميم للمستأجرين';
 
     public static function canDelete(Model $record): bool
     {
@@ -54,16 +54,20 @@ class AnnouncementResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            \Filament\Schemas\Components\Section::make('الإعلان')->description('ما يقرؤه المستأجر في واجهته.')->schema([
+            \Filament\Schemas\Components\Section::make('التعميم')->description('ما يقرؤه المستأجر في واجهته: تنبيه، أو شرح، أو تهنئة. أرفق صوراً أو فيديو أو ملف PDF إن احتجت.')->schema([
                 TextInput::make('title_ar')->label('العنوان')->required()->maxLength(120)->placeholder('مثال: انقطاع المياه يوم الخميس'),
                 Textarea::make('body_ar')->label('النص')->required()->rows(5),
+                \Filament\Forms\Components\FileUpload::make('attachments')->label('الوسائط (اختياري)')->multiple()->maxFiles(6)->maxSize(20480)->reorderable()
+                    ->disk('local')->visibility('private')->directory(fn () => 'announcements/' . (auth()->user()?->subscriber_id ?? 'x'))
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'application/pdf'])
+                    ->helperText('صور JPG أو PNG، أو فيديو MP4، أو PDF. حتى 6 ملفات، 20 ميغابايت لكل ملف.'),
             ])->columnSpan(2),
-            \Filament\Schemas\Components\Section::make('لمن')->description('اترك المباني فارغة ليصل الإعلان لكل المباني.')->schema([
+            \Filament\Schemas\Components\Section::make('لمن')->description('اترك المباني فارغة ليصل التعميم لكل المباني.')->schema([
                 Select::make('building_ids')->label('المباني')->multiple()->live()->placeholder('كل المباني')
                     ->options(fn () => \App\Models\Building::whereNull('archived_at')->with('property')->get()->mapWithKeys(fn ($b) => [$b->id => $b->property->name_ar . ' — ' . $b->name_ar])),
                 Select::make('excluded_unit_ids')->label('استثناء وحدات')->multiple()->searchable()
                     ->options(fn (\Filament\Schemas\Components\Utilities\Get $g) => self::unitOptions((array) $g('building_ids')))
-                    ->helperText('لن يرى مستأجرو هذه الوحدات الإعلان.'),
+                    ->helperText('لن يرى مستأجرو هذه الوحدات التعميم.'),
             ])->columnSpan(1),
             \Filament\Schemas\Components\Section::make('متى')->schema([
                 DateTimePicker::make('published_at')->label('يبدأ عرضه')->default(now())->required()->seconds(false),
@@ -93,9 +97,9 @@ class AnnouncementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->defaultSort('published_at', 'desc')
-            ->emptyStateHeading('لا إعلانات بعد')->emptyStateDescription('أعلن للمستأجرين عن انقطاع مياه أو صيانة مصعد، لمبنى أو أكثر، وحدّد متى يختفي الإعلان.')
+            ->emptyStateHeading('لا تعاميم بعد')->emptyStateDescription('عمّم على المستأجرين: انقطاع مياه، أو صيانة مصعد، أو تهنئة بالعيد، مع صور أو فيديو، لمبنى أو أكثر، وحدّد متى يختفي التعميم.')
             ->columns([
-                TextColumn::make('title_ar')->label('الإعلان')->searchable()->weight('bold')
+                TextColumn::make('title_ar')->label('التعميم')->searchable()->weight('bold')
                     ->description(fn (Announcement $r) => \Illuminate\Support\Str::limit($r->body_ar, 90)),
                 TextColumn::make('audience')->label('لمن')->state(fn (Announcement $r) => self::audience($r))->wrap(),
                 TextColumn::make('state')->label('الحالة')->badge()->state(fn (Announcement $r) => $r->state())

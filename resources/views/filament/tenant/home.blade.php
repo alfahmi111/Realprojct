@@ -144,12 +144,24 @@
 
     <div class="wq-grid">
         <section class="wq-panel" aria-labelledby="a-h">
-            <header class="wq-panel-head"><h2 id="a-h">إعلانات الإدارة</h2></header>
+            <header class="wq-panel-head"><h2 id="a-h">تعاميم الإدارة</h2></header>
             <ul class="wq-list">
                 @forelse ($announcements as $a)
-                    <li style="display:block"><strong>{{ $a['title_ar'] }}</strong><div class="wq-muted">{{ $a['body_ar'] }}</div></li>
+                    <li style="display:block"><strong>{{ $a['title_ar'] }}</strong><div class="wq-muted" style="white-space:pre-line">{{ $a['body_ar'] }}</div>
+                        @if (! empty($a['attachments']))
+                            <div class="wq-circ-media">
+                                @foreach ($a['attachments'] as $i => $path)
+                                    @php($ext = strtolower(pathinfo($path, PATHINFO_EXTENSION)))
+                                    @php($src = route('media.announcement', [$a['id'], $i]))
+                                    @if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true))<a href="{{ $src }}" target="_blank"><img src="{{ $src }}" alt="صورة مرفقة بالتعميم {{ $i + 1 }}" loading="lazy"></a>
+                                    @elseif ($ext === 'mp4')<video src="{{ $src }}" controls preload="metadata"></video>
+                                    @else<a class="wq-circ-file" href="{{ $src }}" target="_blank">ملف مرفق (PDF)</a>@endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </li>
                 @empty
-                    <li class="wq-muted">لا توجد إعلانات.</li>
+                    <li class="wq-muted">لا توجد تعاميم.</li>
                 @endforelse
             </ul>
         </section>

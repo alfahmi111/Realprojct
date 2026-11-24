@@ -60,3 +60,37 @@ Route::get('/media/document/{id}', function (int $id) {
         ? \Illuminate\Support\Facades\Storage::disk('local')->download($path, $doc->title_ar . '.' . pathinfo($path, PATHINFO_EXTENSION))
         : \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, no-store']);
 })->middleware(['web', 'auth'])->name('media.document');
+
+// Circular attachment (owner request 2026-11-24): a tenant sees only circulars visible to his building and unit; staff
+// with leasing permission see all of their office's. RLS hides other offices'.
+Route::get('/media/announcement/{id}/{n}', function (int $id, int $n) {
+    $user = auth()->user();
+    abort_unless($user && $user->subscriber_id, 403);
+    $a = \App\Models\Announcement::find($id);
+    abort_unless($a, 404);
+    if ($user->role === \App\Authorization\Role::Tenant) {
+        $visible = collect(app(\App\Portals\TenantPortal::class)->announcements($user))->pluck('id')->contains($id);
+        abort_unless($visible, 403);
+    } else {
+        abort_unless($user->hasPermission('leasing.view'), 403);
+    }
+    $path = ((array) $a->attachments)[$n] ?? null;
+    abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, max-age=3600']);
+})->middleware(['web', 'auth'])->whereNumber(['id', 'n'])->name('media.announcement');
+
+// Quick-migration Excel template (owner request 2026-11-24)
+Route::get('/manage/quick-migration/template.xlsx', function () {
+    abort_unless(auth()->user()?->hasPermission('properties.import'), 403);
+    $path = app(\App\Migration\ExcelTemplate::class)->build(tempnam(sys_get_temp_dir(), 'tpl') . '.xlsx');
+    return response()->download($path, 'قالب-استيراد-العقود.xlsx', ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])->deleteFileAfterSend();
+})->middleware(['web', 'auth'])->name('migration.template');
+
+// Office logo (owner request 2026-11-24). Public by nature: it is shown under the office's own name, also on the public
+// building page. Only paths inside the office's own branding folder are served.
+Route::get('/media/office/{sid}/logo/{mode}', function (int $sid, string $mode) {
+    $key = $mode === 'dark' ? 'theme.logo_dark' : 'theme.logo_light';
+    $path = app(\App\Tenancy\TenantContext::class)->run($sid, fn () => app(\App\Settings\Settings::class)->get($key));
+    abort_unless(is_string($path) && str_starts_with($path, "branding/$sid/") && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'public, max-age=3600', 'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'"]);
+})->whereNumber('sid')->whereIn('mode', ['light', 'dark'])->name('office.logo');

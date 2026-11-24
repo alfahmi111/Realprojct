@@ -117,8 +117,8 @@ class QuickMigrationPage extends Page
     /** Last imports of this office, newest first. */
     public function recent(): array
     {
-        return ImportBatch::orderByDesc('id')->limit(6)->get()->map(fn ($b) => [
-            'kind' => ['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد'][$b->kind] ?? $b->kind,
+        return ImportBatch::orderByRaw("status = 'staged' desc")->orderByDesc('id')->limit(10)->get()->map(fn ($b) => [
+            'id' => $b->id, 'kind' => ['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد'][$b->kind] ?? $b->kind,
             'status' => $b->status, 'at' => $b->created_at?->format('Y-m-d H:i'),
             'tenant' => collect($b->reviewed ?? [])->get('tenant_name') ?? collect($b->extracted)->firstWhere('field', 'tenant_name')['value'] ?? null,
             'lease_id' => $b->created_refs['lease_id'] ?? null,
@@ -128,24 +128,53 @@ class QuickMigrationPage extends Page
     public function stage(): void
     {
         $d = $this->uploadForm->getState();
-        $batch = Ui::attempt(fn () => app(QuickMigration::class)->stage(auth()->user(), Storage::disk('local')->path($d['file']), $d['kind']), 'استُخرجت الحقول — راجعها قبل الحفظ');
+        $path = Storage::disk('local')->path($d['file']);
+        // Excel/CSV: the template is read by the platform itself, one contract per row (owner request 2026-11-24)
+        if ($d['kind'] === 'excel' && preg_match('/\.(xlsx|csv)$/i', $path)) {
+            $batches = Ui::attempt(fn () => app(QuickMigration::class)->stageTemplate(auth()->user(), $path), '');
+            if ($batches) {
+                \Filament\Notifications\Notification::make()->title(count($batches) === 1 ? 'قُرئ عقد واحد — راجعه قبل الحفظ' : 'قُرئ ' . count($batches) . ' عقداً — راجعها واحداً واحداً')->success()->send();
+                $this->openBatch($batches[0]->id);
+            }
+            return;
+        }
+        $batch = Ui::attempt(fn () => app(QuickMigration::class)->stage(auth()->user(), $path, $d['kind']), 'استُخرجت الحقول — راجعها قبل الحفظ');
         if ($batch) {
-            $this->batchId = $batch->id;
-            $this->reviewForm->fill(collect($batch->extracted)->mapWithKeys(fn ($f) => [$f['field'] => $f['value']])->all());
+            $this->openBatch($batch->id);
+        }
+    }
+
+    /** Open a staged batch for review (the next contract of an Excel file, or one left from before). */
+    public function openBatch(int $id): void
+    {
+        $batch = ImportBatch::where('status', 'staged')->findOrFail($id);
+        $this->batchId = $batch->id;
+        $this->reviewForm->fill(collect($batch->extracted)->mapWithKeys(fn ($f) => [$f['field'] => $f['value']])->all());
+    }
+
+    /** After confirming or discarding, continue with the next staged contract of the same file. */
+    private function next(?string $file): void
+    {
+        $this->batchId = null;
+        $n = $file ? ImportBatch::where('status', 'staged')->where('file_path', $file)->orderBy('id')->value('id') : null;
+        if ($n) {
+            $this->openBatch($n);
         }
     }
 
     public function confirm(): void
     {
         $values = array_filter($this->reviewForm->getState(), fn ($v) => $v !== null && $v !== '');
-        if (Ui::attempt(fn () => app(QuickMigration::class)->confirm(ImportBatch::findOrFail($this->batchId), auth()->user(), $values), 'حُفظ العقد')) {
-            $this->batchId = null;
+        $batch = ImportBatch::findOrFail($this->batchId);
+        if (Ui::attempt(fn () => app(QuickMigration::class)->confirm($batch, auth()->user(), $values), 'حُفظ العقد')) {
+            $this->next($batch->file_path);
         }
     }
 
     public function discard(): void
     {
-        app(QuickMigration::class)->discard(ImportBatch::findOrFail($this->batchId));
-        $this->batchId = null;
+        $batch = ImportBatch::findOrFail($this->batchId);
+        app(QuickMigration::class)->discard($batch);
+        $this->next($batch->file_path);
     }
 }

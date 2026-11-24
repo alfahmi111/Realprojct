@@ -45,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
             default => throw new IntegrationNotConfigured('Automatic Ejar integration is blocked by decision 12.'),
         });
         $this->app->singleton(Simulators::class);
+        $this->app->singleton(\App\Integrations\NationalAddress\NationalAddressGateway::class, fn () => config('integrations.national_address') === 'simulator'
+            ? new \App\Integrations\NationalAddress\NationalAddressSimulator()
+            : new \App\Integrations\NationalAddress\UnconfiguredNationalAddress());
         // Identity layer and SADAD (Q30): one simulator for local trials, otherwise refuse until a provider is contracted.
         $this->app->singleton(\App\Integrations\Identity\IdentitySimulator::class);
         foreach ([\App\Integrations\Identity\IdentityGateway::class => ['nafath', 'yaqeen', 'wathq'], \App\Integrations\Sadad\SadadGateway::class => ['sadad']] as $contract => $keys) {

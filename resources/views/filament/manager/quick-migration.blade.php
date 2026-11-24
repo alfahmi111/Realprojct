@@ -19,6 +19,12 @@
         <li><span>3</span><div><strong>أكّد</strong><small>يُنشأ المستأجر والعقد وجدول الدفعات</small></div></li>
     </ol>
 
+    @if ($step === 1)
+        <aside class="wq-help wq-template">
+            <div><strong>تنقل عدة عقود دفعة واحدة؟</strong> نزّل قالب Excel، واملأ صفاً لكل عقد، ثم ارفعه هنا باختيار «جدول Excel». يقرؤه النظام بنفسه وتراجع كل عقد قبل حفظه.</div>
+            <a class="wq-btn" href="{{ route('migration.template') }}">نزّل القالب (xlsx)</a>
+        </aside>
+    @endif
     <section class="wq-panel wq-migrate-body">
         {{ $this->content }}
     </section>
@@ -31,7 +37,7 @@
                     <li class="wq-rec">
                         <span class="wq-near-what"><strong>{{ $r['tenant'] ?? $r['kind'] }}</strong><small>{{ $r['kind'] }}، {{ $r['at'] }}</small></span>
                         <span class="wq-chip {{ $statusAr[$r['status']][1] ?? '' }}">{{ $statusAr[$r['status']][0] ?? $r['status'] }}</span>
-                        <span class="wq-near-cost">@if ($r['lease_id'])<a class="wq-link" href="{{ $base }}/leases/{{ $r['lease_id'] }}">افتح العقد</a>@endif</span>
+                        <span class="wq-near-cost">@if ($r['lease_id'])<a class="wq-link" href="{{ $base }}/leases/{{ $r['lease_id'] }}">افتح العقد</a>@elseif ($r['status'] === 'staged')<button type="button" class="wq-link" wire:click="openBatch({{ $r['id'] }})">راجعه الآن</button>@endif</span>
                     </li>
                 @endforeach
             </ul>

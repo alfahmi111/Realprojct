@@ -62,6 +62,7 @@ class PropertyResource extends Resource
             TextInput::make('real_estate_registry_number')->label('رقم التسجيل العيني'), TextInput::make('region')->label('المنطقة'),
             TextInput::make('city')->label('المدينة'), Toggle::make('within_urban_boundary')->label('داخل النطاق العمراني'),
             \App\Filament\Support\Ui::propertyPhoto()->columnSpanFull(),
+            \App\Filament\Support\Ui::location(),
         ])->columns(2);
     }
 

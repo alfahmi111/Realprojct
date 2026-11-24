@@ -32,7 +32,7 @@ class LaunchHardeningTest extends TestCase
             $r->assertHeader('X-Content-Type-Options', 'nosniff');
             $r->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
             $this->assertStringContainsString("frame-ancestors 'self'", $r->headers->get('Content-Security-Policy'));
-            $this->assertStringContainsString('geolocation=()', $r->headers->get('Permissions-Policy'));
+            $this->assertStringContainsString('geolocation=(self)', $r->headers->get('Permissions-Policy'));
         }
     }
 

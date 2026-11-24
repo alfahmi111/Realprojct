@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Baseline security headers on every response (M16, launch hardening; REQ-0444 personal data protection):
  * no framing by other sites, no MIME sniffing, no full URL in Referer to other origins, browser features limited to
- * what the app uses (camera for QR scanning, geolocation off), and HSTS when served over HTTPS.
+ * what the app uses (camera for QR scanning, geolocation for the map's «my location»), and HSTS when served over HTTPS.
  * A strict Content-Security-Policy is not set: Filament/Livewire rely on inline scripts; frame-ancestors covers framing.
  */
 class SecurityHeaders
@@ -21,7 +21,7 @@ class SecurityHeaders
         $h->set('X-Frame-Options', 'SAMEORIGIN', false);
         $h->set('X-Content-Type-Options', 'nosniff', false);
         $h->set('Referrer-Policy', 'strict-origin-when-cross-origin', false);
-        $h->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(), payment=(self), usb=()', false);
+        $h->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(self), payment=(self), usb=()', false);
         if (! $h->has('Content-Security-Policy')) {
             $h->set('Content-Security-Policy', "frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
         }

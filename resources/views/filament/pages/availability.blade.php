@@ -14,7 +14,7 @@
     <div class="wq-avail-bar">
         @if (count($properties) > 1)
             <label class="wq-idband-pick"><span>العقار</span>
-                <select class="wq-select" wire:model.live="property">@foreach ($properties as $id => $name)<option value="{{ $id }}" @selected($id == $pid)>{{ $name }}</option>@endforeach</select>
+                <select class="wq-select" wire:model.live="property"><option value="0" @selected($pid === 0)>كل العقارات</option>@foreach ($properties as $id => $name)<option value="{{ $id }}" @selected($id == $pid)>{{ $name }}</option>@endforeach</select>
             </label>
         @endif
         <div class="wq-seg" role="group" aria-label="المدة">
@@ -37,7 +37,12 @@
                 @if ($todayAt !== null)<span class="wq-tl-today-tag" style="inset-inline-start: {{ $pctAt($todayAt) }}%">اليوم</span>@endif
             </div>
         </div>
+        @php($lastProp = null)
         @forelse ($lanes as $lane)
+            @if ($pid === 0 && $lane['property'] !== $lastProp)
+                @php($lastProp = $lane['property'])
+                <div class="wq-tl-group">{{ $lastProp }}</div>
+            @endif
             <div class="wq-tl-row">
                 <span class="wq-tl-lab"><strong>{{ $lane['code'] }}</strong>@if ($lane['vacating'])<small class="wq-tl-vac">تفرغ خلال {{ $lane['vacating']['in_days'] }} يوماً</small>@endif</span>
                 <div class="wq-tl-lane">

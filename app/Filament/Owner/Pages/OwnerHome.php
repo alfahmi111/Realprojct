@@ -63,6 +63,37 @@ class OwnerHome extends Page
         ];
     }
 
+    /**
+     * The owner sets his own approval rule for maintenance spending (owner request 2026-11-24): every spend, above an
+     * amount, or never. Changes the current management agreement; the change is audited (Auditable).
+     */
+    protected function getHeaderActions(): array
+    {
+        $current = fn () => ($o = $this->owner()) ? $o->agreements()->whereNull('archived_at')->where('starts_on', '<=', now())
+            ->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', now()))->orderByDesc('starts_on')->first() : null;
+        $R = \App\Filament\Manager\Resources\Owners\RelationManagers\AgreementsRelationManager::class;
+        return [
+            \Filament\Actions\Action::make('approvalRule')->label(fn () => 'موافقتي على الصرف: ' . (($a = $current()) ? $R::ruleText($a->spend_cap_minor) : '—'))
+                ->icon(Heroicon::OutlinedShieldCheck)->color('gray')->visible(fn () => (bool) $current())
+                ->fillForm(function () use ($current) {
+                    $m = $current()?->spend_cap_minor?->minor();
+                    return ['approval_rule' => $m === null ? 'none' : ($m === 0 ? 'all' : 'up_to'), 'spend_cap_minor' => $m ?: null];
+                })
+                ->schema([
+                    \Filament\Forms\Components\Radio::make('approval_rule')->label('متى يحتاج صرف الصيانة موافقتك؟')->live()->required()
+                        ->options(['all' => 'كل صرف يحتاج موافقتي', 'up_to' => 'يصرف المكتب حتى مبلغ أحدده، وما فوقه بموافقتي', 'none' => 'لا أشترط موافقتي']),
+                    Ui::money('spend_cap_minor', 'المبلغ')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('approval_rule') === 'up_to')
+                        ->required(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('approval_rule') === 'up_to'),
+                ])
+                ->action(function (array $data) use ($current, $R) {
+                    $a = $current();
+                    $cap = $R::cap($data);
+                    $a->forceFill(['spend_cap_minor' => $cap === null ? null : \App\Support\Money\Money::of($cap)])->save();
+                    \Filament\Notifications\Notification::make()->title('حُفظ: ' . $R::ruleText($cap))->success()->send();
+                }),
+        ];
+    }
+
     public function decide(int $workOrderId, bool $approve): void
     {
         $owner = $this->owner();
