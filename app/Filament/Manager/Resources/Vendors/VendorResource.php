@@ -72,7 +72,7 @@ class VendorResource extends Resource
                 TextColumn::make('commercial_registration')->label('السجل'),
                 TextColumn::make('rating')->label('التقييم')->formatStateUsing(fn ($state) => $state ? str_repeat('★', (int) round($state)) . str_repeat('☆', 5 - (int) round($state)) . ' ' . $state : 'لم يُقيَّم')->placeholder('لم يُقيَّم'),
             ])
-            ->recordActions([\App\Filament\Support\IdentityActions::group(), EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([\App\Filament\Support\IdentityActions::group(), EditAction::make(), \App\Filament\Support\Ui::archive('maintenance.edit'),]);
     }
 
     public static function getPages(): array

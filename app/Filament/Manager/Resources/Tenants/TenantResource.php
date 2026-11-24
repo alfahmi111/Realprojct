@@ -31,6 +31,18 @@ class TenantResource extends Resource
     {
         return (bool) auth()->user()?->hasPermission('leasing.view');
     }
+
+    /** Write gate (review M18): viewing roles do not create. */
+    public static function canCreate(): bool
+    {
+        return \App\Filament\Support\Ui::allowed('leasing.edit');
+    }
+
+    /** Write gate (review M18): viewing roles do not edit. */
+    public static function canEdit(Model $record): bool
+    {
+        return \App\Filament\Support\Ui::allowed('leasing.edit');
+    }
     protected static ?string $model = Tenant::class;
 
     protected static ?string $recordTitleAttribute = 'name_ar';   // global search in the header
@@ -124,7 +136,7 @@ class TenantResource extends Resource
                 \Filament\Actions\Action::make('whatsapp')->label('واتساب')->icon(Heroicon::OutlinedChatBubbleLeftRight)->color('success')
                     ->visible(fn (Tenant $t) => (bool) $t->phone)->url(fn (Tenant $t) => $wa($t->phone), shouldOpenInNewTab: true),
                 \App\Filament\Support\IdentityActions::group(),
-                EditAction::make(), \App\Filament\Support\Ui::archive(),
+                EditAction::make(), \App\Filament\Support\Ui::archive('leasing.edit'),
             ]);
     }
 

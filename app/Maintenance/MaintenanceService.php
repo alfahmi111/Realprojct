@@ -169,6 +169,14 @@ class MaintenanceService
     {
         $this->expect($wo, ['confirmed', 'completed']);
         $total = $this->totalCost($wo);
+        // the actual cost may not exceed what the owner approved, or the ceiling when no approval was needed
+        // (review M18: only the estimate was checked, so a 400 estimate could close at 5,000 paid from trust)
+        if (! $wo->warranty_id && $total->isPositive()) {
+            $ceiling = $wo->owner_approval === 'approved' ? $wo->estimated_cost_minor : $this->spendCap($wo->property_id);
+            if ($ceiling !== null && $total->greaterThan($ceiling)) {
+                throw new MaintenanceException('التكلفة الفعلية ' . $total->toDecimalString() . ' تتجاوز ما وافق عليه المالك أو سقف الصرف (' . $ceiling->toDecimalString() . '). اطلب موافقة المالك على المبلغ قبل الإغلاق.');
+            }
+        }
         DB::transaction(function () use ($wo, $by, $total, $tenantCausedApprovalDoc) {
             $wo->forceFill(['status' => 'closed', 'closed_at' => now()])->save();
             if ($wo->warranty_id || $total->isZero()) {
@@ -220,11 +228,17 @@ class MaintenanceService
     {
         $n = 0;
         foreach (PpmPlan::whereNull('archived_at')->where('next_due_on', '<=', $today->toDateString())->get() as $plan) {
-            DB::transaction(function () use ($plan, &$n) {
+            DB::transaction(function () use ($plan, &$n, $today) {
                 $propertyId = $plan->asset_id ? Asset::find($plan->asset_id)->space()->value('property_id') : \App\Models\Space::find($plan->space_id)->property_id;
                 $wo = $this->report('preventive', $propertyId, $plan->title_ar, 'system', null, $plan->asset_id ? Asset::find($plan->asset_id) : null, $plan->space_id);
                 $wo->forceFill(['ppm_plan_id' => $plan->id])->save();
-                $plan->forceFill(['next_due_on' => CarbonImmutable::parse($plan->next_due_on)->addMonthsNoOverflow($plan->every_months)->toDateString()])->save();
+                // one work order per run even when overdue, and the next due date jumps past today in one step
+                // (review M18: a plan months behind produced one work order per day while catching up)
+                $next = CarbonImmutable::parse($plan->next_due_on);
+                do {
+                    $next = $next->addMonthsNoOverflow($plan->every_months);
+                } while ($next->lessThanOrEqualTo($today));
+                $plan->forceFill(['next_due_on' => $next->toDateString()])->save();
                 $n++;
             });
         }
@@ -238,10 +252,17 @@ class MaintenanceService
         return $this->report('unit_prep', $lease->unit->property_id, 'تجهيز الوحدة ' . $lease->unit->code . ' بعد خروج المستأجر: دهان وتنظيف وفحص', 'system', null, null, $space?->id, [], $lease);
     }
 
-    private function spendCap(int $propertyId): ?Money
+    /**
+     * The approval ceiling for a property (review M18): only agreements in force today count, and on a jointly owned
+     * property the strictest owner's rule applies — one co-owner cannot waive another's approval. null = no approval.
+     */
+    public function spendCap(int $propertyId): ?Money
     {
-        return ManagementAgreement::whereNull('archived_at')->whereHas('properties', fn ($q) => $q->where('properties.id', $propertyId))
-            ->orderByDesc('starts_on')->first()?->spend_cap_minor;
+        $today = CarbonImmutable::today()->toDateString();
+        $caps = ManagementAgreement::whereNull('archived_at')->whereHas('properties', fn ($q) => $q->where('properties.id', $propertyId))
+            ->where('starts_on', '<=', $today)->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', $today))
+            ->get()->map(fn ($a) => $a->spend_cap_minor)->filter(fn ($c) => $c !== null);
+        return $caps->isEmpty() ? null : $caps->sortBy(fn (Money $c) => $c->minor())->first();
     }
 
     private function expect(WorkOrder $wo, array $statuses): void

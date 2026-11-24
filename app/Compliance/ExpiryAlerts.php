@@ -28,12 +28,14 @@ final class ExpiryAlerts
         $sid = $this->ctx->subscriberId();
         $s = $sid ? $this->ctx->run(null, fn () => Subscriber::find($sid)) : null;
         $sent = [];
-        if ($s?->license_expires_on && in_array((int) $today->diffInDays($s->license_expires_on, false), self::DAYS_BEFORE, true)) {
+        $stage = $s?->license_expires_on ? ExpiryStage::due($today, $s->license_expires_on) : null;
+        if ($stage !== null && ! ExpiryStage::alreadySent('document.expiring', $s, $stage)) {
             $managers = User::where('subscriber_id', $s->id)->where('role', 'manager')->whereNull('archived_at')->get()->all();
             $this->notifications->dispatch('document.expiring', $managers, [
                 'المستند' => self::LICENSE_KIND_AR[$s->license_kind] ?? 'رخصة المكتب',
                 'الرقم' => (string) $s->license_no,
                 'تاريخ الانتهاء' => $s->license_expires_on->format('Y-m-d'),
+                'التنبيه' => ExpiryStage::LABELS[$stage],
             ], $today->setTime(4, 0), urgent: true, subject: $s);
             $sent[] = 'office_license';
         }

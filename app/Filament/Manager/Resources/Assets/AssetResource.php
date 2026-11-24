@@ -114,7 +114,7 @@ class AssetResource extends Resource
                 TextColumn::make('warranty_ends_on')->label('انتهاء الضمان')->date()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([\Filament\Tables\Filters\SelectFilter::make('category')->label('الفئة')->options(collect(\App\Maintenance\AssetTaxonomy::CATEGORIES)->map(fn ($c) => $c['ar']))])
-            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive('assets.edit'),]);
     }
 
     public static function getPages(): array

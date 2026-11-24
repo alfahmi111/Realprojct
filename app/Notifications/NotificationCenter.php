@@ -25,7 +25,7 @@ class NotificationCenter
 
     public const EVENTS = [
         'payment.due' => 'دفعة مستحقة', 'payment.overdue' => 'دفعة متأخرة', 'payment.received' => 'دفعة مستلمة',
-        'lease.expiring' => 'عقد قارب الانتهاء', 'renewal.survey_reply' => 'رد على استطلاع التجديد',
+        'lease.expiring' => 'اقترب آخر موعد لإشعار عدم التجديد', 'lease.renewal_due' => 'عقد انتهى دون إشعار: سجّل التجديد', 'renewal.survey_reply' => 'رد على استطلاع التجديد',
         'maintenance.new_report' => 'بلاغ صيانة جديد', 'maintenance.emergency' => 'بلاغ طارئ', 'work_order.late' => 'أمر عمل تأخر عن موعده',
         'approval.waiting' => 'اعتماد ينتظرك', 'document.expiring' => 'مستند قارب الانتهاء', 'waitlist.new_prospect' => 'مهتم جديد في قائمة الانتظار', 'waitlist.long_while_vacant' => 'قائمة انتظار طويلة ووحدة شاغرة',
         'subscription.grace' => 'انتهى اشتراك المكتب — مهلة السماح جارية', 'subscription.read_only' => 'انتهت مهلة السماح — المنصة للقراءة فقط',
@@ -52,9 +52,14 @@ class NotificationCenter
             return [];
         }
         $ids = [];
+        // a tenant and his own account in the same dispatch: outside messages go once, to the tenant record (review M18)
+        $tenantUserIds = array_filter(array_map(fn ($r) => $r instanceof \App\Models\Tenant ? $r->user_id : null, $recipients));
         foreach ($recipients as $r) {
             $isUser = $r instanceof User;
             $channels = $config['channels'] ?? ['in_app'];
+            if ($isUser && in_array($r->id, $tenantUserIds, true)) {
+                $channels = array_values(array_intersect($channels, ['in_app', 'push']));
+            }
             if ($isUser) {
                 $channels = array_values(array_unique(array_merge(['in_app'], $channels)));
                 $prefs = ($this->settings->get('notifications.preferences', $r->id) ?? [])[$event] ?? null;
@@ -120,7 +125,16 @@ class NotificationCenter
         $stats = [];
         $due = DB::table('notifications_outbox')->where('status', 'queued')->where('send_after', '<=', $now)->orderBy('id')->get();
         foreach ($due as $n) {
-            $status = $this->deliverOne($n, $now);
+            // claim the row atomically: two overlapping runs never send the same message twice (review M18)
+            if (DB::table('notifications_outbox')->where('id', $n->id)->where('status', 'queued')->update(['status' => 'sending']) === 0) {
+                continue;
+            }
+            try {
+                $status = $this->deliverOne($n, $now);
+            } catch (\Throwable $e) {
+                $this->mark($n->id, 'queued');   // retried on the next run
+                throw $e;
+            }
             $stats[$status] = ($stats[$status] ?? 0) + 1;
         }
         return $stats;

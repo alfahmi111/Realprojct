@@ -150,7 +150,7 @@ class DocumentResource extends Resource
                     }),
             ])
             ->headerActions([
-                Action::make('upload')->label('رفع مستند')->icon(Heroicon::OutlinedArrowUpTray)
+                Action::make('upload')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('رفع مستند')->icon(Heroicon::OutlinedArrowUpTray)
                     ->schema([
                         Select::make('owner')->label('يخص')->options(fn () => self::ownerOptions())->searchable()->required(),
                         Select::make('kind')->label('النوع')->required()->live()
@@ -171,7 +171,7 @@ class DocumentResource extends Resource
             ])
             ->recordActions([
                 Action::make('open')->label('فتح')->icon(Heroicon::OutlinedEye)->url(fn (Document $d) => route('media.document', $d->id), shouldOpenInNewTab: true),
-                Action::make('replace')->label('نسخة جديدة')->icon(Heroicon::OutlinedArrowPath)->color('gray')
+                Action::make('replace')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('نسخة جديدة')->icon(Heroicon::OutlinedArrowPath)->color('gray')
                     ->modalDescription('للترخيص المجدَّد أو الشهادة الجديدة. تبقى النسخة السابقة في السجل.')
                     ->schema([DatePicker::make('expires_on')->label('تاريخ الانتهاء الجديد'), self::fileField()])
                     ->action(function (Document $d, array $data) use ($vault) {

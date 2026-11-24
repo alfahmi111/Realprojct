@@ -64,7 +64,8 @@ final class IdentityActions
                     $run(fn () => $svc()->nafathCheck($v, $r));
                 }),
         ])->label('تحقّق')->icon(Heroicon::OutlinedShieldCheck)->button()->color('gray')
-            ->visible(fn () => collect(['yaqeen', 'wathq', 'nafath'])->contains(fn ($s) => $svc()->available($s)));
+            ->visible(fn () => collect(['yaqeen', 'wathq', 'nafath'])->contains(fn ($s) => $svc()->available($s))
+                && collect(['leasing.edit', 'properties.edit', 'maintenance.edit'])->contains(fn ($p) => Ui::allowed($p)));   // review M18: write roles only
     }
 
     /** «موثّق عبر يقين في 2026-11-23» under the name, or the open problem. */

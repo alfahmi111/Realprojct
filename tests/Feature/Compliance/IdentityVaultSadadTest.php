@@ -142,9 +142,13 @@ class IdentityVaultSadadTest extends TestCase
         $today = CarbonImmutable::parse('2026-11-23');
         $cd = $vault->add($this->p, 'civil_defense', '', 'documents/x/cd.pdf', $today->addDays(30)->toDateString(), $this->manager);
         $vault->add($this->p, 'building_permit', '', 'documents/x/bp.pdf', $today->addDays(7)->toDateString(), $this->manager);
-        $vault->add($this->p, 'deed', '', 'documents/x/d.pdf', $today->addDays(12)->toDateString(), $this->manager);   // no alert on day 12
+        $vault->add($this->p, 'deed', '', 'documents/x/d.pdf', $today->addDays(12)->toDateString(), $this->manager);   // inside 30 days: its 30-day alert is due (review M18: ranges)
+        $vault->add($this->p, 'deed', '', 'documents/x/d2.pdf', $today->addDays(60)->toDateString(), $this->manager);   // too early: none
         $r = $vault->alerts($today, app(NotificationCenter::class));
-        $this->assertSame(['alerted' => 2, 'work_orders' => 1], $r);
+        $this->assertSame(['alerted' => 3, 'work_orders' => 1], $r);
+        $this->assertSame(['alerted' => 0, 'work_orders' => 0], $vault->alerts($today, app(NotificationCenter::class)));   // run twice in a day: nothing repeated
+        // day 7 of the deed (today+5) was missed; on today+6 its 7-day alert is caught up, nothing else repeats
+        $this->assertSame(1, $vault->alerts($today->addDays(6), app(NotificationCenter::class))['alerted']);
         $wo = WorkOrder::find($cd->fresh()->statutory_work_order_id);
         $this->assertSame('statutory', $wo->type);
         $this->assertStringContainsString('شهادة الدفاع المدني', $wo->description);

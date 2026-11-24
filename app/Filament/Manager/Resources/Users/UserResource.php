@@ -70,7 +70,7 @@ class UserResource extends Resource
                         Select::make('scope_id')->label('العنصر')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('scope_type') === 'portfolio' ? Portfolio::pluck('name_ar', 'id') : Property::whereNull('archived_at')->pluck('name_ar', 'id'))->required(),
                     ])
                     ->action(fn (User $record, array $data) => Ui::attempt(fn () => UserScope::firstOrCreate(['user_id' => $record->id, 'scope_type' => $data['scope_type'], 'scope_id' => (int) $data['scope_id']]), 'أُضيف النطاق')),
-                Ui::archive()->visible(fn (User $record) => $record->archived_at === null && $record->id !== auth()->id()),
+                Ui::archive('users.manage')->visible(fn (User $record) => $record->archived_at === null && $record->id !== auth()->id()),
             ]);
     }
 

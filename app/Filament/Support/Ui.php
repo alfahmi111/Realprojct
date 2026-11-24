@@ -140,11 +140,24 @@ final class Ui
     }
 
     /** Archive (never delete) — hidden once archived. */
-    public static function archive(): Action
+    /**
+     * Archive a record — only for users who may change it (review M18: archive had no permission check, so any role able
+     * to view a list could archive its records). $permission is the write permission of the resource.
+     */
+    public static function archive(string $permission): Action
     {
         return Action::make('archive')->label('أرشفة')->color('danger')->requiresConfirmation()
-            ->visible(fn (Model $record) => $record->archived_at === null)
-            ->action(fn (Model $record) => $record->archive());
+            ->visible(fn (Model $record) => $record->archived_at === null && self::allowed($permission))
+            ->action(function (Model $record) use ($permission) {
+                abort_unless(self::allowed($permission), 403);
+                $record->archive();
+            });
+    }
+
+    /** Whether the signed-in user holds a permission (write gates on resources and actions). */
+    public static function allowed(string $permission): bool
+    {
+        return (bool) auth()->user()?->hasPermission($permission);
     }
 
     /** Run a service call and show its domain error as a notification instead of a crash. */

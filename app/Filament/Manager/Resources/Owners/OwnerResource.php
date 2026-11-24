@@ -31,6 +31,18 @@ class OwnerResource extends Resource
     {
         return (bool) auth()->user()?->hasPermission('properties.view');
     }
+
+    /** Write gate (review M18): viewing roles do not create. */
+    public static function canCreate(): bool
+    {
+        return \App\Filament\Support\Ui::allowed('properties.edit');
+    }
+
+    /** Write gate (review M18): viewing roles do not edit. */
+    public static function canEdit(Model $record): bool
+    {
+        return \App\Filament\Support\Ui::allowed('properties.edit');
+    }
     protected static ?string $model = Owner::class;
 
     protected static ?string $recordTitleAttribute = 'name_ar';   // global search in the header
@@ -62,8 +74,8 @@ class OwnerResource extends Resource
                 \Filament\Forms\Components\ToggleButtons::make('kind')->label('النوع')->options(self::KIND_AR)->icons(['individual' => 'heroicon-o-user', 'heirs' => 'heroicon-o-user-group', 'company' => 'heroicon-o-building-office'])->inline()->required()->live()->default('individual'),
                 TextInput::make('name_ar')->label('الاسم بالعربية')->required(),
                 TextInput::make('name_en')->label('الاسم بالإنجليزية'),
-                TextInput::make('national_id')->label('رقم الهوية')->password()->revealable()->hidden(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company')->helperText('يُخزَّن مشفّراً.'),
-                TextInput::make('commercial_registration')->label('السجل التجاري')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company'),
+                TextInput::make('national_id')->label('رقم الهوية')->password()->revealable()->dehydrated(fn ($state) => filled($state))->placeholder(fn (?\App\Models\Owner $record) => $record?->getRawOriginal('national_id') ? 'محفوظ — اكتب رقماً جديداً لتغييره' : null)->hidden(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company')->helperText('يُخزَّن مشفّراً.'),
+                TextInput::make('commercial_registration')->label('السجل التجاري')->dehydrated(fn ($state) => filled($state))->placeholder(fn (?\App\Models\Owner $record) => $record?->getRawOriginal('commercial_registration') ? 'محفوظ — اكتب رقماً جديداً لتغييره' : null)->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('kind') === 'company'),
                 Toggle::make('resident')->label('مقيم في المملكة')->default(true)->helperText('غير المقيم قد تختلف معاملته الضريبية.'),
             ])->columns(2),
             Section::make('الضريبة')->description('إن كان المالك مسجّلاً في ضريبة القيمة المضافة، تحمل فواتير الإيجار التجاري ضريبة 15% باسمه.')->schema([
@@ -99,7 +111,7 @@ class OwnerResource extends Resource
                 IconColumn::make('vat_registered')->label('مسجّل ضريبياً')->boolean()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([\Filament\Tables\Filters\SelectFilter::make('kind')->label('النوع')->options(self::KIND_AR)])
-            ->recordActions([\App\Filament\Support\IdentityActions::group(), EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([\App\Filament\Support\IdentityActions::group(), EditAction::make(), \App\Filament\Support\Ui::archive('properties.edit'),]);
     }
 
     public static function getRelations(): array
