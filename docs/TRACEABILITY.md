@@ -309,7 +309,7 @@
 | REQ-0302 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0303 | §7.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L968 |
 | REQ-0304 | §7.3 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L949 |
-| REQ-0305 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L941، L949 |
+| REQ-0305 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php | MIXED→MVP: §12 L941، L949 |
 | REQ-0306 | §7.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0307 | §7.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L949 |
 | REQ-0308 | §7.3 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L959 |

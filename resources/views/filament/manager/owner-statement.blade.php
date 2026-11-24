@@ -50,7 +50,7 @@
                 @if ($r['margin'])
                     <li class="is-out"><span class="wq-cascade-label">هامش المدير على فواتير الموردين</span><span class="wq-cascade-track"><span style="{{ $step($r['margin']) }}"></span></span><b>− {{ $s['margin_total'] }}</b></li>
                 @endif
-                @if ($r['recovered'])<li class="is-in"><span class="wq-cascade-label">صيانة استُردت من المستأجر<small>تكلفة حُمّلت على المستأجر وسدّدها</small></span><span class="wq-cascade-track"><span style="--w: {{ max(1, intdiv($r['recovered'] * 100, $max)) }}%"></span></span><b>+ {{ $s['recovered'] }}</b></li>@endif
+                @if ($r['recovered'])<li class="is-in"><span class="wq-cascade-label">صيانة استُردت من المستأجر<small>تكلفة حُمّلت على المستأجر وسدّدها@if ($s['has_recovered_vat']) — شاملة ضريبة {{ $s['recovered_vat'] }} يُقرّ بها المالك@endif</small></span><span class="wq-cascade-track"><span style="--w: {{ max(1, intdiv($r['recovered'] * 100, $max)) }}%"></span></span><b>+ {{ $s['recovered'] }}</b></li>@endif
                 <li class="is-net"><span class="wq-cascade-label">صافي الشهر للمالك<small>يُحوَّل بطلب يعتمده مراجِع؛ انظر حركة الأمانات أدناه</small></span><span class="wq-cascade-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
             </ol>
 

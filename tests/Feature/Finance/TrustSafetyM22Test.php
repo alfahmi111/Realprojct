@@ -482,6 +482,35 @@ class TrustSafetyM22Test extends TestCase
         $this->assertSame(['11500.00', '575.00', '10925.00', '0.00'], array_map(fn ($k) => $pos[$k]->toDecimalString(), ['trust_cash', 'owed_to_office', 'available', 'difference']));
     }
 
+    public function test_req_0305_q39_maintenance_recharged_to_the_tenant_enters_the_statement_with_its_vat_and_matches_the_ledger(): void
+    {
+        $owner = Owner::create(['kind' => 'individual', 'name_ar' => 'م', 'vat_registered' => true, 'vat_number' => '300000000000063']);
+        [$p, , $shop] = $this->building([['owner' => $owner, 'numerator' => 1, 'denominator' => 1]]);
+        $com = $this->lease($shop, $this->tCom, 'commercial', '120000');
+        $this->clock('2027-01-20 09:00:00');
+        $this->firstInvoice($com);
+        $pay = app(PaymentService::class);
+        $pay->record($this->tCom, Money::parse('11500'), 'bank_transfer', CarbonImmutable::parse('2027-01-05'), 'manager', reference: 'FT-Q39-1');
+        // repair 1,000 paid from trust, then recharged to the tenant (misuse) 1,000 + 150 VAT, paid to the office
+        $trust = app(TrustAccounting::class);
+        app(ApprovalExecutor::class)->approve($trust->requestExpense($this->accountant, $owner, $p->id, Money::parse('1000'), 'إصلاح', 'WO-Q39', CarbonImmutable::parse('2027-01-10')), $this->manager);
+        $inv = app(InvoiceService::class)->issueRecharge($com, 'سوء استخدام', Money::parse('1000'), CarbonImmutable::parse('2027-01-11'));
+        $this->assertSame('150.00', $inv->tax_minor->toDecimalString());
+        $pay->record($this->tCom, Money::parse('1150'), 'bank_transfer', CarbonImmutable::parse('2027-01-12'), 'manager', reference: 'FT-Q39-2');
+
+        $st = $trust->statement($owner, CarbonImmutable::parse('2027-01-01'));
+        // Q39: the whole 1,150 is credited (before: 1,000, a 150 gap with the ledger)
+        $this->assertSame(['1150.00', '150.00'], [$st['maintenance_recovered']->toDecimalString(), $st['maintenance_recovered_vat']->toDecimalString()]);
+        // net: 11,500 − 1,000 + 1,150 − fee (5% of 10,000 = 500 + 75 VAT) = 11,075
+        $this->assertSame('11075.00', $st['net_to_owner']->toDecimalString());
+        $pos = $trust->position($owner);
+        $this->assertSame(['11075.00', '11075.00', '11075.00', '0.00'], array_map(fn ($k) => $pos[$k]->toDecimalString(), ['ledger_based', 'statement_based', 'available', 'difference']));
+        // the page says the VAT is included and shows no ledger difference
+        $this->actingAs($this->manager);
+        Livewire::test(OwnerStatementPage::class)->set('data.owner_id', $owner->id)->set('data.month', '2027-01')->call('show')
+            ->assertSee('شاملة ضريبة')->assertDontSee('فرق بين الدفتر والكشوف');
+    }
+
     // ───────────────────────── 5. Q37 (أ): the owner pays the vendor directly ─────────────────────────
 
     private function finishedWorkOrder(Property $p, string $cost): WorkOrder

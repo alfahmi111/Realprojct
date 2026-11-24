@@ -126,7 +126,7 @@ class OwnerStatementPage extends Page
             'maintenance' => array_map(fn ($x) => ['date' => $x['date'], 'description' => $x['description'], 'work_order' => $x['work_order'], 'amount' => $m($x['amount']), 'minor' => $minor($x['amount'])], $s['maintenance']),
             'maintenance_total' => $m($s['maintenance_total']), 'margin_total' => $m($s['vendor_margin_total']), 'net' => $m($s['net_to_owner']),
             'fee_text' => \App\Finance\TrustAccounting::feeText($s['management_fee']),
-            'owner_direct' => $m($s['collected_by_owner']), 'recovered' => $m($s['maintenance_recovered']),
+            'owner_direct' => $m($s['collected_by_owner']), 'recovered' => $m($s['maintenance_recovered']), 'recovered_vat' => $m($s['maintenance_recovered_vat']), 'has_recovered_vat' => $s['maintenance_recovered_vat']->isPositive(),
             // M22: running trust position of this owner
             'opening_available' => $m($s['opening_available']), 'disbursed' => $m($s['disbursed']), 'available' => $m($s['available']),
             'available_now' => $m($s['available_now']), 'pending_disbursements' => $m($s['pending_disbursements']), 'has_pending' => $s['pending_disbursements']->isPositive(),

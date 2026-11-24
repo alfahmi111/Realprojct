@@ -332,22 +332,25 @@ class TrustAccounting
         // shown on its own line and is not "net to transfer"; the fee on it is then owed by the owner (a negative net).
         $ownerDirect = Money::sum($allocs->filter(fn ($a) => $a->payment?->paid_to === 'owner')->map(fn ($a) => $a->amount_minor)->all());
         $heldByManager = $collectedGross->minus($ownerDirect);
-        // Maintenance the tenant was charged for (misuse) and paid back to the office: credited to the owner, net of VAT,
-        // because the full repair cost was deducted above (review M18).
+        // Maintenance the tenant was charged for (misuse) and paid back to the office: credited to the owner in full, VAT
+        // included (owner decision Q39, replacing the net-of-VAT rule of review M18). The owner is the seller on that
+        // invoice and declares its VAT, as with shop-rent VAT, and the ledger already credits his trust with the whole amount.
         $recharges = PaymentAllocation::query()
             ->whereHas('payment', fn ($q) => $q->where('status', 'recorded')->where('paid_to', 'manager')->whereBetween('received_on', [$from, $to]))
             ->whereIn('invoice_id', Invoice::where('seller_owner_id', $owner->id)->where('kind', 'maintenance_recharge')->select('id'))->get();
         $recovered = Money::zero();
+        $recoveredVat = Money::zero();
         foreach ($recharges as $a) {
             $inv = Invoice::find($a->invoice_id);
-            $recovered = $recovered->plus($a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor())));
+            $recovered = $recovered->plus($a->amount_minor);
+            $recoveredVat = $recoveredVat->plus($a->amount_minor->minus($a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor()))));
         }
         $deducted = $collection === 'deduct_from_remittance';
         $net = $heldByManager->plus($recovered)->minus($deducted ? $fee->plus($feeVat) : Money::zero())->minus($maintTotal)->minus($marginTotal);
         return [
             'owner_id' => $owner->id, 'month' => $month->format('Y-m'),
             'collected_rent' => $collectedGross, 'collected_rent_net_of_vat' => $collectedNet,
-            'collected_by_owner' => $ownerDirect, 'held_by_manager' => $heldByManager, 'maintenance_recovered' => $recovered,
+            'collected_by_owner' => $ownerDirect, 'held_by_manager' => $heldByManager, 'maintenance_recovered' => $recovered, 'maintenance_recovered_vat' => $recoveredVat,
             'management_fee' => ['type' => $agreement?->fee_type ?? 'percentage', 'percentage_bp' => $agreement?->fee_percentage_bp ?? 0, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
                 'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted, 'agreements' => count($parts) > 1 ? $parts : []],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
