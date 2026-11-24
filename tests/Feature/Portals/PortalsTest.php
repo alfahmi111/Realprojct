@@ -81,7 +81,7 @@ class PortalsTest extends TestCase
     public function test_req_0283_kpis_occupancy_financial_occupancy_collection_aging_and_noi(): void
     {
         $inv = app(InvoiceService::class)->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));
-        app(PaymentService::class)->record($this->lessee, Money::parse('6000'), 'mada', CarbonImmutable::parse('2027-01-05'), 'manager');
+        app(PaymentService::class)->record($this->lessee, Money::parse('6000'), 'mada', CarbonImmutable::parse('2027-01-05'), 'manager', reference: 'EJR-P84', refSource: 'ejar');
         $k = app(Kpis::class)->all([$this->property->id], CarbonImmutable::parse('2027-01-01'), CarbonImmutable::parse('2027-03-01'));
         $this->assertSame(5000, $k['physical_occupancy_bp']);       // 1 of 2 units
         $this->assertSame(4800, $k['financial_occupancy_bp']);      // 48,000 of 100,000 potential

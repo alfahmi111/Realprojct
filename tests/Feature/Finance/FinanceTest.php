@@ -152,11 +152,11 @@ class FinanceTest extends TestCase
         [$q1, $q2] = $this->lease->scheduleLines->take(2)->all();
         $i1 = $this->inv()->issueRent($q1, CarbonImmutable::parse('2027-01-01'));
         $i2 = $this->inv()->issueRent($q2, CarbonImmutable::parse('2027-04-01'));
-        $p = app(PaymentService::class)->record($this->tenant, Money::parse('20000'), 'mada', CarbonImmutable::parse('2027-04-05'), 'manager', $this->accountant);
+        $p = app(PaymentService::class)->record($this->tenant, Money::parse('20000'), 'mada', CarbonImmutable::parse('2027-04-05'), 'manager', $this->accountant, reference: 'EJR-F155', refSource: 'ejar');
         $this->assertStringStartsWith('RECEIPT-2027-', $p->receipt_number);   // REQ-0316
         $this->assertTrue($this->inv()->outstanding($i1->fresh())->isZero());
         $this->assertSame(1000000, $this->inv()->outstanding($i2->fresh())->minor());
-        $p2 = app(PaymentService::class)->record($this->tenant, Money::parse('12000'), 'card', CarbonImmutable::parse('2027-04-20'), 'manager');
+        $p2 = app(PaymentService::class)->record($this->tenant, Money::parse('12000'), 'card', CarbonImmutable::parse('2027-04-20'), 'manager', reference: 'GW-F159', refSource: 'card');
         $this->assertTrue($this->inv()->outstanding($i2->fresh())->isZero());
         $this->assertSame(200000, app(Ledger::class)->balance("tenant_credit:{$this->tenant->id}")->negate()->minor());   // 2,000 over-payment held as credit
     }
@@ -170,7 +170,7 @@ class FinanceTest extends TestCase
     public function test_req_0429_collected_rent_enters_owner_trust_not_manager_revenue_and_req_0430_revenue_is_fees_only(): void
     {
         $i = $this->inv()->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));
-        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager');
+        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager', reference: 'EJR-F173', refSource: 'ejar');
         $ledger = app(Ledger::class);
         $this->assertSame(1500000, $ledger->balance('trust_bank')->minor());
         $this->assertTrue(app(TrustAccounting::class)->managerRevenue('2027-01-01', '2027-12-31')->isZero());
@@ -215,7 +215,7 @@ class FinanceTest extends TestCase
     {
         app(Settings::class)->setSubscriber('finance.vat_registered', true);
         $i = $this->inv()->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));
-        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager');
+        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager', reference: 'EJR-F218', refSource: 'ejar');
         $ta = app(TrustAccounting::class);
         $req = $ta->requestExpense($this->accountant, $this->owner, $i->property_id, Money::parse('800'), 'إصلاح تسريب', 'WO-17', CarbonImmutable::parse('2027-01-10'), Money::parse('50'));
         $this->assertSame('pending', $req->status);   // paying out of trust waits for a checker (REQ-0069)
@@ -229,7 +229,7 @@ class FinanceTest extends TestCase
     public function test_req_0306_vendor_margin_is_a_separate_line_and_net_adds_up(): void
     {
         $i = $this->inv()->issueRent($this->lease->scheduleLines->first(), CarbonImmutable::parse('2027-01-01'));
-        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager');
+        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager', reference: 'EJR-F232', refSource: 'ejar');
         app(DualApproval::class)->setEnabled(\App\Models\Subscriber::find($this->owner->subscriber_id)->forceFill(['plan' => 'owner']), false);
         $ta = app(TrustAccounting::class);
         $ta->requestExpense($this->accountant, $this->owner, $i->property_id, Money::parse('800'), 'إصلاح تسريب', 'WO-17', CarbonImmutable::parse('2027-01-10'), Money::parse('50'));
@@ -265,7 +265,7 @@ class FinanceTest extends TestCase
         $this->assertSame(300000, $fixed('2027-02-01'));
 
         // Invoiced to the owner separately: not deducted from the transfer, booked as owed by the owner.
-        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager');
+        app(PaymentService::class)->record($this->tenant, $i->total_minor, 'mada', CarbonImmutable::parse('2027-01-03'), 'manager', reference: 'EJR-F268', refSource: 'ejar');
         $s->setSubscriber('finance.fee.collection', 'invoice_owner');
         $st = $ta->statement($this->owner, $jan);
         $this->assertFalse($st['management_fee']['deducted']);
@@ -305,7 +305,7 @@ class FinanceTest extends TestCase
     {
         $lines = $this->lease->scheduleLines;
         $i = $this->inv()->issueRent($lines[0], CarbonImmutable::parse('2027-01-01'));
-        app(PaymentService::class)->record($this->tenant, Money::parse('16000'), 'mada', CarbonImmutable::parse('2027-01-02'), 'manager');   // 1,000 unallocated
+        app(PaymentService::class)->record($this->tenant, Money::parse('16000'), 'mada', CarbonImmutable::parse('2027-01-02'), 'manager', reference: 'EJR-F308', refSource: 'ejar');   // 1,000 unallocated
         $orphan = Tenant::create(['kind' => 'individual', 'name_ar' => 'آخر']);
         $found = app(Reconciliation::class)->run(CarbonImmutable::parse('2027-04-02'));
         $this->assertSame(1, $found['registered_lease_without_invoice']);   // Q2 due 2027-04-01, not invoiced

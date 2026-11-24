@@ -45,7 +45,9 @@ class Ledger
                 if (($l[1] === null || $l[1]->isZero()) && ($l[2] === null || $l[2]->isZero())) {
                     continue;
                 }
-                JournalLine::create(['journal_entry_id' => $entry->id, 'account' => $l[0], 'owner_id' => $l[3] ?? $ownerId,
+                // a 4th element, even null, is the line's owner (M22: a reversal and a deposit's cash keep "no owner");
+                // without it the line takes the entry's owner
+                JournalLine::create(['journal_entry_id' => $entry->id, 'account' => $l[0], 'owner_id' => array_key_exists(3, $l) ? $l[3] : $ownerId,
                     'debit_minor' => $l[1] ?? 0, 'credit_minor' => $l[2] ?? 0]);
             }
             return $entry;

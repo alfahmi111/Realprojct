@@ -107,7 +107,7 @@ class DeferredFixesM19Test extends TestCase
         $b = $this->lease('', unitId: LeasableUnit::where('property_id', $p2->id)->first()->id);
         foreach ([$a, $b] as $l) {
             $inv = app(InvoiceService::class)->issueRent($l->scheduleLines()->first(), CarbonImmutable::parse('2026-01-01'));
-            app(PaymentService::class)->record($this->tenant, $inv->total_minor, 'bank_transfer', CarbonImmutable::parse('2026-01-03'), 'owner');
+            app(PaymentService::class)->record($this->tenant, $inv->total_minor, 'bank_transfer', CarbonImmutable::parse('2026-01-03'), 'owner', reference: 'FT-D110-' . $inv->id);
         }
         $s = app(TrustAccounting::class)->statement($this->owner, CarbonImmutable::parse('2026-01-01'));
         // 10,000 at 5% + 10,000 at 10% (was 20,000 at the latest agreement's 10%)

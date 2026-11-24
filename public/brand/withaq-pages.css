@@ -312,6 +312,21 @@
 .wq-cascade .is-out b { color: var(--status-late-fg); }
 .wq-cascade .is-net b { font-size: 1.15rem; color: var(--status-paid-fg); }
 .wq-stmt .wq-note { margin: 0 24px 18px; }
+/* M22: the owner's trust position — brought forward, this month, transferred, available */
+.wq-trust { margin: 0 24px 20px; border: 1px solid var(--color-line); border-radius: 10px; overflow: hidden; }
+.wq-trust h3 { margin: 0; padding: 12px 16px; font-family: 'Cairo', sans-serif; font-size: 1rem; color: var(--color-ink); background: var(--color-soft); border-bottom: 1px solid var(--color-line); }
+.wq-trust dl { margin: 0; padding: 4px 16px; display: grid; grid-template-columns: 1fr auto; }
+.wq-trust dt, .wq-trust dd { margin: 0; padding: 9px 0; border-bottom: 1px dashed var(--color-line); }
+.wq-trust dt { color: var(--color-ink); font-size: .92rem; }
+.wq-trust dt small { display: block; color: var(--color-muted); font-size: .76rem; }
+.wq-trust dd { text-align: end; font-family: 'Cairo', sans-serif; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.wq-trust .is-out { color: var(--status-late-fg); }
+.wq-trust .is-total { border-bottom: 0; font-weight: 700; }
+.wq-trust-now { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-top: 2px solid var(--color-ink); }
+.wq-trust-now strong { font-family: 'Cairo', sans-serif; font-size: 1.35rem; color: var(--status-paid-fg); font-variant-numeric: tabular-nums; }
+.wq-trust-now small { display: block; color: var(--color-muted); font-size: .8rem; }
+.wq-trust dl + h3 { border-top: 1px solid var(--color-line); }
+.wq-trust-now small.is-out { color: var(--status-late-fg); font-weight: 700; }
 @media (max-width: 700px) { .wq-cascade li { grid-template-columns: 1fr auto; } .wq-cascade-track { grid-column: 1 / -1; grid-row: 2; } }
 @media print {
     .fi-sidebar, .fi-topbar, .wq-noprint, .wq-pager, .fi-header { display: none !important; }

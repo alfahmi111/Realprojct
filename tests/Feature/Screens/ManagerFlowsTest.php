@@ -110,7 +110,7 @@ class ManagerFlowsTest extends TestCase
         $this->assertSame('EJ-SCR-1', $invoice->ejar_contract_number);
 
         Livewire::test(CreatePayment::class)->fillForm([
-            'tenant_id' => $t->id, 'amount_minor' => '12000', 'method' => 'mada', 'received_on' => now()->toDateString(), 'paid_to' => 'manager',
+            'tenant_id' => $t->id, 'amount_minor' => '12000', 'method' => 'mada', 'received_on' => now()->toDateString(), 'paid_to' => 'manager', 'ref_source' => 'ejar', 'reference' => 'EJR-SCR-PAY-1',
         ])->call('create')->assertHasNoFormErrors();
         $this->assertSame(1, Payment::count());
         $this->assertTrue(app(\App\Finance\InvoiceService::class)->outstanding($invoice->fresh())->isZero());

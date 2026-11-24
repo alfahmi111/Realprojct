@@ -17,7 +17,8 @@ class WorkOrder extends Model
 
     protected function casts(): array
     {
-        return ['photos_report' => 'array', 'photos_before' => 'array', 'photos_after' => 'array', 'estimated_cost_minor' => MoneyCast::class, 'owner_approval_required' => 'boolean', 'tenant_caused' => 'boolean', 'reported_at' => 'datetime', 'responded_at' => 'datetime', 'completed_at' => 'datetime', 'closed_at' => 'datetime', 'archived_at' => 'datetime'];
+        return ['photos_report' => 'array', 'photos_before' => 'array', 'photos_after' => 'array', 'estimated_cost_minor' => MoneyCast::class, 'owner_approval_required' => 'boolean', 'tenant_caused' => 'boolean', 'reported_at' => 'datetime', 'responded_at' => 'datetime', 'completed_at' => 'datetime', 'closed_at' => 'datetime', 'archived_at' => 'datetime',
+            'owner_paid_on' => 'date', 'owner_payment_amount_minor' => MoneyCast::class];
     }
 
     protected $attributes = ['status' => 'reported', 'photos_report' => '[]', 'photos_before' => '[]', 'photos_after' => '[]'];

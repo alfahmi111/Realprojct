@@ -124,7 +124,7 @@ class OwnerDecisionsM19Test extends TestCase
         // the rule is data: when the regulation is approved the platform switches the row to «required»
         DB::table('policies')->where('code', 'REGA-DRAFT-OWNER-ACCOUNT')->update(['payload' => json_encode(['mode' => 'required'])]);
         $this->assertSame(['owner'], array_keys($policies->paidToOptions(CarbonImmutable::parse('2026-12-01'))));
-        $pay = app(PaymentService::class)->record($this->tenant, Money::parse('100'), 'bank_transfer', CarbonImmutable::parse('2026-12-01'), 'owner');
+        $pay = app(PaymentService::class)->record($this->tenant, Money::parse('100'), 'bank_transfer', CarbonImmutable::parse('2026-12-01'), 'owner', reference: 'FT-O127');
         $this->assertSame('owner', $pay->paid_to);
         $this->expectException(FinanceException::class);
         app(PaymentService::class)->record($this->tenant, Money::parse('100'), 'cash', CarbonImmutable::parse('2026-12-01'), 'manager');
