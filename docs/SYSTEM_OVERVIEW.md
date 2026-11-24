@@ -2,7 +2,9 @@
 
 > مرجع لكل من يتسلّم المشروع: أين يقع كل شيء، وكيف تترابط الأجزاء، وما القواعد التي لا تُكسر.
 > الحالة المقيسة والخطوة التالية في `HANDOFF.md`. الدستور ودروس الأخطاء في `PROJECT_LOCK.md`. المتطلبات في `docs/SPEC.md` و`docs/TRACEABILITY.md`.
-> آخر تحديث: 2026-11-24 (بعد M18). سجل المراجعة الشاملة: `docs/REVIEW_2026-11-24.md`.
+> آخر تحديث: 2026-11-24 (بعد M19). سجل المراجعة الشاملة: `docs/REVIEW_2026-11-24.md`.
+>
+> **إضافات M19:** الموقع التعريفي (`SiteController`، `site/home`، `site_leads`)؛ `Today::date()` لتاريخ الرياض؛ `PropertyScope` لنطاق المستخدم على كل الموارد؛ `Messages::ar` لترجمة رسائل قواعد العمل؛ `IntegrationAccounts` لحسابات المكتب لدى المزوّدين؛ `PolicyService::ownerAccountMode` (Q33)؛ `LeasingService::autoRenew` و`terminateRenewal` (Q35).
 
 ---
 

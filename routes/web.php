@@ -5,9 +5,9 @@ use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Route;
 
 // One app: every user lands on their role's interface (REQ-0271).
-Route::get('/', fn () => redirect(auth()->check()
-    ? Filament::getPanel(auth()->user()->role->portal())->getUrl()
-    : Filament::getPanel('manager')->getLoginUrl()));
+// Visitors see the public website; a signed-in user lands on their role's interface (REQ-0271).
+Route::get('/', [\App\Http\Controllers\SiteController::class, 'home'])->name('site.home');
+Route::post('/demo', [\App\Http\Controllers\SiteController::class, 'demo'])->middleware('throttle:5,1')->name('site.demo');
 Route::get('/manifest.webmanifest', ManifestController::class)->name('manifest');
 
 // Building QR public page — permanent short link (REQ-0393). Registration is free (decision 3) and rate-limited.
