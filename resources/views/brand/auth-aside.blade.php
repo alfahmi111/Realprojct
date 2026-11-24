@@ -41,11 +41,9 @@
 {{-- Identity panel beside the sign-in card (layout of the owner's design; no third-party logos). --}}
 <aside class="wq-auth-aside" aria-label="وِثاق">
     <div class="wq-auth-brand">
-        <div class="wq-auth-mark">{!! file_get_contents(public_path('brand/withaq-mark.svg')) !!}</div>
-        <div>
-            <h1 class="wq-auth-title">وِثاق</h1>
-            <div class="wq-auth-kicker">منصة إدارة الأملاك والأصول العقارية</div>
-        </div>
+        {{-- The stacked logo (Kufic wordmark over Withaq), white on the identity panel; its aria-label names the platform. --}}
+        <h1 class="wq-auth-title"><span class="wq-auth-logo">{!! file_get_contents(public_path('brand/withaq-stacked.svg')) !!}</span></h1>
+        <div class="wq-auth-kicker">منصة إدارة الأملاك والأصول العقارية</div>
     </div>
 
     <span class="wq-auth-door">{{ $door['door'] }}</span>

@@ -87,14 +87,16 @@ input:focus-visible + label.fi-btn { outline: 3px solid color-mix(in srgb, var(-
     background: var(--color-surface, #FFFFFF) !important;
     padding: 36px 32px !important;
 }
+/* panel header logo: the Kufic wordmark fills the logo box */
+.wq-logo-word svg { display: block; width: 100%; height: 100%; }
 .fi-simple-header .fi-logo { display: none; }   /* the identity panel carries the brand */
 .fi-simple-header-heading { color: var(--color-deep, #0D4F5C); text-align: start; }
 
 .wq-auth-aside { position: relative; z-index: 1; color: #fff; max-width: 440px; text-align: start; display: grid; gap: 20px; justify-items: start; }
-.wq-auth-brand { display: flex; align-items: center; gap: 16px; }
-.wq-auth-mark { width: 72px; height: 72px; color: #fff; flex: none; }
+.wq-auth-brand { display: grid; gap: 14px; justify-items: inherit; }
+.wq-auth-logo { display: block; width: 150px; color: #fff; }
+.wq-auth-logo svg { display: block; width: 100%; height: auto; }
 .wq-auth-kicker { font-size: .92rem; font-weight: 600; opacity: .9; }
-.wq-auth-brand > div { display: grid; gap: 4px; }
 .wq-auth-title { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 3rem; line-height: 1.3; margin: 0; }
 .wq-auth-sub { font-size: 1.05rem; opacity: .92; margin: 0 0 22px; }
 .wq-auth-door { padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: .95rem; color: var(--color-deep, #0D4F5C); background: #fff; box-shadow: var(--wq-shadow-lg); }
@@ -136,7 +138,7 @@ input:focus-visible + label.fi-btn { outline: 3px solid color-mix(in srgb, var(-
 @media (max-width: 900px) {
     .fi-simple-layout { flex-direction: column; gap: 24px; }
     .wq-auth-aside { text-align: center; justify-items: center; gap: 14px; }
-    .wq-auth-mark { width: 56px; height: 56px; }
+    .wq-auth-logo { width: 112px; }
     .wq-auth-title { font-size: 2.2rem; }
     .wq-auth-facade, .wq-auth-points { display: none; }   /* on phones the sign-in card comes first */
 }

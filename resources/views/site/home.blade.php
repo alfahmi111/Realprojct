@@ -19,7 +19,9 @@
     <title>وِثاق | إدارة الأملاك والصيانة والأصول للمكاتب العقارية</title>
     <meta name="description" content="منصة سعودية لمكاتب إدارة الأملاك: العقود والتحصيل وكشف حساب المالك، والصيانة وسجل أصول كل وحدة، وبوابات للمالك والمستأجر والفني، مع قواعد إيجار والضريبة مطبّقة.">
     <meta name="theme-color" content="#0D4F5C">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
     <link rel="icon" href="{{ asset('brand/withaq-favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('brand/icons/apple-touch-icon.png') }}">
     <link rel="stylesheet" href="{{ asset('fonts/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('site/site.css') }}?v={{ @filemtime(public_path('site/site.css')) }}">
 </head>
@@ -29,8 +31,7 @@
 <header class="ws-head">
     <div class="ws-wrap ws-head-in">
         <a class="ws-brand" href="{{ route('site.home') }}" aria-label="وِثاق، الصفحة الرئيسية">
-            <span class="ws-mark" aria-hidden="true">{!! file_get_contents(public_path('brand/withaq-mark.svg')) !!}</span>
-            <span class="ws-name">وِثاق</span>
+            <span class="ws-logo" aria-hidden="true">{!! file_get_contents(public_path('brand/withaq-wordmark.svg')) !!}</span>
         </a>
         <nav class="ws-nav" aria-label="أقسام الصفحة">
             <a href="#what">ما تحصل عليه</a>
@@ -295,7 +296,7 @@
 
 <footer class="ws-foot">
     <div class="ws-wrap ws-foot-in">
-        <span class="ws-brand ws-brand-foot"><span class="ws-mark" aria-hidden="true">{!! file_get_contents(public_path('brand/withaq-mark.svg')) !!}</span><span class="ws-name">وِثاق</span></span>
+        <span class="ws-brand ws-brand-foot"><span class="ws-logo ws-logo-foot">{!! file_get_contents(public_path('brand/withaq-horizontal.svg')) !!}</span></span>
         <p>مزوّد برمجيات لإدارة الأملاك في المملكة العربية السعودية. لا نستلم أموالاً ولا ندير العقارات بأنفسنا.</p>
         <a class="ws-link" href="{{ $loginUrl }}">دخول المكاتب والملاك</a>
     </div>

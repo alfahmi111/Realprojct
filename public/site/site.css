@@ -37,9 +37,9 @@ body.ws { margin: 0; background: var(--ws-surface); color: var(--ws-ink); font-f
 .ws-head { position: sticky; top: 0; z-index: 20; background: rgba(255, 255, 255, .94); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--ws-line); }
 .ws-head-in { display: flex; align-items: center; gap: 24px; min-height: 68px; }
 .ws-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ws-primary); }
-.ws-mark { display: inline-block; width: 32px; height: 32px; }
-.ws-mark svg { width: 100%; height: 100%; }
-.ws-name { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--ws-deep); }
+/* the square-Kufic wordmark is the logo (brand guide: at least 64 px wide on screen) */
+.ws-logo { display: inline-block; height: 52px; aspect-ratio: 14 / 11; color: var(--ws-deep); }
+.ws-logo svg { display: block; width: 100%; height: 100%; }
 .ws-nav { display: flex; gap: 22px; margin-inline-start: 18px; }
 .ws-nav a { color: var(--ws-ink); text-decoration: none; font-weight: 500; font-size: .98rem; }
 .ws-nav a:hover { color: var(--ws-primary); }
@@ -162,8 +162,8 @@ body.ws { margin: 0; background: var(--ws-surface); color: var(--ws-ink); font-f
 .ws-foot { padding: 34px 0; border-top: 1px solid var(--ws-line); }
 .ws-foot-in { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .ws-foot p { margin: 0; color: var(--ws-muted); font-size: .95rem; flex: 1 1 320px; }
-.ws-brand-foot .ws-mark { width: 26px; height: 26px; }
-.ws-brand-foot .ws-name { font-size: 1.15rem; }
+.ws-logo-foot { height: 40px; aspect-ratio: auto; }
+.ws-logo-foot svg { width: auto; }
 
 /* narrow screens */
 @media (max-width: 960px) {

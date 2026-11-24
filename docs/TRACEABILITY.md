@@ -332,7 +332,7 @@
 | REQ-0325 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0326 | §7.6 | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0327 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
-| REQ-0328 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
+| REQ-0328 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php, tests/Feature/Screens/BrandingAndPreferencesTest.php |  |
 | REQ-0329 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0330 | §7.6أ | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |
 | REQ-0331 | §7.6أ | BUILD | MVP | DONE | app/Http/Controllers/ManifestController.php, app/Theming/Customization.php | tests/Feature/Screens/BrandingAndPreferencesTest.php, tests/Feature/Foundation/CustomizationTest.php |  |

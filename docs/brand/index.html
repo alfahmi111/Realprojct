@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دليل شعار وثاق</title>
+<link rel="icon" href="kit/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#121716; --paper:#F3F4F2; --card:#fff; --muted:#59625F; --line:#D9DEDC; --teal:#0D4F5C; --bad:#A3271C; --good:#0B6B4F; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.75 'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif; overflow-x:hidden; }
+.wrap { max-width:1120px; margin:0 auto; padding:0 16px; }
+a { color:var(--teal); }
+.hero { background:var(--ink); color:#fff; }
+.hero .wrap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:40px; align-items:center; padding-top:56px; padding-bottom:56px; }
+.hero .art svg { width:min(340px,100%); height:auto; display:block; margin-inline:auto; }
+.hero h1 { font-size:clamp(28px,4vw,42px); line-height:1.25; margin:0 0 12px; }
+.hero p { margin:0 0 10px; color:#C9D2CF; max-width:52ch; }
+.hero .idea { color:#fff; font-size:19px; font-weight:500; }
+h2 { font-size:24px; margin:56px 0 6px; }
+.lead { margin:0 0 18px; color:var(--muted); max-width:74ch; }
+.vers { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.v { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.v .st { height:220px; display:grid; place-items:center; padding:20px; color:var(--ink); }
+.v.dark .st { background:var(--ink); color:#fff; }
+.v.teal .st { background:var(--teal); color:#fff; }
+.v .st svg { max-width:90%; max-height:170px; width:auto; height:auto; }
+.v .cap { padding:10px 14px; border-top:1px solid var(--line); font-size:14px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.v .cap span { color:var(--muted); font-size:13px; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+.panel h3 { margin:0 0 8px; font-size:17px; }
+.panel p, .panel li { font-size:15px; }
+.panel ul { margin:0; padding-inline-start:20px; }
+.diagram { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; display:grid; place-items:center; }
+.diagram svg { width:100%; max-width:440px; height:auto; }
+table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; font-size:15px; }
+th, td { text-align:right; padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+th { background:#F7F8F7; font-weight:500; color:var(--muted); font-size:14px; }
+td.num { font-variant-numeric:tabular-nums; direction:ltr; text-align:right; }
+.sw { display:inline-block; width:26px; height:26px; border-radius:6px; border:1px solid var(--line); vertical-align:middle; margin-inline-end:8px; }
+.sizes { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; display:flex; flex-wrap:wrap; gap:28px; align-items:flex-end; }
+.sizes figure { margin:0; display:grid; justify-items:center; gap:6px; color:var(--ink); }
+.sizes figcaption { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.pix { image-rendering:pixelated; }
+.mis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.mis figure { margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.mis .st { height:150px; display:grid; place-items:center; overflow:hidden; color:var(--ink); position:relative; }
+.mis .st svg { width:110px; height:auto; }
+.mis .st::after { content:''; position:absolute; inset:10px; border:2px solid var(--bad); border-radius:8px; opacity:.0; }
+.mis figcaption { padding:8px 12px; font-size:13px; border-top:1px solid var(--line); color:var(--bad); }
+.mis figcaption::before { content:'✕ '; font-weight:700; }
+.okbg { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.okbg figure { margin:0; border-radius:12px; overflow:hidden; border:1px solid var(--line); background:var(--card); }
+.okbg .st { height:140px; display:grid; place-items:center; }
+.okbg .st svg { width:110px; height:auto; }
+.okbg figcaption { padding:8px 12px; font-size:13px; border-top:1px solid var(--line); }
+.okbg .ok figcaption { color:var(--good); } .okbg .ok figcaption::before { content:'✓ '; font-weight:700; }
+.okbg .no figcaption { color:var(--bad); } .okbg .no figcaption::before { content:'✕ '; font-weight:700; }
+.files { columns:2; column-gap:28px; font-size:14px; padding:0; list-style:none; }
+.files li { break-inside:avoid; padding:6px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; }
+.files code { direction:ltr; font-size:13px; }
+.files span { color:var(--muted); }
+footer { padding:44px 0 64px; color:var(--muted); font-size:14px; }
+@media (max-width:860px) {
+  .hero .wrap { grid-template-columns:1fr; gap:24px; }
+  .vers { grid-template-columns:1fr 1fr; } .two { grid-template-columns:1fr; }
+  .mis, .okbg { grid-template-columns:1fr 1fr; } .files { columns:1; }
+}
+@media (max-width:520px) { .vers { grid-template-columns:1fr; } th, td { padding:8px 10px; font-size:14px; } }
+</style>
+</head>
+<body>
+<section class="hero"><div class="wrap">
+  <div class="art" id="hero"></div>
+  <div>
+    <h1>شعار وثاق</h1>
+    <p class="idea">ذيل الواو ينزل ويمتد تحت الكلمة كلها ثم يصعد بجانبها: الرباط نفسه يحتضن الاسم.</p>
+    <p>الاسم بالخط الكوفي المربع على شبكة صارمة. الشعار هو الكلمة نفسها، فلا رمز منفصل يحتاج شرحاً. هذا دليل استخدامه ونسخه وملفاته، وهو مقترح بانتظار اعتمادك قبل إدخاله في النظام.</p>
+    <p>اعتمده المالك 2026-11-25 (الخيار الأول: تبقى الواجهة بالأزرق المخضر).</p>
+  </div>
+</div></section>
+<div class="wrap">
+
+<h2>النسخ</h2>
+<p class="lead">المكدسة هي الأساسية. كل نسخة متاحة بالحبر وبالأبيض وبالأزرق المخضر، ونسخة معكوسة بخلفيتها.</p>
+<div class="vers" id="vers"></div>
+
+<h2>البناء</h2>
+<p class="lead">كل شيء مبني على وحدة واحدة: الخانة. سمك الخط خانة، والفراغ بين الخطوط خانة، فلا يتلاصق حرفان. الشبكة العربية 14 خانة عرضاً و11 ارتفاعاً.</p>
+<div class="two">
+  <div class="diagram" id="grid"></div>
+  <div class="panel"><h3>قواعد الكتابة</h3><ul>
+    <li><b>الواو</b> رأس مربع بفراغ خانة واحدة، وذيله ينزل في العمود الأخير ثم يمتد في الصف الأخير ويصعد في العمود الأول: هذا هو الحضن.</li>
+    <li><b>الثاء</b> سنّ بثلاث خانات، ونقاطها الثلاث مثلث مستقر فوقه.</li>
+    <li><b>الألف</b> عمود من أعلى الشبكة إلى خط القاعدة، يتصل بالثاء.</li>
+    <li><b>القاف</b> رأس مربع ووعاء تحته، ونقطتاه في الصف الأول مع نقطة الثاء العليا.</li>
+    <li><b>خط القاعدة</b> أسفل الصف السابع، وعليه يقف الاسم اللاتيني في النسخة الأفقية.</li>
+    <li><b>اللاتيني</b> على شبكة خانتها 7/16 من الخانة العربية، فيساوي عرضه عرض الكتلة العربية تماماً في النسخة المكدسة. الـ Q وحدها تنزل تحت السطر.</li>
+  </ul></div>
+</div>
+
+<h2>المساحة الآمنة</h2>
+<p class="lead">خانتان على الأقل من كل جانب، لا يدخلها نص ولا صورة ولا حافة.</p>
+<div class="diagram" id="clear"></div>
+
+<h2>الأحجام الدنيا</h2>
+<div class="two">
+  <table>
+    <thead><tr><th>النسخة</th><th>الشاشة</th><th>الطباعة</th></tr></thead>
+    <tbody>
+      <tr><td>المكدسة</td><td class="num">96 px</td><td class="num">25 mm</td></tr>
+      <tr><td>الأفقية</td><td class="num">160 px</td><td class="num">40 mm</td></tr>
+      <tr><td>العربية وحدها</td><td class="num">64 px</td><td class="num">16 mm</td></tr>
+      <tr><td>الرمز (النسخة الصغيرة)</td><td class="num">16 px</td><td class="num">5 mm</td></tr>
+    </tbody>
+  </table>
+  <div class="panel"><h3>متى أستعمل الرمز</h3><p>تحت الحجم الأدنى للكلمة، أي أيقونة المتصفح والتطبيق والصورة الشخصية في الحسابات: استعمل الرمز، وهو الواو وذيلها الحاضن وحدهما. لا تصغّر الكلمة كاملة إلى ما دون 64 بكسل.</p></div>
+</div>
+<div class="sizes" id="sizes" style="margin-top:14px"></div>
+
+<h2>الألوان</h2>
+<p class="lead">لونان للشعار ولون مساند. الأزرق المخضر هو لون واجهة النظام الحالي، يبقى للاستمرارية.</p>
+<table>
+  <thead><tr><th>اللون</th><th>HEX</th><th>RGB</th><th>الاستعمال</th><th>التباين</th></tr></thead>
+  <tbody>
+    <tr><td><span class="sw" style="background:#121716"></span>حبر وثاق</td><td class="num">#121716</td><td class="num">18, 23, 22</td><td>الشعار على الفاتح، وخلفية النسخة المعكوسة</td><td>مع الأبيض 18.1:1</td></tr>
+    <tr><td><span class="sw" style="background:#FFFFFF"></span>أبيض</td><td class="num">#FFFFFF</td><td class="num">255, 255, 255</td><td>الشعار على الحبر والأزرق المخضر</td><td>—</td></tr>
+    <tr><td><span class="sw" style="background:#0D4F5C"></span>أزرق مخضر</td><td class="num">#0D4F5C</td><td class="num">13, 79, 92</td><td>واجهة النظام، والشعار عليه بالأبيض</td><td>مع الأبيض 9.2:1 · مع الحبر 2:1 فقط</td></tr>
+  </tbody>
+</table>
+<p class="lead" style="margin-top:10px">قيم الطباعة (CMYK وPantone) تُعتمد مع المطبعة بعد تجربة فعلية، ولم أضع أرقاماً غير مختبرة.</p>
+
+<h2>الخلفيات</h2>
+<div class="okbg" id="bgs"></div>
+
+<h2>استعمالات خاطئة</h2>
+<div class="mis" id="mis"></div>
+
+<h2>الملفات</h2>
+<p class="lead">كل الملفات SVG بلا نصوص حية ولا صور مضمّنة، ويمكن فتحها في أي برنامج. الملفات التي تنتهي بلا لون تتبع لون النص (currentColor) وهي المناسبة للنظام.</p>
+<ul class="files" id="files"></ul>
+
+<footer>
+  <p><b>بعد اعتمادك:</b> أُدخل الشعار في النظام بطلب سحب مستقل للمراجعة: رأس لوحة التحكم، وصفحة الدخول، والموقع، وأيقونات المتصفح، وملف التطبيق. وقرار الألوان هل تتحول الواجهة إلى الحبر أم تبقى بالأزرق المخضر قرارك.</p>
+  <p><b>يحتاج مراجعة بشرية:</b> قراءة الكوفي المربع من قرّاء من خارج الفريق، وبحث في سجل العلامات التجارية قبل التسجيل، واعتماد تهجئة Withaq.</p>
+</footer>
+</div>
+<script>
+const K = {"withaq-stacked": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 224 250\" role=\"img\" aria-label=\"وثاق Withaq\"><title>وثاق Withaq</title><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M32 0L48 0L48 16L32 16ZM64 0L80 0L80 16L64 16ZM96 0L112 0L112 96L144 96L144 64L160 64L160 112L96 112ZM144 0L160 0L160 16L144 16ZM0 32L16 32L16 160L208 160L208 112L176 112L176 64L224 64L224 176L0 176ZM32 32L80 32L80 144L32 144L32 96L48 96L48 128L64 128L64 80L32 80ZM64 48L48 48L48 64L64 64ZM128 32L144 32L144 48L128 48ZM160 32L176 32L176 48L160 48ZM208 80L192 80L192 96L208 96ZM0 208L7 208L7 236L14 236L14 243L0 243ZM28 208L35 208L35 243L21 243L21 236L28 236ZM42 208L49 208L49 243L42 243ZM56 208L91 208L91 215L77 215L77 243L70 243L70 215L56 215ZM98 208L105 208L105 222L126 222L126 208L133 208L133 243L126 243L126 229L105 229L105 243L98 243ZM140 208L175 208L175 243L168 243L168 229L147 229L147 243L140 243ZM147 215L147 222L168 222L168 215ZM182 208L217 208L217 243L224 243L224 250L203 250L203 243L182 243ZM189 215L189 236L210 236L210 215ZM14 222L21 222L21 236L14 236Z\"/></svg>\n", "withaq-horizontal": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 496 176\" role=\"img\" aria-label=\"وثاق Withaq\"><title>وثاق Withaq</title><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M304 0L320 0L320 16L304 16ZM336 0L352 0L352 16L336 16ZM368 0L384 0L384 96L416 96L416 64L432 64L432 112L368 112ZM416 0L432 0L432 16L416 16ZM272 32L288 32L288 160L480 160L480 112L448 112L448 64L496 64L496 176L272 176ZM304 32L352 32L352 144L304 144L304 96L320 96L320 128L336 128L336 80L304 80ZM336 48L320 48L320 64L336 64ZM400 32L416 32L416 48L400 48ZM432 32L448 32L448 48L432 48ZM480 80L464 80L464 96L480 96ZM0 77L7 77L7 105L14 105L14 112L0 112ZM28 77L35 77L35 112L21 112L21 105L28 105ZM42 77L49 77L49 112L42 112ZM56 77L91 77L91 84L77 84L77 112L70 112L70 84L56 84ZM98 77L105 77L105 91L126 91L126 77L133 77L133 112L126 112L126 98L105 98L105 112L98 112ZM140 77L175 77L175 112L168 112L168 98L147 98L147 112L140 112ZM147 84L147 91L168 91L168 84ZM182 77L217 77L217 112L224 112L224 119L203 119L203 112L182 112ZM189 84L189 105L210 105L210 84ZM14 91L21 91L21 105L14 105Z\"/></svg>\n", "withaq-ar": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 224 176\" role=\"img\" aria-label=\"وثاق\"><title>وثاق</title><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M32 0L48 0L48 16L32 16ZM64 0L80 0L80 16L64 16ZM96 0L112 0L112 96L144 96L144 64L160 64L160 112L96 112ZM144 0L160 0L160 16L144 16ZM0 32L16 32L16 160L208 160L208 112L176 112L176 64L224 64L224 176L0 176ZM32 32L80 32L80 144L32 144L32 96L48 96L48 128L64 128L64 80L32 80ZM64 48L48 48L48 64L64 64ZM128 32L144 32L144 48L128 48ZM160 32L176 32L176 48L160 48ZM208 80L192 80L192 96L208 96Z\"/></svg>\n", "withaq-en": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 224 42\" role=\"img\" aria-label=\"Withaq\"><title>Withaq</title><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M0 0L7 0L7 28L14 28L14 35L0 35ZM28 0L35 0L35 35L21 35L21 28L28 28ZM42 0L49 0L49 35L42 35ZM56 0L91 0L91 7L77 7L77 35L70 35L70 7L56 7ZM98 0L105 0L105 14L126 14L126 0L133 0L133 35L126 35L126 21L105 21L105 35L98 35ZM140 0L175 0L175 35L168 35L168 21L147 21L147 35L140 35ZM147 7L147 14L168 14L168 7ZM182 0L217 0L217 35L224 35L224 42L203 42L203 35L182 35ZM189 7L189 28L210 28L210 7ZM14 14L21 14L21 28L14 28Z\"/></svg>\n", "withaq-symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" role=\"img\" aria-label=\"وثاق\"><title>وثاق</title><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M113.78 42.67L199.11 42.67L199.11 213.33L56.89 213.33L56.89 156.44L85.33 156.44L85.33 184.89L170.67 184.89L170.67 128L113.78 128ZM170.67 71.11L142.22 71.11L142.22 99.56L170.67 99.56Z\"/></svg>\n", "__grid": ["..#.#.#..#....", "......#.......", "#.###.#.#.#...", "#.#.#.#.......", "#.###.#..#.###", "#...#.#..#.#.#", "#.#.#.####.###", "#.#.#........#", "#.###........#", "#............#", "##############"], "__files": [["kit/withaq-stacked.svg", "المكدسة · يتبع لون النص"], ["kit/withaq-stacked-ink.svg", "المكدسة · حبر"], ["kit/withaq-stacked-white.svg", "المكدسة · أبيض"], ["kit/withaq-stacked-teal.svg", "المكدسة · أزرق مخضر"], ["kit/withaq-stacked-reversed.svg", "المكدسة · معكوس بخلفيته ومساحته الآمنة"], ["kit/withaq-horizontal.svg", "الأفقية · يتبع لون النص"], ["kit/withaq-horizontal-ink.svg", "الأفقية · حبر"], ["kit/withaq-horizontal-white.svg", "الأفقية · أبيض"], ["kit/withaq-horizontal-teal.svg", "الأفقية · أزرق مخضر"], ["kit/withaq-horizontal-reversed.svg", "الأفقية · معكوس بخلفيته ومساحته الآمنة"], ["kit/withaq-ar.svg", "العربية · يتبع لون النص"], ["kit/withaq-ar-ink.svg", "العربية · حبر"], ["kit/withaq-ar-white.svg", "العربية · أبيض"], ["kit/withaq-ar-teal.svg", "العربية · أزرق مخضر"], ["kit/withaq-ar-reversed.svg", "العربية · معكوس بخلفيته ومساحته الآمنة"], ["kit/withaq-en.svg", "اللاتينية · يتبع لون النص"], ["kit/withaq-en-ink.svg", "اللاتينية · حبر"], ["kit/withaq-en-white.svg", "اللاتينية · أبيض"], ["kit/withaq-en-teal.svg", "اللاتينية · أزرق مخضر"], ["kit/withaq-en-reversed.svg", "اللاتينية · معكوس بخلفيته ومساحته الآمنة"], ["kit/withaq-symbol.svg", "الرمز · يتبع لون النص"], ["kit/withaq-symbol-ink.svg", "الرمز · حبر"], ["kit/withaq-symbol-white.svg", "الرمز · أبيض"], ["kit/withaq-symbol-teal.svg", "الرمز · أزرق مخضر"], ["kit/withaq-symbol-reversed.svg", "الرمز · معكوس بخلفيته ومساحته الآمنة"], ["kit/icons/favicon.ico", "أيقونة المتصفح 16/32/48"], ["kit/icons/favicon.svg", "أيقونة المتصفح، تتبدل في الوضع الداكن"], ["kit/icons/apple-touch-icon.png", "أيقونة iPhone"], ["kit/icons/icon-192.png", "أيقونة التطبيق 192"], ["kit/icons/icon-512.png", "أيقونة التطبيق 512"], ["kit/icons/maskable-512.png", "أيقونة أندرويد القابلة للقص"], ["kit/icons/site.webmanifest", "ملف التطبيق"], ["kit/icons/head-snippet.html", "أسطر الربط في الصفحة"]]};
+function el(str) { const t = document.createElement('template'); t.innerHTML = str.trim(); const e = t.content.firstElementChild; e.removeAttribute('width'); e.removeAttribute('height'); return e; }
+document.getElementById('hero').append(el(K['withaq-stacked']));
+const V = [['withaq-stacked', 'المكدسة (الأساسية)', 'dark'], ['withaq-stacked', 'المكدسة', ''], ['withaq-horizontal', 'الأفقية', ''],
+           ['withaq-ar', 'العربية وحدها', ''], ['withaq-en', 'اللاتينية وحدها', ''], ['withaq-symbol', 'الرمز', 'teal']];
+const vers = document.getElementById('vers');
+V.forEach(([k, n, cls]) => { const d = document.createElement('div'); d.className = 'v ' + cls; d.innerHTML = `<div class="st"></div><div class="cap"><b>${n}</b><span>${k}.svg</span></div>`; d.querySelector('.st').append(el(K[k])); vers.append(d); });
+
+// construction grid: the Kufic block with its cells drawn
+(function () {
+  const rows = K.__grid, u = 20, cols = rows[0].length, W = cols * u, H = rows.length * u;
+  let s = `<svg viewBox="-24 -24 ${W + 48} ${H + 48}" xmlns="http://www.w3.org/2000/svg">`;
+  for (let r = 0; r < rows.length; r++) for (let c = 0; c < cols; c++) {
+    const on = rows[r][c] === '#';
+    s += `<rect x="${c * u}" y="${r * u}" width="${u}" height="${u}" fill="${on ? '#121716' : 'none'}" stroke="#C9D0CD" stroke-width="1"/>`;
+  }
+  s += `<line x1="-14" x2="${W + 14}" y1="${7 * u}" y2="${7 * u}" stroke="#0D4F5C" stroke-width="2" stroke-dasharray="6 4"/>`;
+  s += `<text x="${W + 18}" y="${7 * u + 5}" font-size="12" fill="#0D4F5C" text-anchor="start" font-family="IBM Plex Sans Arabic, sans-serif">خط القاعدة</text>`;
+  s += `<rect x="0" y="${-18}" width="${u}" height="8" fill="#0D4F5C"/><text x="${u + 6}" y="${-10}" font-size="12" fill="#0D4F5C" font-family="IBM Plex Sans Arabic, sans-serif">خانة واحدة</text>`;
+  document.getElementById('grid').append(el(s + '</svg>'));
+})();
+// clear space
+(function () {
+  const art = K['withaq-stacked'], m = art.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/), w = +m[1], h = +m[2], u = 16, p = 2 * u;
+  const inner = art.replace(/^[\s\S]*?<\/title>/, '').replace(/<\/svg>\s*$/, '').replace(/currentColor/g, '#121716');
+  const s = `<svg viewBox="0 0 ${w + 2 * p} ${h + 2 * p}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="${w + 2 * p}" height="${h + 2 * p}" fill="#E6F0EE"/><rect x="${p}" y="${p}" width="${w}" height="${h}" fill="#fff"/>
+    <g transform="translate(${p} ${p})">${inner}</g>
+    <g fill="#0D4F5C"><rect x="${p}" y="0" width="${u}" height="${u}" opacity=".55"/><rect x="${p + u}" y="${u}" width="${u}" height="${u}" opacity=".55"/>
+    <rect x="0" y="${p}" width="${u}" height="${u}" opacity=".55"/><rect x="${u}" y="${p + u}" width="${u}" height="${u}" opacity=".55"/></g></svg>`;
+  document.getElementById('clear').append(el(s));
+})();
+// sizes: true pixel renders
+(function () {
+  const box = document.getElementById('sizes');
+  const items = [['withaq-symbol', 16], ['withaq-symbol', 24], ['withaq-symbol', 32], ['withaq-ar', 64], ['withaq-stacked', 96], ['withaq-horizontal', 160]];
+  items.forEach(([k, px]) => {
+    const fig = document.createElement('figure'); box.append(fig);
+    const img = new Image();
+    img.onload = () => { const r = img.naturalHeight / img.naturalWidth || 1; const cv = document.createElement('canvas'); cv.width = px; cv.height = Math.round(px * r); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); fig.prepend(cv);
+      if (px <= 24) { const b = document.createElement('canvas'); b.width = cv.width * 3; b.height = cv.height * 3; b.className = 'pix'; const g = b.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0, b.width, b.height); fig.insertBefore(b, fig.lastChild); } };
+    const svg = K[k].replace(/currentColor/g, '#121716').replace('<svg ', '<svg width="512" ');
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    const c = document.createElement('figcaption'); c.textContent = `${px}px · ${k.replace('withaq-', '')}`; fig.append(c);
+  });
+})();
+// backgrounds
+const BG = [['#FFFFFF', '#121716', 'ok', 'حبر على أبيض'], ['#121716', '#FFFFFF', 'ok', 'أبيض على حبر'], ['#0D4F5C', '#FFFFFF', 'ok', 'أبيض على الأزرق المخضر'],
+            ['#E9EEEC', '#121716', 'ok', 'حبر على رمادي فاتح'], ['#0D4F5C', '#121716', 'no', 'حبر على الأزرق المخضر (تباين 2:1)'], ['#8E9694', '#FFFFFF', 'no', 'أبيض على رمادي متوسط'],
+            ['linear-gradient(120deg,#E3A33B,#C2410C 50%,#7C3AED)', '#FFFFFF', 'no', 'خلفية متدرجة صاخبة'], ['repeating-linear-gradient(45deg,#cfd6d4 0 6px,#fff 6px 12px)', '#121716', 'no', 'نقش مزدحم']];
+const bgs = document.getElementById('bgs');
+BG.forEach(([bg, ink, cls, n]) => { const f = document.createElement('figure'); f.className = cls; f.innerHTML = `<div class="st" style="background:${bg};color:${ink}"></div><figcaption>${n}</figcaption>`; f.querySelector('.st').append(el(K['withaq-stacked'])); bgs.append(f); });
+// misuse
+const MIS = [['transform:scaleX(1.45)', 'لا تمطّه ولا تضغطه'], ['transform:rotate(-12deg)', 'لا تُمِله'], ['', 'لا تحوّله إلى خط خارجي', 'outline'], ['filter:drop-shadow(4px 6px 3px rgba(0,0,0,.5))', 'لا تضف ظلاً أو تأثيراً'],
+             ['', 'لا تلوّن الحروف بألوان مختلفة', 'multi'], ['', 'لا تضع اللاتيني فوق العربي', 'swap'], ['', 'لا تكتب الاسم بخط آخر بجانبه', 'font'], ['transform:scale(.45)', 'لا تصغّر الكلمة دون 64 بكسل']];
+const mis = document.getElementById('mis');
+MIS.forEach(([st, n, kind]) => {
+  const f = document.createElement('figure'); f.innerHTML = `<div class="st"></div><figcaption>${n}</figcaption>`; const box = f.querySelector('.st');
+  let e = el(K['withaq-stacked']);
+  if (kind === 'outline') e.querySelectorAll('path').forEach(p => { p.setAttribute('fill', 'none'); p.setAttribute('stroke', '#121716'); p.setAttribute('stroke-width', '3'); });
+  if (kind === 'multi') { e = el(K['withaq-ar']); const p = e.querySelector('path'); const parts = p.getAttribute('d').split('M').filter(Boolean); p.remove(); const cols = ['#C2410C', '#0D4F5C', '#7C3AED', '#CA8A04']; parts.forEach((d, i) => { const q = document.createElementNS('http://www.w3.org/2000/svg', 'path'); q.setAttribute('d', 'M' + d); q.setAttribute('fill', cols[i % 4]); e.append(q); }); }
+  if (kind === 'swap') { const w = document.createElement('div'); w.style.cssText = 'display:grid;gap:6px;justify-items:center'; const a = el(K['withaq-en']); a.style.width = '110px'; const b = el(K['withaq-ar']); b.style.width = '110px'; w.append(a, b); box.append(w); mis.append(f); return; }
+  if (kind === 'font') { const w = document.createElement('div'); w.style.cssText = 'display:flex;gap:8px;align-items:center'; const b = el(K['withaq-ar']); b.style.width = '70px'; const t = document.createElement('span'); t.textContent = 'وِثاق'; t.style.cssText = "font:700 26px 'Cairo','Segoe UI',sans-serif"; w.append(t, b); box.append(w); mis.append(f); return; }
+  e.setAttribute('style', st); box.append(e); mis.append(f);
+});
+// files
+const files = document.getElementById('files');
+K.__files.forEach(([p, d]) => { const li = document.createElement('li'); li.innerHTML = `<a href="${p}"><code>${p.split('/').pop()}</code></a><span>${d}</span>`; files.append(li); });
+</script>
+</body>
+</html>
