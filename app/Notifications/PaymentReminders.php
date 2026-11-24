@@ -42,15 +42,17 @@ class PaymentReminders
             $recipients = array_values(array_filter([$tenant, $tenant->user_id ? User::find($tenant->user_id) : null]));
             $vars = ['tenant_name' => $tenant->name_ar, 'unit' => $inv->unit_code, 'amount' => $outstanding->toDecimalString(), 'due_date' => $due->toDateString()];
 
-            if ($before !== null && $today->isSameDay($due->subDays($before)) && $this->once($inv, 'before')) {
+            // by range, each stage once (review M18): an invoice issued late or a missed day still gets its reminder
+            $overdue7 = $today->greaterThanOrEqualTo($due->addDays(7));
+            if ($before !== null && $today->greaterThanOrEqualTo($due->subDays($before)) && $today->lessThan($due) && $this->once($inv, 'before')) {
                 $this->center->dispatch('payment.due', $recipients, $vars + ['stage' => 'before'], $today, subject: $inv);
                 $sent['before']++;
             }
-            if ($today->isSameDay($due) && $this->once($inv, 'due')) {
+            if ($today->greaterThanOrEqualTo($due) && ! $overdue7 && $this->once($inv, 'due')) {
                 $this->center->dispatch('payment.due', $recipients, $vars + ['stage' => 'due'], $today, subject: $inv);
                 $sent['due']++;
             }
-            if ($today->isSameDay($due->addDays(7)) && $this->once($inv, 'second')) {
+            if ($overdue7 && $this->once($inv, 'second')) {
                 $this->center->dispatch('payment.overdue', $recipients, $vars + ['stage' => 'second'], $today, subject: $inv);
                 $managers = User::where('role', 'manager')->whereNull('archived_at')->get()->all();
                 $this->center->dispatch('payment.overdue', $managers, $vars + ['stage' => 'escalated_to_manager'], $today, subject: $inv);

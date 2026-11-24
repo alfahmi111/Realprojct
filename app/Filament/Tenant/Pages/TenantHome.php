@@ -75,7 +75,9 @@ class TenantHome extends Page
 
     public function report(): void
     {
-        $this->validate(['description' => 'required|string|max:2000', 'photos.*' => 'image|max:8192']);
+        // photos or a short video, as the form offers (review M18: videos were rejected without a message)
+        $this->validate(['description' => 'required|string|max:2000', 'photos.*' => 'file|mimetypes:image/jpeg,image/png,image/webp,video/mp4,video/quicktime|max:20480'],
+            [], ['description' => 'وصف المشكلة', 'photos.*' => 'المرفق']);
         $paths = array_map(fn ($f) => $f->store('subscribers/' . auth()->user()->subscriber_id . '/reports'), $this->photos);
         Ui::attempt(fn () => app(TenantPortal::class)->openReport(auth()->user(), $this->assetId ? Asset::find($this->assetId) : null, $this->description, $paths, $this->emergency), 'تم إرسال البلاغ');
         $this->reset(['assetId', 'description', 'emergency', 'photos']);

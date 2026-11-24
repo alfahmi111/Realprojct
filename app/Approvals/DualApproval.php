@@ -48,6 +48,14 @@ class DualApproval
      * Submit a sensitive entry. When dual approval is enabled it waits for a checker; when disabled it is
      * executed immediately and still recorded.
      */
+    /** One pending request per subject: two approvals of the same reversal would reverse it twice (review M18). */
+    public function assertNonePending(string $subjectType, string $subjectId): void
+    {
+        if (ApprovalRequest::where('status', 'pending')->where('subject_type', $subjectType)->where('subject_id', $subjectId)->exists()) {
+            throw new ApprovalException('يوجد طلب معلّق على هذا السجل ينتظر المراجِع.');
+        }
+    }
+
     public function submit(User $maker, string $action, array $payload, callable $execute, ?string $subjectType = null, ?string $subjectId = null): ApprovalRequest
     {
         if (! in_array($action, ApprovalRequest::ACTIONS, true)) {

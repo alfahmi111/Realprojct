@@ -19,7 +19,8 @@ class ListLeasableUnits extends ListRecords
 
     protected string $view = 'filament.manager.units-tree';
 
-    public string $q = '';
+    #[\Livewire\Attributes\Url]
+    public string $q = '';   // ?q=101 from the home facade opens the tree on that unit (review M18)
 
     public string $mode = 'tree';
 

@@ -16,6 +16,11 @@ class Building extends Model
 
     protected $fillable = ['property_id', 'name_ar', 'name_en'];
 
+    protected function casts(): array
+    {
+        return ['archived_at' => 'datetime'];   // review M18
+    }
+
     public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class);

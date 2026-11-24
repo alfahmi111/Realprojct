@@ -39,8 +39,9 @@
             {{-- Waterfall: from collected down to net, each deduction as its own step --}}
             <ol class="wq-cascade" aria-label="من المحصّل إلى الصافي">
                 <li class="is-in"><span class="wq-cascade-label">الإيجار المحصّل</span><span class="wq-cascade-track"><span style="--w: 100%"></span></span><b>{{ $s['collected'] }}</b></li>
+                @if ($r['owner_direct'])<li class="is-out"><span class="wq-cascade-label">حُصّل في حساب المالك مباشرة<small>لا يمر بحساب المكتب، فلا يُحوَّل</small></span><span class="wq-cascade-track"><span style="{{ $step($r['owner_direct']) }}"></span></span><b>− {{ $s['owner_direct'] }}</b></li>@endif
                 @if ($s['fee_deducted'])
-                    <li class="is-out"><span class="wq-cascade-label">أتعاب الإدارة {{ $s['fee_pct'] }}% من {{ $s['fee_basis'] }}</span><span class="wq-cascade-track"><span style="{{ $step($r['fee']) }}"></span></span><b>− {{ $s['fee'] }}</b></li>
+                    <li class="is-out"><span class="wq-cascade-label">أتعاب الإدارة: {{ $s['fee_text'] }}</span><span class="wq-cascade-track"><span style="{{ $step($r['fee']) }}"></span></span><b>− {{ $s['fee'] }}</b></li>
                     <li class="is-out"><span class="wq-cascade-label">ضريبة الأتعاب</span><span class="wq-cascade-track"><span style="{{ $step($r['vat']) }}"></span></span><b>− {{ $s['fee_vat'] }}</b></li>
                 @endif
                 @foreach ($s['maintenance'] as $m)
@@ -49,11 +50,12 @@
                 @if ($r['margin'])
                     <li class="is-out"><span class="wq-cascade-label">هامش المدير على فواتير الموردين</span><span class="wq-cascade-track"><span style="{{ $step($r['margin']) }}"></span></span><b>− {{ $s['margin_total'] }}</b></li>
                 @endif
+                @if ($r['recovered'])<li class="is-in"><span class="wq-cascade-label">صيانة استُردت من المستأجر<small>تكلفة حُمّلت على المستأجر وسدّدها</small></span><span class="wq-cascade-track"><span style="--w: {{ max(1, intdiv($r['recovered'] * 100, $max)) }}%"></span></span><b>+ {{ $s['recovered'] }}</b></li>@endif
                 <li class="is-net"><span class="wq-cascade-label">صافي المحوَّل للمالك</span><span class="wq-cascade-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
             </ol>
 
             @unless ($s['fee_deducted'])
-                <p class="wq-note">أتعاب الإدارة ({{ $s['fee_pct'] }}% من {{ $s['fee_basis'] }}) تبلغ {{ $s['fee'] }} وضريبتها {{ $s['fee_vat'] }}، وتُفوتَر على المالك منفصلة فلا تُخصم من هذا الكشف.</p>
+                <p class="wq-note">أتعاب الإدارة ({{ $s['fee_text'] }}) تبلغ {{ $s['fee'] }} وضريبتها {{ $s['fee_vat'] }}، وتُفوتَر على المالك منفصلة فلا تُخصم من هذا الكشف.</p>
             @endunless
             @if (! $r['collected'])
                 <p class="wq-note">لم يُحصَّل إيجار لهذا المالك في {{ $monthName($s['month']) }}.</p>

@@ -99,9 +99,12 @@ class OwnerStatementPage extends Page
             'fee' => $m($s['management_fee']['amount']), 'fee_deducted' => $s['management_fee']['deducted'], 'fee_basis' => $s['management_fee']['basis'] === 'due' ? 'الإيجار المستحق' : 'المحصَّل', 'fee_vat' => $m($s['management_fee']['vat']),
             'maintenance' => array_map(fn ($x) => ['date' => $x['date'], 'description' => $x['description'], 'work_order' => $x['work_order'], 'amount' => $m($x['amount']), 'minor' => $minor($x['amount'])], $s['maintenance']),
             'maintenance_total' => $m($s['maintenance_total']), 'margin_total' => $m($s['vendor_margin_total']), 'net' => $m($s['net_to_owner']),
+            'fee_text' => \App\Finance\TrustAccounting::feeText($s['management_fee']),
+            'owner_direct' => $m($s['collected_by_owner']), 'recovered' => $m($s['maintenance_recovered']),
             // integers for the waterfall bars
             'raw' => ['collected' => $minor($s['collected_rent']), 'fee' => $s['management_fee']['deducted'] ? $minor($s['management_fee']['amount']) : 0, 'vat' => $s['management_fee']['deducted'] ? $minor($s['management_fee']['vat']) : 0,
-                'maintenance' => $minor($s['maintenance_total']), 'margin' => $minor($s['vendor_margin_total']), 'net' => $minor($s['net_to_owner'])],
+                'maintenance' => $minor($s['maintenance_total']), 'margin' => $minor($s['vendor_margin_total']), 'net' => $minor($s['net_to_owner']),
+                'owner_direct' => $minor($s['collected_by_owner']), 'recovered' => $minor($s['maintenance_recovered'])],
         ];
     }
 }

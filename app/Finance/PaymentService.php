@@ -73,6 +73,10 @@ class PaymentService
     /** Editing a recorded payment is a sensitive entry: maker/checker, executed as a reversal (REQ-0069). */
     public function requestReversal(Payment $payment, User $maker, string $reason): ApprovalRequest
     {
+        if ($payment->status !== 'recorded') {
+            throw new FinanceException('الدفعة معكوسة من قبل.');
+        }
+        $this->approvals->assertNonePending('payment', (string) $payment->id);   // review M18
         return $this->approvals->submit($maker, 'payment.edit', ['payment_id' => $payment->id, 'reason' => $reason], function () use ($payment) {
             DB::transaction(function () use ($payment) {
                 $payment->forceFill(['status' => 'reversed'])->save();
@@ -82,6 +86,47 @@ class PaymentService
                 // Allocations are append-only; those of a reversed payment no longer count (InvoiceService::outstanding).
             });
         }, 'payment', (string) $payment->id);
+    }
+
+    /**
+     * Apply a tenant's unallocated credit to his open invoices, oldest first (review M18: a payment received before its
+     * invoice stayed as credit forever while the invoice showed as unpaid and overdue). Ledger: the credit moves from
+     * tenant_credit to the owner's receivable; money received straight by the owner moves from unassigned to that owner.
+     */
+    public function applyCredit(Tenant $tenant, CarbonImmutable $on): int
+    {
+        $applied = 0;
+        foreach (Payment::where('tenant_id', $tenant->id)->where('status', 'recorded')->with('allocations')->orderBy('received_on')->orderBy('id')->get() as $payment) {
+            $left = $payment->amount_minor->minus(Money::sum($payment->allocations->map(fn ($a) => $a->amount_minor)->all()));
+            if (! $left->isPositive()) {
+                continue;
+            }
+            $lines = [];
+            foreach (Invoice::where('tenant_id', $tenant->id)->where('status', 'issued')->with('allocations')->orderBy('period_start')->orderBy('issue_date')->orderBy('id')->get() as $inv) {
+                if ($left->isZero()) {
+                    break;
+                }
+                $due = $this->invoices->outstanding($inv);
+                if (! $due->isPositive()) {
+                    continue;
+                }
+                $take = Money::min($due, $left);
+                PaymentAllocation::create(['payment_id' => $payment->id, 'invoice_id' => $inv->id, 'amount_minor' => $take]);
+                $left = $left->minus($take);
+                $owner = $inv->seller_owner_id;
+                $lines[] = ["tenant_credit:{$tenant->id}", $take, null];
+                $lines[] = ["receivable:$owner", null, $take, $owner];
+                if ($payment->paid_to === 'owner') {
+                    $lines[] = ["owner_direct:$owner", $take, null, $owner];
+                    $lines[] = ['owner_direct:unassigned', null, $take];
+                }
+                $applied++;
+            }
+            if ($lines) {
+                $this->ledger->post($on->toDateString(), 'payment.credit_applied', 'تطبيق رصيد سند ' . $payment->receipt_number, $lines, $payment);
+            }
+        }
+        return $applied;
     }
 
     /** Deposit received: a liability, never revenue (REQ-0189, REQ-0433). */

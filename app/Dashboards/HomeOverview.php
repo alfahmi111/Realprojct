@@ -108,7 +108,10 @@ class HomeOverview
         // same statuses as the facade and the occupancy vital, so the three figures agree
         $active = Lease::whereIn('leasable_unit_id', $units->pluck('id'))->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
             ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->get()->keyBy('leasable_unit_id');
-        $expected = \App\Models\ExpectedVacancy::whereIn('leasable_unit_id', $active->keys())->whereIn('confidence', ['confirmed', 'probable'])->get()->keyBy('leasable_unit_id');
+        // only an expectation about the CURRENT lease and not already past (review M18: a vacancy expected from the
+        // previous tenant marked the new tenant as leaving)
+        $expected = \App\Models\ExpectedVacancy::whereIn('lease_id', $active->pluck('id'))->whereIn('confidence', ['confirmed', 'probable'])
+            ->where('month', '>=', $today->format('Y-m'))->get()->keyBy('leasable_unit_id');
         $total = $units->count();
         $leased = $active->count();
         $windows = [];

@@ -72,7 +72,7 @@ class PpmPlanResource extends Resource
                 TextColumn::make('every_months')->label('التكرار')->formatStateUsing(fn ($state) => [1 => 'شهرياً', 2 => 'كل شهرين', 3 => 'كل ثلاثة أشهر', 6 => 'كل ستة أشهر', 12 => 'سنوياً'][(int) $state] ?? 'كل ' . $state . ' أشهر'),
                 TextColumn::make('next_due_on')->label('الموعد القادم')->date('Y-m-d')->sortable()->badge()->color(fn ($state) => $state < now() ? 'danger' : ($state < now()->addDays(14) ? 'warning' : 'gray')),
             ])
-            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive('maintenance.edit'),]);
     }
 
     public static function getPages(): array

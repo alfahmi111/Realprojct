@@ -86,10 +86,10 @@ class AgreementsRelationManager extends RelationManager
                     ->color(fn (string $state) => $state === 'ساري' ? 'success' : 'gray'),
             ])
             ->headerActions([
-                CreateAction::make()->label('إضافة عقد إدارة')->modalHeading('عقد إدارة جديد')
+                CreateAction::make()->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('إضافة عقد إدارة')->modalHeading('عقد إدارة جديد')
                     ->using(fn (array $data) => $this->create($data)),
             ])
-            ->recordActions([Ui::archive()]);
+            ->recordActions([Ui::archive('properties.edit')]);
     }
 
     public static function feeText(ManagementAgreement $a): string

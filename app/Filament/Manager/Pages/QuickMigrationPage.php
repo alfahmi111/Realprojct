@@ -93,14 +93,15 @@ class QuickMigrationPage extends Page
         $s = fn (string $f, string $label, array $opts) => Select::make($f)->label($label)->options($opts)->hint($hint($f))->hintColor($color($f));
         return $schema->statePath('review')->components([
             \Filament\Schemas\Components\Section::make('المستأجر')->schema([
-                $t('tenant_name', 'الاسم'), $s('tenant_kind', 'النوع', ['individual' => 'فرد', 'company' => 'منشأة']), $t('tenant_phone', 'الجوال'),
-            ])->columns(3),
+                $t('tenant_name', 'الاسم')->required(), $s('tenant_kind', 'النوع', ['individual' => 'فرد', 'company' => 'منشأة']), $t('tenant_phone', 'الجوال'),
+                $t('tenant_national_id', 'رقم الهوية أو السجل التجاري'),   // was missing: imported tenants lost their ID (review M18)
+            ])->columns(4),
             \Filament\Schemas\Components\Section::make('الوحدة والعقد')->schema([
-                $t('unit_code', 'رمز الوحدة'), $s('usage', 'الغرض', ['residential' => 'سكني', 'commercial' => 'تجاري']), $t('ejar_contract_number', 'رقم عقد إيجار'),
-                $t('starts_on', 'البداية')->placeholder('YYYY-MM-DD'), $t('ends_on', 'النهاية')->placeholder('YYYY-MM-DD'),
+                $t('unit_code', 'رمز الوحدة')->required(), $s('usage', 'الغرض', ['residential' => 'سكني', 'commercial' => 'تجاري'])->required(), $t('ejar_contract_number', 'رقم عقد إيجار'),
+                $t('starts_on', 'البداية')->placeholder('YYYY-MM-DD')->required()->regex('/^\d{4}-\d{2}-\d{2}$/'), $t('ends_on', 'النهاية')->placeholder('YYYY-MM-DD')->required()->regex('/^\d{4}-\d{2}-\d{2}$/'),
             ])->columns(3),
             \Filament\Schemas\Components\Section::make('البيانات المالية')->schema([
-                $t('annual_rent', 'الإيجار السنوي'), $s('payment_frequency', 'دورة السداد', ['monthly' => 'شهري', 'quarterly' => 'ربع سنوي', 'semiannual' => 'نصف سنوي', 'annual' => 'سنوي', 'single' => 'دفعة واحدة']),
+                $t('annual_rent', 'الإيجار السنوي')->required()->numeric(), $s('payment_frequency', 'دورة السداد', ['monthly' => 'شهري', 'quarterly' => 'ربع سنوي', 'semiannual' => 'نصف سنوي', 'annual' => 'سنوي', 'single' => 'دفعة واحدة'])->required(),
                 $t('deposit', 'مبلغ الضمان'),
             ])->columns(3),
         ]);
@@ -119,7 +120,7 @@ class QuickMigrationPage extends Page
     {
         return ImportBatch::orderByRaw("status = 'staged' desc")->orderByDesc('id')->limit(10)->get()->map(fn ($b) => [
             'id' => $b->id, 'kind' => ['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد'][$b->kind] ?? $b->kind,
-            'status' => $b->status, 'at' => $b->created_at?->format('Y-m-d H:i'),
+            'status' => $b->status, 'at' => $b->created_at?->copy()->setTimezone(config('app.display_timezone', 'Asia/Riyadh'))->format('Y-m-d H:i'),
             'tenant' => collect($b->reviewed ?? [])->get('tenant_name') ?? collect($b->extracted)->firstWhere('field', 'tenant_name')['value'] ?? null,
             'lease_id' => $b->created_refs['lease_id'] ?? null,
         ])->all();
@@ -166,6 +167,11 @@ class QuickMigrationPage extends Page
     {
         $values = array_filter($this->reviewForm->getState(), fn ($v) => $v !== null && $v !== '');
         $batch = ImportBatch::findOrFail($this->batchId);
+        // escalation clauses read from the contract are not edited on this screen but must reach the lease (review M18)
+        $esc = collect($batch->extracted)->firstWhere('field', 'escalations')['value'] ?? null;
+        if (! empty($esc)) {
+            $values['escalations'] = $esc;
+        }
         if (Ui::attempt(fn () => app(QuickMigration::class)->confirm($batch, auth()->user(), $values), 'حُفظ العقد')) {
             $this->next($batch->file_path);
         }

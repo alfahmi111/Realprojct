@@ -99,7 +99,7 @@
                             <span class="wq-floor-name">{{ $row['floor'] }}</span>
                             <div class="wq-floor-units">
                                 @foreach ($row['units'] as $u)
-                                    <a class="wq-unit wq-s-{{ $u['status'] }}" href="{{ $base }}/leasable-units?tableSearch={{ urlencode($u['code']) }}"
+                                    <a class="wq-unit wq-s-{{ $u['status'] }}" href="{{ $base }}/leasable-units?q={{ urlencode($u['code']) }}"
                                        title="{{ $u['code'] }} — {{ $statusLabels[$u['status']] }}{{ $u['tenant'] ? ' — ' . $u['tenant'] : '' }}">
                                         <span class="wq-unit-code">{{ $u['code'] }}</span>
                                         <span class="wq-sr">{{ $statusLabels[$u['status']] }}</span>

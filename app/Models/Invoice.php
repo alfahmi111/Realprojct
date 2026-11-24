@@ -17,7 +17,7 @@ class Invoice extends Model
 
     protected function casts(): array
     {
-        return ['issue_date' => 'date', 'period_start' => 'date', 'period_end' => 'date', 'buyer_national_address' => 'array', 'subtotal_minor' => MoneyCast::class, 'tax_minor' => MoneyCast::class, 'total_minor' => MoneyCast::class, 'archived_at' => 'datetime'];
+        return ['issue_date' => 'date', 'period_start' => 'date', 'period_end' => 'date', 'buyer_national_address' => 'array', 'subtotal_minor' => MoneyCast::class, 'tax_minor' => MoneyCast::class, 'total_minor' => MoneyCast::class, 'archived_at' => 'datetime', 'sadad_issued_at' => 'datetime'];
     }
 
     protected $attributes = ['status' => 'issued'];

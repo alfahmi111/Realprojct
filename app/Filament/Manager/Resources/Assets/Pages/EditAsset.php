@@ -11,7 +11,7 @@ class EditAsset extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [\App\Filament\Support\Ui::archive()];
+        return [\App\Filament\Support\Ui::archive('assets.edit')];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array

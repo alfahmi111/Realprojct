@@ -31,6 +31,12 @@ class LeaseOfferResource extends Resource
     {
         return (bool) auth()->user()?->hasPermission('leasing.view');
     }
+
+    /** Write gate (review M18): viewing roles do not create. */
+    public static function canCreate(): bool
+    {
+        return \App\Filament\Support\Ui::allowed('leasing.edit');
+    }
     protected static ?string $model = LeaseOffer::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentPlus;
@@ -122,21 +128,21 @@ class LeaseOfferResource extends Resource
             ])
             ->filters([\Filament\Tables\Filters\SelectFilter::make('status')->label('الحالة')->options(self::STATUS_AR)])
             ->recordActions([
-                Action::make('submit')->label('رفع للاعتماد')->visible(fn (LeaseOffer $r) => $r->status === 'draft')
+                Action::make('submit')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('رفع للاعتماد')->visible(fn (LeaseOffer $r) => $r->status === 'draft')
                     ->action(fn (LeaseOffer $r) => Ui::attempt(fn () => app(LeasingService::class)->submitOffer($r))),
                 Action::make('approve')->label('اعتماد')->color('success')->visible(fn (LeaseOffer $r) => $r->status === 'pending_approval')
                     ->action(fn (LeaseOffer $r) => Ui::attempt(fn () => app(LeasingService::class)->decideOffer($r, auth()->user(), true))),
                 Action::make('reject')->label('رفض')->color('danger')->visible(fn (LeaseOffer $r) => $r->status === 'pending_approval')
                     ->schema([TextInput::make('reason')->label('السبب')->required()])
                     ->action(fn (LeaseOffer $r, array $data) => Ui::attempt(fn () => app(LeasingService::class)->decideOffer($r, auth()->user(), false, $data['reason']))),
-                Action::make('send')->label('إرسال للمستأجر')->visible(fn (LeaseOffer $r) => $r->status === 'approved')
+                Action::make('send')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إرسال للمستأجر')->visible(fn (LeaseOffer $r) => $r->status === 'approved')
                     ->action(function (LeaseOffer $r) {
                         $token = Ui::attempt(fn () => app(LeasingService::class)->sendOffer($r), 'أُرسل العرض');
                         if ($token) {
                             Notification::make()->title('رابط قبول العرض')->body(route('offer.accept', $token))->persistent()->send();
                         }
                     }),
-                Action::make('expire')->label('إنهاء العرض')->color('gray')->visible(fn (LeaseOffer $r) => in_array($r->status, ['sent', 'approved'], true))
+                Action::make('expire')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إنهاء العرض')->color('gray')->visible(fn (LeaseOffer $r) => in_array($r->status, ['sent', 'approved'], true))
                     ->schema([TextInput::make('reason')->label('سبب خسارة المستأجر')->required()])
                     ->action(fn (LeaseOffer $r, array $data) => Ui::attempt(fn () => app(LeasingService::class)->expireOffer($r, $data['reason']))),
             ]);

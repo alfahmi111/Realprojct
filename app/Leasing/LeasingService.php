@@ -173,6 +173,9 @@ class LeasingService
         }
         $from = $lease->status;
         $lease->forceFill(['status' => $to])->save();
+        if ($to === 'cancelled') {
+            SpaceOccupancy::where('lease_id', $lease->id)->delete();   // a cancelled lease frees its unit (review M18)
+        }
         AuditLogger::record('lease.status', $lease, ['status' => $from], ['status' => $to]);
         return $lease;
     }
@@ -264,7 +267,7 @@ class LeasingService
             }
         }
         return DB::transaction(function () use ($lease, $annualRent, $years, $start) {
-            $end = $start->addYearsNoOverflow($years)->subDay();
+            $end = self::lastDay($start, $start->addYearsNoOverflow($years));
             $new = Lease::create([
                 'leasable_unit_id' => $lease->leasable_unit_id, 'tenant_id' => $lease->tenant_id, 'parent_lease_id' => $lease->id, 'kind' => 'renewal',
                 'usage' => $lease->usage, 'starts_on' => $start->toDateString(), 'ends_on' => $end->toDateString(),
@@ -343,14 +346,18 @@ class LeasingService
                 ->whereRaw('period && daterange(?, ?, \'[]\')', [$from->toDateString(), $to->toDateString()])
                 ->selectRaw('kind, lease_id, lower(period) as s, upper(period) - 1 as e')->get();
             $days = [];
+            $dayLease = [];   // which lease occupies each day, so back-to-back leases are shown apart (review M18)
             for ($d = $from; $d <= $to; $d = $d->addDay()) {
                 $hit = $occ->first(fn ($o) => $d->toDateString() >= $o->s && $d->toDateString() <= $o->e);
                 $days[$d->toDateString()] = $hit ? ['lease' => 'leased', 'hold' => 'held', 'maintenance' => 'maintenance'][$hit->kind] : 'vacant';
+                $dayLease[$d->toDateString()] = $hit?->lease_id;
             }
-            $vacating = Lease::where('leasable_unit_id', $unit->id)->where('status', 'notice_given')->orderBy('ends_on')->first();
+            $today = CarbonImmutable::today();
+            $vacating = Lease::where('leasable_unit_id', $unit->id)->where('status', 'notice_given')->where('ends_on', '>=', $today->toDateString())->orderBy('ends_on')->first();
             $rows[$unit->code] = [
-                'unit_id' => $unit->id, 'days' => $days,
-                'vacating' => $vacating ? ['in_days' => (int) $from->diffInDays(CarbonImmutable::parse($vacating->ends_on)), 'confidence' => 'confirmed'] : null,
+                'unit_id' => $unit->id, 'days' => $days, 'day_leases' => $dayLease, 'composite' => (bool) $unit->is_composite,
+                // counted from today, not from the window start (review M18)
+                'vacating' => $vacating ? ['in_days' => (int) $today->diffInDays(CarbonImmutable::parse($vacating->ends_on)), 'confidence' => 'confirmed'] : null,
             ];
         }
         return $rows;
@@ -366,7 +373,7 @@ class LeasingService
             'year' => $start->addYearsNoOverflow($offer->duration_count),
             default => throw new LeasingException('Daily/weekly durations belong to phase 3.'),
         };
-        return [$start, $end->subDay()];
+        return [$start, self::lastDay($start, $end)];
     }
 
     /** Long track = month/year leases documented in Ejar; day/week is short-term hospitality (phase 3, REQ-0172…REQ-0176). */
@@ -398,5 +405,15 @@ class LeasingService
         if (! in_array($offer->status, $allowed, true)) {
             throw new LeasingException("Offer is {$offer->status}.");
         }
+    }
+
+    /**
+     * Last day of a term that starts on $start and whose anniversary is $anniversary. When adding months or years had to
+     * clip a month-end start (31 Jan + 1 month = 28 Feb, 29 Feb + 1 year = 28 Feb) the clipped day itself is the last day,
+     * otherwise the day before the anniversary (review M18: the clipped case lost a day).
+     */
+    public static function lastDay(CarbonImmutable $start, CarbonImmutable $anniversary): CarbonImmutable
+    {
+        return $anniversary->day < $start->day ? $anniversary : $anniversary->subDay();
     }
 }

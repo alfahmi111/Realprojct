@@ -433,3 +433,5 @@
 .wq-pmap-pop a { color: var(--color-primary); font-weight: 700; }
 .wq-citygroup { margin: 8px 2px 0; font-family: 'Cairo', sans-serif; font-size: 1.15rem; color: var(--color-deep, var(--color-ink)); }
 .wq-citygroup small { font-family: 'Tajawal', sans-serif; font-size: .8rem; color: var(--color-muted); font-weight: 400; }
+.wq-wo-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; padding: 10px 18px 16px; }
+.wq-wo-photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 1px solid var(--color-line); }

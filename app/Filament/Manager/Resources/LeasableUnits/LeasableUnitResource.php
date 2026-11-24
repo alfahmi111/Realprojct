@@ -37,6 +37,12 @@ class LeasableUnitResource extends Resource
     {
         return (bool) auth()->user()?->hasPermission('properties.view');
     }
+
+    /** Write gate (review M18): viewing roles do not edit. */
+    public static function canEdit(Model $record): bool
+    {
+        return \App\Filament\Support\Ui::allowed('properties.edit');
+    }
     protected static ?string $model = LeasableUnit::class;
 
     protected static ?string $recordTitleAttribute = 'code';   // global search in the header
@@ -83,23 +89,23 @@ class LeasableUnitResource extends Resource
             ->filters([SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar')])
             ->recordActions([
                 EditAction::make(),
-                Action::make('attributes')->label('الخصائص')->visible(fn (LeasableUnit $r) => ! $r->is_composite && UnitTypes::get($r->unit_type)['attributes'])
+                Action::make('attributes')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('الخصائص')->visible(fn (LeasableUnit $r) => ! $r->is_composite && UnitTypes::get($r->unit_type)['attributes'])
                     ->fillForm(fn (LeasableUnit $r) => $r->spaces->first()->attributes ?? [])
                     ->schema(fn (LeasableUnit $r) => self::attributeFields($r->unit_type))
                     ->action(fn (LeasableUnit $r, array $data) => Ui::attempt(fn () => app(BuildingWizard::class)->setAttributes($r->spaces->first(), self::castAttributes($r->unit_type, $data)), 'حُفظت الخصائص')),
-                Action::make('price')->label('السعر')
+                Action::make('price')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('السعر')
                     ->schema([Select::make('duration_unit')->label('المدة')->options(['month' => 'شهري', 'year' => 'سنوي'])->required(), Ui::money('price', 'السعر')->required()])
                     ->action(fn (LeasableUnit $r, array $data) => Ui::attempt(fn () => app(BuildingWizard::class)->setPrice($r, $data['duration_unit'], Money::of((int) $data['price'])), 'حُفظ السعر')),
-                Action::make('changeType')->label('تغيير النوع')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
+                Action::make('changeType')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('تغيير النوع')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
                     ->schema([Select::make('type')->label('النوع')->options(collect(UnitTypes::TYPES)->except(['whole_building', 'room'])->map(fn ($t) => $t['ar']))->required()])
                     ->action(fn (LeasableUnit $r, array $data) => Ui::attempt(fn () => app(BuildingWizard::class)->changeType($r->spaces->first(), $data['type']))),
-                Action::make('merge')->label('دمج مع وحدة')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
+                Action::make('merge')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('دمج مع وحدة')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
                     ->schema(fn (LeasableUnit $r) => [
                         Select::make('other')->label('الوحدة الأخرى')->options(LeasableUnit::where('property_id', $r->property_id)->where('id', '<>', $r->id)->where('is_composite', false)->whereNull('archived_at')->pluck('code', 'id'))->required(),
                         TextInput::make('code')->label('رمز الوحدة المدمجة')->required(), TextInput::make('name_ar')->label('الاسم')->required(),
                     ])
                     ->action(fn (LeasableUnit $r, array $data) => Ui::attempt(fn () => app(BuildingWizard::class)->merge($r->spaces->first(), LeasableUnit::find($data['other'])->spaces->first(), $data['code'], $data['name_ar']), 'تم الدمج')),
-                Action::make('split')->label('تقسيم')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
+                Action::make('split')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.edit'))->label('تقسيم')->visible(fn (LeasableUnit $r) => ! $r->is_composite)
                     ->schema([\Filament\Forms\Components\Repeater::make('parts')->label('الأجزاء')->schema([TextInput::make('code')->label('الرمز')->required(), TextInput::make('name_ar')->label('الاسم')->required()])->minItems(2)->columns(2)])
                     ->action(fn (LeasableUnit $r, array $data) => Ui::attempt(fn () => app(BuildingWizard::class)->split($r->spaces->first(), $data['parts']), 'تم التقسيم')),
             ]);

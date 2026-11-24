@@ -21,10 +21,10 @@ Route::get('/media/property/{id}/photo', function (int $id) {
     return \Illuminate\Support\Facades\Storage::disk('local')->response($p->photo_path, null, ['Cache-Control' => 'private, max-age=86400']);
 })->middleware(['web', 'auth'])->whereNumber('id')->name('property.photo');
 
-Route::get('/export',\App\Http\Controllers\DataExportController::class)->middleware(['web', 'auth'])->name('data.export');
+Route::get('/export',\App\Http\Controllers\DataExportController::class)->middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->name('data.export');
 
 // Technician interface API + offline sync (REQ-0313, REQ-0495). Same-origin session auth inside the PWA.
-Route::middleware(['web', 'auth'])->prefix('api/tech')->group(function () {
+Route::middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->prefix('api/tech')->group(function () {
     Route::get('work-orders', [\App\Http\Controllers\Api\TechnicianController::class, 'workOrders']);
     Route::get('assets/{qr}', [\App\Http\Controllers\Api\TechnicianController::class, 'scan']);
     Route::post('sync', [\App\Http\Controllers\Api\TechnicianController::class, 'sync']);
@@ -59,7 +59,7 @@ Route::get('/media/document/{id}', function (int $id) {
     return request()->boolean('download')
         ? \Illuminate\Support\Facades\Storage::disk('local')->download($path, $doc->title_ar . '.' . pathinfo($path, PATHINFO_EXTENSION))
         : \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, no-store']);
-})->middleware(['web', 'auth'])->name('media.document');
+})->middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->name('media.document');
 
 // Circular attachment (owner request 2026-11-24): a tenant sees only circulars visible to his building and unit; staff
 // with leasing permission see all of their office's. RLS hides other offices'.
@@ -77,7 +77,7 @@ Route::get('/media/announcement/{id}/{n}', function (int $id, int $n) {
     $path = ((array) $a->attachments)[$n] ?? null;
     abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
     return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, max-age=3600']);
-})->middleware(['web', 'auth'])->whereNumber(['id', 'n'])->name('media.announcement');
+})->middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->whereNumber(['id', 'n'])->name('media.announcement');
 
 // Quick-migration Excel template (owner request 2026-11-24)
 Route::get('/manage/quick-migration/template.xlsx', function () {
@@ -94,3 +94,18 @@ Route::get('/media/office/{sid}/logo/{mode}', function (int $sid, string $mode) 
     abort_unless(is_string($path) && str_starts_with($path, "branding/$sid/") && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
     return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'public, max-age=3600', 'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'"]);
 })->whereNumber('sid')->whereIn('mode', ['light', 'dark'])->name('office.logo');
+
+// Work order photos (review M18: uploaded but shown nowhere). Staff with maintenance permission, the assigned
+// technician, or the tenant of the lease that reported it; RLS hides other offices' orders.
+Route::get('/media/work-order/{id}/{kind}/{n}', function (int $id, string $kind, int $n) {
+    $user = auth()->user();
+    abort_unless($user && $user->subscriber_id, 403);
+    $wo = \App\Models\WorkOrder::find($id);
+    abort_unless($wo, 404);
+    $tenantOwns = $user->role === \App\Authorization\Role::Tenant && $wo->lease_id
+        && \App\Models\Lease::where('id', $wo->lease_id)->whereHas('tenant', fn ($q) => $q->where('user_id', $user->id))->exists();
+    abort_unless($user->hasPermission('maintenance.view') || $wo->assignee_user_id === $user->id || $tenantOwns, 403);
+    $path = ((array) $wo->{'photos_' . $kind})[$n] ?? null;
+    abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, max-age=3600']);
+})->middleware(['web', 'auth', \App\Http\Middleware\RequireTwoFactorOnRoute::class])->whereNumber(['id', 'n'])->whereIn('kind', ['report', 'before', 'after'])->name('media.work_order');

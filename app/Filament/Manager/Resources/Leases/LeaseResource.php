@@ -97,24 +97,24 @@ class LeaseResource extends Resource
             ->filters([SelectFilter::make('status')->label('الحالة')->options(self::STATUS_AR)])
             ->recordActions([
                 ViewAction::make(),
-                Action::make('sendForRegistration')->label('إرسال للتوثيق')->visible(fn (Lease $r) => $r->status === 'draft')
+                Action::make('sendForRegistration')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إرسال للتوثيق')->visible(fn (Lease $r) => $r->status === 'draft')
                     ->action(function (Lease $r) use ($svc) {
                         $pkg = Ui::attempt(fn () => $svc()->sendForRegistration($r), 'جُهّزت بيانات التوثيق');
                         if ($pkg) {
                             Notification::make()->title('سجّل العقد في منصة إيجار بهذه البيانات')->body(json_encode($pkg['data'], JSON_UNESCAPED_UNICODE))->persistent()->send();
                         }
                     }),
-                Action::make('awaiting')->label('بانتظار الأطراف')->visible(fn (Lease $r) => $r->status === 'sent_for_registration')
+                Action::make('awaiting')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('بانتظار الأطراف')->visible(fn (Lease $r) => $r->status === 'sent_for_registration')
                     ->action(fn (Lease $r) => Ui::attempt(fn () => $svc()->markAwaitingParties($r))),
-                Action::make('register')->label('إدخال رقم العقد الموثّق')->color('success')->visible(fn (Lease $r) => $r->status === 'awaiting_parties')
+                Action::make('register')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إدخال رقم العقد الموثّق')->color('success')->visible(fn (Lease $r) => $r->status === 'awaiting_parties')
                     ->schema([TextInput::make('number')->label('رقم عقد إيجار')->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->register($r, $data['number']), 'تم التوثيق')),
-                Action::make('activate')->label('تفعيل')->visible(fn (Lease $r) => $r->status === 'registered')
+                Action::make('activate')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تفعيل')->visible(fn (Lease $r) => $r->status === 'registered')
                     ->action(fn (Lease $r) => Ui::attempt(fn () => $svc()->activate($r))),
-                Action::make('deposit')->label('تسجيل التأمين')->visible(fn (Lease $r) => in_array($r->status, ['registered', 'active'], true) && $r->deposit_minor->isPositive())
+                Action::make('deposit')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تسجيل التأمين')->visible(fn (Lease $r) => in_array($r->status, ['registered', 'active'], true) && $r->deposit_minor->isPositive())
                     ->schema([DatePicker::make('on')->label('التاريخ')->required()->default(now()), Select::make('paid_to')->label('استُلم في حساب')->options(['manager' => 'المدير (أمانات)', 'owner' => 'المالك'])->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => app(PaymentService::class)->recordDeposit($r, $r->deposit_minor, CarbonImmutable::parse($data['on']), $data['paid_to']), 'سُجّل التأمين كالتزام')),
-                Action::make('notice')->label('إشعار عدم التجديد')->color('warning')->visible(fn (Lease $r) => $r->status === 'active')
+                Action::make('notice')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إشعار عدم التجديد')->color('warning')->visible(fn (Lease $r) => $r->status === 'active')
                     ->schema(fn (Lease $r) => [
                         Select::make('by')->label('من')->options(['tenant' => 'المستأجر', 'lessor' => 'المؤجر'])->required()->live(),
                         DatePicker::make('on')->label('تاريخ الإشعار')->required()->default(now()),
@@ -122,7 +122,7 @@ class LeaseResource extends Resource
                         FileUpload::make('document')->label('المستند الداعم')->directory('subscribers/' . $r->subscriber_id . '/notices')->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('by') === 'lessor'),
                     ])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->giveNotice($r, $data['by'], CarbonImmutable::parse($data['on']), $data['reason'] ?? null, $data['document'] ?? null), 'سُجّل الإشعار')),
-                Action::make('renew')->label('تجديد')->visible(fn (Lease $r) => in_array($r->status, ['active', 'expired'], true))
+                Action::make('renew')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تجديد')->visible(fn (Lease $r) => in_array($r->status, ['active', 'expired'], true))
                     ->schema([Ui::money('rent', 'الإيجار السنوي الجديد')->required(), TextInput::make('years')->label('سنوات')->integer()->minValue(1)->default(1)->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->renew($r, Money::of((int) $data['rent']), (int) $data['years']), 'تم التجديد')),
             ]);

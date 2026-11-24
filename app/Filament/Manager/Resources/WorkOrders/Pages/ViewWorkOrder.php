@@ -19,7 +19,7 @@ class ViewWorkOrder extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return WorkOrderResource::flowActions();   // act from the page itself (review M18)
     }
 
     public function getHeading(): string
@@ -37,7 +37,10 @@ class ViewWorkOrder extends ViewRecord
             'w' => $w,
             'flow' => array_map(fn ($s, $i) => ['key' => $s, 'label' => WorkOrderResource::STATUS_AR[$s], 'state' => $w->status === 'rejected' ? 'off' : ($at === false ? 'off' : ($i < $at ? 'done' : ($i === $at ? 'now' : 'next'))), 'at' => $stamps[$s] ?? null], self::FLOW, array_keys(self::FLOW)),
             'actual' => $w->costLines->sum(fn ($c) => $c->total_minor->minor()),
-            'photos' => array_values(array_filter(array_merge((array) $w->photos_report, (array) $w->photos_before, (array) $w->photos_after))),
+            // [label => [url, ...]] served through the protected route (review M18)
+            'photos' => collect(['report' => 'صور البلاغ', 'before' => 'قبل التنفيذ', 'after' => 'بعد التنفيذ'])
+                ->map(fn ($label, $kind) => ['label' => $label, 'urls' => collect((array) $w->{'photos_' . $kind})->keys()->map(fn ($n) => route('media.work_order', [$w->id, $kind, $n]))->all()])
+                ->filter(fn ($g) => count($g['urls']))->values()->all(),
         ];
     }
 }

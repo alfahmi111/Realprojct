@@ -44,8 +44,20 @@
                         <span class="wq-fall-amt">{{ $sar($statement['collected_rent']) }}</span>
                         <span class="wq-fall-bar"><span style="--p:100%"></span></span>
                     </li>
+                    @if (($statement['collected_by_owner'] ?? null)?->isPositive())
+                        <li class="wq-fall-info">
+                            <span class="wq-fall-label">منه في حسابك مباشرة<small>دُفع لك مباشرة، فلا يُحوَّل من المكتب</small></span>
+                            <span class="wq-fall-amt">{{ $sar($statement['collected_by_owner']) }}</span>
+                        </li>
+                    @endif
+                    @if (($statement['maintenance_recovered'] ?? null)?->isPositive())
+                        <li class="wq-fall-in">
+                            <span class="wq-fall-label">صيانة استُردت من المستأجر</span>
+                            <span class="wq-fall-amt">+ {{ $sar($statement['maintenance_recovered']) }}</span>
+                        </li>
+                    @endif
                     @php($fee = $statement['management_fee'])
-                    @php($feeNote = intdiv($fee['percentage_bp'], 100) . '.' . str_pad((string) ($fee['percentage_bp'] % 100), 2, '0', STR_PAD_LEFT) . '% من ' . (($fee['basis'] ?? 'collected') === 'due' ? 'الإيجار المستحق' : 'المحصَّل') . ' حسب عقد الإدارة')
+                    @php($feeNote = \App\Finance\TrustAccounting::feeText($fee) . ' حسب عقد الإدارة')
                     @if ($fee['deducted'] ?? true)
                         <li class="wq-fall-minus">
                             <span class="wq-fall-label">أتعاب الإدارة <small>{{ $feeNote }}</small></span>

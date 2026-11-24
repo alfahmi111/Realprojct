@@ -43,7 +43,16 @@ class TrustAccounting
                 continue;
             }
             $months = $this->monthKeys(CarbonImmutable::parse($inv->period_start), CarbonImmutable::parse($inv->period_end));
-            $parts = $inv->subtotal_minor->split(count($months));
+            // a full month weighs the same as any other full month; a partial month by its share of that month's days
+            // (review M18: 15 Jan–14 Apr was recognised 25% in each of Jan, Feb, Mar and Apr)
+            $pStart = CarbonImmutable::parse($inv->period_start);
+            $pEnd = CarbonImmutable::parse($inv->period_end);
+            $weights = array_map(function ($ym) use ($pStart, $pEnd) {
+                $m = CarbonImmutable::parse($ym . '-01');
+                $covered = (int) $m->max($pStart)->diffInDays($m->endOfMonth()->startOfDay()->min($pEnd)) + 1;
+                return intdiv($covered * 10000, $m->daysInMonth);
+            }, $months);
+            $parts = $inv->subtotal_minor->allocate($weights);
             $idx = array_search($start->format('Y-m'), $months, true);
             if ($idx === false || $parts[$idx]->isZero()) {
                 continue;
@@ -122,17 +131,49 @@ class TrustAccounting
         $maintTotal = Money::sum($maintenance->pluck('amount')->all());
         $marginTotal = Money::sum($margins->pluck('amount')->all());
 
+        // Only what the office actually holds is transferable (review M18): rent paid straight into the owner's account is
+        // shown on its own line and is not "net to transfer"; the fee on it is then owed by the owner (a negative net).
+        $ownerDirect = Money::sum($allocs->filter(fn ($a) => $a->payment?->paid_to === 'owner')->map(fn ($a) => $a->amount_minor)->all());
+        $heldByManager = $collectedGross->minus($ownerDirect);
+        // Maintenance the tenant was charged for (misuse) and paid back to the office: credited to the owner, net of VAT,
+        // because the full repair cost was deducted above (review M18).
+        $recharges = PaymentAllocation::query()
+            ->whereHas('payment', fn ($q) => $q->where('status', 'recorded')->where('paid_to', 'manager')->whereBetween('received_on', [$from, $to]))
+            ->whereIn('invoice_id', Invoice::where('seller_owner_id', $owner->id)->where('kind', 'maintenance_recharge')->select('id'))->get();
+        $recovered = Money::zero();
+        foreach ($recharges as $a) {
+            $inv = Invoice::find($a->invoice_id);
+            $recovered = $recovered->plus($a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor())));
+        }
         $deducted = $collection === 'deduct_from_remittance';
-        $net = $collectedGross->minus($deducted ? $fee->plus($feeVat) : Money::zero())->minus($maintTotal)->minus($marginTotal);
+        $net = $heldByManager->plus($recovered)->minus($deducted ? $fee->plus($feeVat) : Money::zero())->minus($maintTotal)->minus($marginTotal);
         return [
             'owner_id' => $owner->id, 'month' => $month->format('Y-m'),
             'collected_rent' => $collectedGross, 'collected_rent_net_of_vat' => $collectedNet,
+            'collected_by_owner' => $ownerDirect, 'held_by_manager' => $heldByManager, 'maintenance_recovered' => $recovered,
             'management_fee' => ['type' => $agreement->fee_type, 'percentage_bp' => $agreement->fee_percentage_bp, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
                 'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
             'vendor_margin' => $margins->all(), 'vendor_margin_total' => $marginTotal,
             'net_to_owner' => $net,
         ];
+    }
+
+    /**
+     * The fee as words for statements (review M18: fixed and mixed agreements read «0.00% من المحصَّل»):
+     * «7.5% من المحصَّل»، «مبلغ ثابت 500.00»، «5% من المحصَّل ومبلغ ثابت 300.00»، or «لا أتعاب».
+     */
+    public static function feeText(array $fee): string
+    {
+        $bp = (int) ($fee['percentage_bp'] ?? 0);
+        $pct = rtrim(rtrim(number_format($bp / 100, 2, '.', ''), '0'), '.') . '% من ' . (($fee['basis'] ?? 'collected') === 'due' ? 'الإيجار المستحق' : 'المحصَّل');
+        $fixed = $fee['fixed_part'] ?? null;
+        $fixedText = $fixed instanceof Money && $fixed->isPositive() ? 'مبلغ ثابت ' . \App\Support\Dates\NumberFormatter::money($fixed) : null;
+        return match ($fee['type'] ?? 'percentage') {
+            'fixed' => $fixedText ?? 'مبلغ ثابت لا يستحق هذا الشهر',
+            'mixed' => $pct . ($fixedText ? ' و' . $fixedText : ''),
+            default => $bp > 0 ? $pct : 'لا أتعاب',
+        };
     }
 
     /** Book the month's management fee: manager revenue = fees only (REQ-0430). */

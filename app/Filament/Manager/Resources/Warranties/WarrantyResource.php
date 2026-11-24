@@ -74,7 +74,7 @@ class WarrantyResource extends Resource
                 TextColumn::make('kind')->label('النوع')->badge()->color('gray')->formatStateUsing(fn ($state) => ['manufacturer' => 'ضمان المصنّع', 'supplier' => 'ضمان المورّد', 'annual_contract' => 'عقد صيانة سنوي'][$state] ?? $state),
                 TextColumn::make('ends_on')->label('ينتهي')->date('Y-m-d')->sortable()->badge()->color(fn ($state) => $state < now() ? 'gray' : ($state < now()->addDays(60) ? 'warning' : 'success'))->description(fn ($record) => $record->ends_on < now() ? 'انتهى' : 'باقٍ ' . (int) now()->diffInDays($record->ends_on) . ' يوماً'),
             ])
-            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive(),]);
+            ->recordActions([EditAction::make(), \App\Filament\Support\Ui::archive('maintenance.edit'),]);
     }
 
     public static function getPages(): array

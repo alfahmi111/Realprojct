@@ -127,9 +127,14 @@ final class DocumentVault
         $alerted = 0;
         $wos = 0;
         $managers = null;
-        foreach (Document::current()->whereNotNull('expires_on')->whereIn('expires_on', array_map(fn ($d) => $today->addDays($d)->toDateString(), self::ALERT_DAYS))->get() as $doc) {
+        // by range with a once-per-stage record (review M18): a missed day or a late upload still gets its alert
+        foreach (Document::current()->whereNotNull('expires_on')->whereBetween('expires_on', [$today->toDateString(), $today->addDays(max(self::ALERT_DAYS))->toDateString()])->get() as $doc) {
+            $stage = \App\Compliance\ExpiryStage::due($today, $doc->expires_on);
+            if ($stage === null || \App\Compliance\ExpiryStage::alreadySent('document.expiring', $doc, $stage)) {
+                continue;
+            }
             $managers ??= User::where('role', 'manager')->whereNull('archived_at')->get()->all();
-            $center->dispatch('document.expiring', $managers, ['المستند' => $doc->title_ar, 'تاريخ الانتهاء' => $doc->expires_on->format('Y-m-d')], $today->setTime(4, 0), urgent: true, subject: $doc);
+            $center->dispatch('document.expiring', $managers, ['المستند' => $doc->title_ar, 'تاريخ الانتهاء' => $doc->expires_on->format('Y-m-d'), 'التنبيه' => \App\Compliance\ExpiryStage::LABELS[$stage]], $today->setTime(4, 0), urgent: true, subject: $doc);
             $alerted++;
             if ($doc->category === 'certificate' && $doc->statutory_work_order_id === null && $doc->property_id) {
                 $wo = $this->maintenance->reportStatutory($doc);

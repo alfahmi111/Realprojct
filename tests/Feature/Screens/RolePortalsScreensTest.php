@@ -82,7 +82,7 @@ class RolePortalsScreensTest extends TestCase
         Filament::setCurrentPanel(Filament::getPanel('technician'));
         $this->actingAs($this->tech)->get('/tech/tasks')->assertOk()->assertSee($wo->number);
         Livewire::actingAs($this->tech)->test(TechnicianHome::class)->call('start', $wo->id)
-            ->set('cost', ['kind' => 'part', 'description' => 'محبس', 'quantity' => 1, 'unit_cost' => '40'])->call('addCost', $wo->id)
+            ->set('cost.' . $wo->id, ['kind' => 'part', 'description' => 'محبس', 'quantity' => 1, 'unit_cost' => '40'])->call('addCost', $wo->id)
             ->set('scan', 'QR-T')->call('doScan');
         $this->assertSame('in_progress', $wo->fresh()->status);
         $this->assertSame(4000, $m->totalCost($wo->fresh())->minor());

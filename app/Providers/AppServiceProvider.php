@@ -71,6 +71,10 @@ class AppServiceProvider extends ServiceProvider
         // Dates: Filament's own picker instead of the browser's native one, whose placeholder shows reversed in RTL Arabic
         // ("yyyy/رهش/موي"). Stored value stays Y-m-d; the week starts on Sunday as in Saudi Arabia (M14).
         \Filament\Forms\Components\DatePicker::configureUsing(fn (\Filament\Forms\Components\DatePicker $c) => $c->native(false)->displayFormat('Y-m-d')->firstDayOfWeek(7)->closeOnDateSelection());
+        // Times are stored in UTC and shown in Saudi time (review M18: «08:00» typed by a manager was stored as 08:00 UTC = 11:00 Riyadh)
+        \Filament\Support\Facades\FilamentTimezone::set(config('app.display_timezone', 'Asia/Riyadh'));
+        // An upload field accepts only files uploaded through it, never a typed path to another office's file (review M18)
+        \Filament\Forms\Components\FileUpload::configureUsing(fn (\Filament\Forms\Components\FileUpload $c) => $c->preventFilePathTampering());
         // Each queued job starts with an empty tenant context; tenant jobs set their own (TenantAware jobs).
         Queue::before(fn () => app(TenantContext::class)->clear());
         Queue::after(fn () => app(TenantContext::class)->clear());

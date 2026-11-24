@@ -39,7 +39,7 @@ class PortfolioTree
         $unitBySpace = [];
         foreach ($units as $u) {
             foreach ($u->spaces as $s) {
-                $unitBySpace[$s->id] ??= $u;
+                $unitBySpace[$s->id][] = $u;   // every unit containing the space, single and composite (review M18)
             }
         }
         $leases = Lease::whereIn('leasable_unit_id', $units->pluck('id'))->with('tenant')->orderByDesc('starts_on')->get()->groupBy('leasable_unit_id');
@@ -63,7 +63,10 @@ class PortfolioTree
                 foreach ($floors as $f) {
                     $rows = [];
                     foreach ($spaces->where('parent_id', $f->id)->where('kind', 'unit') as $s) {
-                        $u = $unitBySpace[$s->id] ?? null;
+                        // the unit that holds a live lease today wins (a whole-building lease shows on each flat); else the single unit
+                        $candidates = $unitBySpace[$s->id] ?? [];
+                        $u = collect($candidates)->first(fn ($c) => ($leases[$c->id] ?? collect())->contains(fn ($l) => in_array($l->status, self::LIVE, true) && $l->starts_on <= $today && $l->ends_on >= $today))
+                            ?? collect($candidates)->first(fn ($c) => ! $c->is_composite) ?? ($candidates[0] ?? null);
                         $row = $this->unitRow($s, $u, $u ? ($leases[$u->id] ?? collect()) : collect(), $today, $overdue, $maint);
                         if ($search !== '' && ! $this->matches($row, $search)) {
                             continue;

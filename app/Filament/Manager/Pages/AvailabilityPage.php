@@ -92,6 +92,7 @@ class AvailabilityPage extends Page
         $leases = $grid ? Lease::whereIn('leasable_unit_id', collect($grid)->pluck('unit_id'))->whereNotIn('status', ['cancelled'])
             ->where('starts_on', '<=', $end->toDateString())->where('ends_on', '>=', $start->toDateString())->with('tenant')->get()->groupBy('leasable_unit_id') : collect();
 
+        $leaseById = $leases->flatten()->keyBy('id');
         $lanes = [];
         $totals = ['leased' => 0, 'vacant' => 0, 'held' => 0, 'maintenance' => 0];
         foreach ($grid as $row) {
@@ -99,20 +100,23 @@ class AvailabilityPage extends Page
             $segs = [];
             $i = 0;
             foreach ($row['days'] as $day => $state) {
-                $totals[$state]++;
+                if (empty($row['composite'])) {
+                    $totals[$state]++;   // a whole-building unit repeats its parts' days: kept out of the shares (review M18)
+                }
+                $leaseId = $row['day_leases'][$day] ?? null;
                 $last = count($segs) - 1;
-                if ($last >= 0 && $segs[$last]['state'] === $state) {
+                if ($last >= 0 && $segs[$last]['state'] === $state && $segs[$last]['lease_id'] === $leaseId) {
                     $segs[$last]['len']++;
                     $segs[$last]['to'] = $day;
                 } else {
-                    $segs[] = ['state' => $state, 'at' => $i, 'len' => 1, 'from' => $day, 'to' => $day];
+                    $segs[] = ['state' => $state, 'at' => $i, 'len' => 1, 'from' => $day, 'to' => $day, 'lease_id' => $leaseId];
                 }
                 $i++;
             }
             foreach ($segs as &$s) {
                 $s['label'] = null;
                 if ($s['state'] === 'leased') {
-                    $l = ($leases[$row['unit_id']] ?? collect())->first(fn ($x) => $x->starts_on->toDateString() <= $s['from'] && $x->ends_on->toDateString() >= $s['from']);
+                    $l = $s['lease_id'] ? $leaseById->get($s['lease_id']) : null;
                     $s['label'] = $l?->tenant?->name_ar;
                 }
             }

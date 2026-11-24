@@ -11,6 +11,6 @@ class EditTenant extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [\App\Filament\Support\Ui::archive()];
+        return [\App\Filament\Support\Ui::archive('leasing.edit')];
     }
 }

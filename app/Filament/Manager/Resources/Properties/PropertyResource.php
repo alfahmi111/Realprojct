@@ -32,6 +32,12 @@ class PropertyResource extends Resource
     {
         return (bool) auth()->user()?->hasPermission('properties.view');
     }
+
+    /** Write gate (review M18): viewing roles do not edit. */
+    public static function canEdit(Model $record): bool
+    {
+        return \App\Filament\Support\Ui::allowed('properties.edit');
+    }
     protected static ?string $model = Property::class;
 
     protected static ?string $recordTitleAttribute = 'name_ar';   // global search in the header
@@ -87,8 +93,8 @@ class PropertyResource extends Resource
                 TextColumn::make('city')->label('المدينة'),
                 TextColumn::make('leasable_units_count')->counts('leasableUnits')->label('الوحدات التأجيرية'),
             ])
-            ->headerActions([Action::make('wizard')->label('إضافة مبنى')->url(fn () => \App\Filament\Manager\Pages\AddBuildingWizard::getUrl())])
-            ->recordActions([ViewAction::make(), EditAction::make(), Ui::archive()]);
+            ->headerActions([Action::make('wizard')->authorize(fn () => \App\Filament\Support\Ui::allowed('properties.create'))->label('إضافة مبنى')->url(fn () => \App\Filament\Manager\Pages\AddBuildingWizard::getUrl())])
+            ->recordActions([ViewAction::make(), EditAction::make(), Ui::archive('properties.edit')]);
     }
 
     public static function getPages(): array

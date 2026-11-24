@@ -26,6 +26,9 @@ final class IntegrationStatus
         'sadad' => ['سداد', 'فواتير برقم سداد', 'P2'],
     ];
 
+    /** key => driver names with a real implementation bound in AppServiceProvider. None yet: no provider contracted. */
+    public const LIVE_DRIVERS = [];
+
     public const STATE_AR = [
         'manual' => ['يدوي بمساعدة النظام', 'info'],
         'simulator' => ['محاكاة للتجربة فقط', 'warning'],
@@ -36,10 +39,12 @@ final class IntegrationStatus
     public static function driver(string $key): string
     {
         $d = (string) config("integrations.$key", 'none');
-        return match ($d) {
-            'manual', 'simulator', 'none' => $d,
-            '' => 'none',
-            default => 'live',
+        // «live» only for a driver that has a real implementation registered (review M18: any unknown value such as
+        // INTEGRATION_PAYMENTS=moyasar showed «مربوط» while the bound gateway still refused every call)
+        return match (true) {
+            in_array($d, ['manual', 'simulator'], true) => $d,
+            in_array($d, self::LIVE_DRIVERS[$key] ?? [], true) => 'live',
+            default => 'none',
         };
     }
 
