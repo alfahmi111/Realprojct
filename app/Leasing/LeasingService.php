@@ -253,7 +253,7 @@ class LeasingService
     }
 
     /** Renew: a new lease for the next term. Under a rent freeze, the rent cannot exceed the last registered rent (REQ-0198). */
-    public function renew(Lease $lease, Money $annualRent, int $years = 1): Lease
+    public function renew(Lease $lease, Money $annualRent, int $years = 1, ?int $months = null, bool $automatic = false): Lease
     {
         $start = CarbonImmutable::parse($lease->ends_on)->addDay();
         $freeze = $this->policies->freezeFor($lease->unit->property, $lease->usage, $start);
@@ -266,17 +266,72 @@ class LeasingService
                 throw new LeasingException('Renewal rent cannot exceed the last registered rent while the freeze applies: ' . $freeze->title_ar);
             }
         }
-        return DB::transaction(function () use ($lease, $annualRent, $years, $start) {
-            $end = self::lastDay($start, $start->addYearsNoOverflow($years));
+        return DB::transaction(function () use ($lease, $annualRent, $years, $months, $automatic, $start) {
+            $end = self::lastDay($start, $start->addMonthsNoOverflow($months ?? 12 * $years));
             $new = Lease::create([
                 'leasable_unit_id' => $lease->leasable_unit_id, 'tenant_id' => $lease->tenant_id, 'parent_lease_id' => $lease->id, 'kind' => 'renewal',
                 'usage' => $lease->usage, 'starts_on' => $start->toDateString(), 'ends_on' => $end->toDateString(),
                 'annual_rent_minor' => $annualRent, 'payment_frequency' => $lease->payment_frequency, 'deposit_minor' => $lease->deposit_minor,
             ]);
             $this->occupy($lease->unit, $start, $end, 'lease', leaseId: $new->id);
+            if ($automatic) {   // Q35: the renewal stands by the contract itself; it runs without a fresh registration step
+                $new->forceFill(['status' => 'active', 'auto_renewed_at' => now(), 'ejar_contract_number' => $lease->ejar_contract_number])->save();
+                AuditLogger::record('lease.auto_renewed', $new, null, ['parent_lease_id' => $lease->id, 'ends_on' => $end->toDateString()]);
+            }
             $this->schedule->generate($new);
             $this->transition($lease, 'renewed');
             return $new;
+        });
+    }
+
+    /**
+     * Owner decision Q35: a lease that reached its end with no notice renews by itself for the same term at the same
+     * rent (a freeze never blocks the same rent; a missing registered rent inside a frozen area does, and then a person
+     * decides). The renewal is active at once and can be ended early with {@see terminateRenewal()}.
+     */
+    public function autoRenew(Lease $lease): Lease
+    {
+        $start = CarbonImmutable::parse($lease->starts_on);
+        $months = max(1, (int) round($start->diffInMonths(CarbonImmutable::parse($lease->ends_on)->addDay())));
+        return $this->renew($lease, $lease->annual_rent_minor, months: $months, automatic: true);
+    }
+
+    /**
+     * End an automatically renewed lease early (Q35 «ويمكن إنهاؤه»). The term is cut to `$endOn`; unbilled
+     * instalments after it are voided and the one that straddles it is prorated by days; the unit is freed after it.
+     * An invoice already issued for days after `$endOn` stays as is: its credit is a separate, approved step.
+     */
+    public function terminateRenewal(Lease $lease, CarbonImmutable $endOn, string $by, string $reason, CarbonImmutable $today): Lease
+    {
+        if ($lease->auto_renewed_at === null || $lease->status !== 'active') {
+            throw new LeasingException('يمكن إنهاء العقد المجدَّد تلقائياً وهو ساري فقط.');
+        }
+        if (! in_array($by, ['lessor', 'tenant'], true) || trim($reason) === '') {
+            throw new LeasingException('حدّد من طلب الإنهاء وسببه.');
+        }
+        if ($endOn->lessThan($today) || $endOn->lessThan($lease->starts_on) || $endOn->greaterThanOrEqualTo($lease->ends_on)) {
+            throw new LeasingException('تاريخ الإنهاء يكون من اليوم فصاعداً وقبل نهاية العقد.');
+        }
+        return DB::transaction(function () use ($lease, $endOn, $by, $reason) {
+            $end = $endOn->toDateString();
+            foreach ($lease->scheduleLines()->where('status', 'scheduled')->get() as $line) {
+                $ps = CarbonImmutable::parse($line->period_start);
+                $pe = CarbonImmutable::parse($line->period_end);
+                if ($ps->toDateString() > $end) {
+                    $line->forceFill(['status' => 'void'])->save();
+                } elseif ($pe->toDateString() > $end) {
+                    $all = (int) $ps->diffInDays($pe) + 1;
+                    $kept = (int) $ps->diffInDays($endOn) + 1;
+                    $amount = $line->amount_minor instanceof Money ? $line->amount_minor : Money::of((int) $line->amount_minor);
+                    $line->forceFill(['period_end' => $end, 'amount_minor' => $amount->multiplyRatio($kept, $all)])->save();
+                }
+            }
+            DB::update("UPDATE space_occupancies SET period = daterange(lower(period), (?::date + 1), '[)') WHERE lease_id = ?", [$end, $lease->id]);
+            $old = CarbonImmutable::parse($lease->ends_on)->toDateString();
+            $lease->forceFill(['ends_on' => $end, 'status' => 'notice_given', 'non_renewal_notice_on' => now()->toDateString(),
+                'terminated_by' => $by, 'termination_reason' => mb_substr($reason, 0, 500), 'terminated_at' => now()])->save();
+            AuditLogger::record('lease.terminated', $lease, ['ends_on' => $old, 'status' => 'active'], ['ends_on' => $end, 'status' => 'notice_given', 'by' => $by, 'reason' => $reason]);
+            return $lease;
         });
     }
 

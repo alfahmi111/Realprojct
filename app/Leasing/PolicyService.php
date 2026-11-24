@@ -44,6 +44,37 @@ class PolicyService
         });
     }
 
+    /**
+     * Where collected funds go (owner decision Q33): 'required' (owner's account only), 'default' (owner's account by
+     * default, the office trust account with a warning) or null (no rule). Nationwide rows only.
+     */
+    public function ownerAccountMode(DateTimeInterface $on): ?string
+    {
+        $d = $on->format('Y-m-d');
+        $rows = Policy::query()->where('kind', 'funds_to_owner_account')->whereNull('archived_at')->whereNull('region')
+            ->where('effective_from', '<=', $d)->where(fn ($q) => $q->whereNull('effective_to')->orWhere('effective_to', '>=', $d))->get();
+        $modes = $rows->map(fn (Policy $p) => ($p->payload ?? [])['mode'] ?? 'default');
+        return $modes->contains('required') ? 'required' : ($modes->isNotEmpty() ? 'default' : null);
+    }
+
+    /** Refuse collection into the office account while the owner-account rule is required (Q33). */
+    public function assertOfficeCollectionAllowed(string $paidTo, DateTimeInterface $on): void
+    {
+        if ($paidTo === 'manager' && $this->ownerAccountMode($on) === 'required') {
+            throw new \App\Finance\FinanceException('لائحة إدارة الأملاك توجب إيداع المبالغ المحصّلة في حساب المالك، لا في حساب المكتب.');
+        }
+    }
+
+    /** Labels for the "received into" choice, with the draft rule's warning (Q33). */
+    public function paidToOptions(DateTimeInterface $on): array
+    {
+        return match ($this->ownerAccountMode($on)) {
+            'required' => ['owner' => 'حساب المالك'],
+            'default' => ['owner' => 'حساب المالك', 'manager' => 'حساب أمانات المكتب (تحظره مسودة لائحة إدارة الأملاك)'],
+            default => ['owner' => 'حساب المالك', 'manager' => 'حساب أمانات المكتب'],
+        };
+    }
+
     /** Allowed non-renewal reason codes for a property on a date (REQ-0195). */
     public function nonRenewalReasons(Property $property, DateTimeInterface $on): Collection
     {

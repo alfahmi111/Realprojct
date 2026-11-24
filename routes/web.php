@@ -18,6 +18,8 @@ Route::post('/b/{code}', [\App\Http\Controllers\BuildingPageController::class, '
 Route::get('/media/property/{id}/photo', function (int $id) {
     $p = \App\Models\Property::find($id);
     abort_unless($p && $p->photo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($p->photo_path), 404);
+    // office staff limited to some properties see only their photos (review M18 A8); owners and tenants pass through RLS
+    abort_if(auth()->user()->role->portal() === 'manager' && ! \App\Authorization\Scope::canSeeProperty(auth()->user(), $p->id), 403);
     return \Illuminate\Support\Facades\Storage::disk('local')->response($p->photo_path, null, ['Cache-Control' => 'private, max-age=86400']);
 })->middleware(['web', 'auth'])->whereNumber('id')->name('property.photo');
 
@@ -52,6 +54,7 @@ Route::get('/media/document/{id}', function (int $id) {
     abort_unless($user && $user->subscriber_id, 403);
     $doc = \App\Models\Document::find($id);   // RLS: another office's document is simply not found
     abort_unless($doc, 404);
+    abort_unless(\App\Filament\Support\PropertyScope::apply(\App\Models\Document::query(), 'document')->whereKey($id)->exists(), 403);   // property scope (REQ-0494)
     $vault = app(\App\Documents\DocumentVault::class);
     abort_unless($vault->canSee($user, $doc) && ($user->hasPermission('properties.view') || $user->hasPermission('properties.*')), 403);
     $path = $vault->open($doc, $user, request()->boolean('download') ? 'download' : 'view');
@@ -105,6 +108,7 @@ Route::get('/media/work-order/{id}/{kind}/{n}', function (int $id, string $kind,
     $tenantOwns = $user->role === \App\Authorization\Role::Tenant && $wo->lease_id
         && \App\Models\Lease::where('id', $wo->lease_id)->whereHas('tenant', fn ($q) => $q->where('user_id', $user->id))->exists();
     abort_unless($user->hasPermission('maintenance.view') || $wo->assignee_user_id === $user->id || $tenantOwns, 403);
+    abort_if($user->role->portal() === 'manager' && $wo->assignee_user_id !== $user->id && ! \App\Authorization\Scope::canSeeProperty($user, (int) $wo->property_id), 403);   // REQ-0494
     $path = ((array) $wo->{'photos_' . $kind})[$n] ?? null;
     abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
     return \Illuminate\Support\Facades\Storage::disk('local')->response($path, null, ['Cache-Control' => 'private, max-age=3600']);

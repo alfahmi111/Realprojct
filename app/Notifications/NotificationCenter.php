@@ -25,7 +25,7 @@ class NotificationCenter
 
     public const EVENTS = [
         'payment.due' => 'دفعة مستحقة', 'payment.overdue' => 'دفعة متأخرة', 'payment.received' => 'دفعة مستلمة',
-        'lease.expiring' => 'اقترب آخر موعد لإشعار عدم التجديد', 'lease.renewal_due' => 'عقد انتهى دون إشعار: سجّل التجديد', 'renewal.survey_reply' => 'رد على استطلاع التجديد',
+        'lease.expiring' => 'اقترب آخر موعد لإشعار عدم التجديد', 'lease.renewal_due' => 'عقد انتهى دون إشعار ولم يتجدد تلقائياً: سجّل التجديد', 'lease.auto_renewed' => 'تجدّد عقد تلقائياً (يمكن إنهاؤه)', 'renewal.survey_reply' => 'رد على استطلاع التجديد',
         'maintenance.new_report' => 'بلاغ صيانة جديد', 'maintenance.emergency' => 'بلاغ طارئ', 'work_order.late' => 'أمر عمل تأخر عن موعده',
         'approval.waiting' => 'اعتماد ينتظرك', 'document.expiring' => 'مستند قارب الانتهاء', 'waitlist.new_prospect' => 'مهتم جديد في قائمة الانتظار', 'waitlist.long_while_vacant' => 'قائمة انتظار طويلة ووحدة شاغرة',
         'subscription.grace' => 'انتهى اشتراك المكتب — مهلة السماح جارية', 'subscription.read_only' => 'انتهت مهلة السماح — المنصة للقراءة فقط',

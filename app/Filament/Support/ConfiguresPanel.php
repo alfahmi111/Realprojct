@@ -58,7 +58,8 @@ trait ConfiguresPanel
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('brand.preferences'))
             // Header: whose workspace (beside the logo), then today's date, quick "new" and the task bell (before the user menu).
             ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn () => view('brand.topbar-identity'))
-            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, fn () => view('brand.topbar-tools'))
+            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, fn () => view('brand.topbar-tools'))
+            ->userMenu(false)   // the header carries name, role, avatar (profile) and sign-out itself (owner request 2026-11-24)
             ->globalSearchKeyBindings(['mod+k'])
             ->globalSearchFieldSuffix(fn () => 'Ctrl K')
             // Caps Lock warning on every password field (sign-in, temporary passwords, profile).

@@ -43,7 +43,7 @@ class OwnerStatementPage extends Page
 
     public function mount(): void
     {
-        $first = Owner::whereNull('archived_at')->orderBy('name_ar')->value('id');
+        $first = \App\Filament\Support\PropertyScope::apply(Owner::query(), 'owner')->whereNull('archived_at')->orderBy('name_ar')->value('id');
         $this->form->fill(['month' => now()->format('Y-m'), 'owner_id' => $first]);
         if ($first) {
             $this->show(quiet: true);   // open on the first owner, this month
@@ -58,7 +58,7 @@ class OwnerStatementPage extends Page
     public function form(Schema $schema): Schema
     {
         return $schema->statePath('data')->components([
-            Select::make('owner_id')->label('المالك')->options(fn () => Owner::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->required()->live()->afterStateUpdated(fn () => $this->show(quiet: true)),
+            Select::make('owner_id')->label('المالك')->options(fn () => \App\Filament\Support\PropertyScope::apply(Owner::query(), 'owner')->whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->required()->live()->afterStateUpdated(fn () => $this->show(quiet: true)),
             TextInput::make('month')->label('الشهر')->type('month')->regex('/^\d{4}-\d{2}$/')->required()->live(onBlur: true)->afterStateUpdated(fn () => $this->show(quiet: true)),
         ])->columns(2);
     }
@@ -86,7 +86,7 @@ class OwnerStatementPage extends Page
             $this->statement = null;
             return;
         }
-        $s = Ui::attempt(fn () => app(TrustAccounting::class)->statement(Owner::findOrFail($d['owner_id']), CarbonImmutable::parse($d['month'] . '-01')), $quiet ? '' : 'جاهز');
+        $s = Ui::attempt(fn () => app(TrustAccounting::class)->statement(\App\Filament\Support\PropertyScope::apply(Owner::query(), 'owner')->findOrFail($d['owner_id']), CarbonImmutable::parse($d['month'] . '-01')), $quiet ? '' : 'جاهز');
         $this->statement = $s ? $this->present($s) + ['owner' => Owner::find($d['owner_id'])?->name_ar] : null;
     }
 

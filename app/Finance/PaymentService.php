@@ -36,6 +36,7 @@ class PaymentService
         if (! in_array($paidTo, ['manager', 'owner'], true)) {
             throw new FinanceException('Payments go to the manager or the owner only — never the platform (REQ-0436).');
         }
+        app(\App\Leasing\PolicyService::class)->assertOfficeCollectionAllowed($paidTo, $receivedOn);   // Q33
         return DB::transaction(function () use ($tenant, $amount, $method, $receivedOn, $paidTo, $by, $reference, $source) {
             $payment = Payment::create([
                 'tenant_id' => $tenant->id, 'receipt_number' => $this->numbering->next('receipt', (int) $receivedOn->format('Y')),
@@ -130,8 +131,9 @@ class PaymentService
     }
 
     /** Deposit received: a liability, never revenue (REQ-0189, REQ-0433). */
-    public function recordDeposit(Lease $lease, Money $amount, CarbonImmutable $on, string $paidTo = 'manager'): void
+    public function recordDeposit(Lease $lease, Money $amount, CarbonImmutable $on, string $paidTo = 'owner'): void
     {
+        app(\App\Leasing\PolicyService::class)->assertOfficeCollectionAllowed($paidTo, $on);   // Q33
         $this->ledger->post($on->toDateString(), 'deposit.received', 'تأمين العقد ' . $lease->id, [
             [$paidTo === 'owner' ? 'owner_direct:deposit' : 'trust_bank', $amount, null],
             ["deposit_liability:{$lease->id}", null, $amount],

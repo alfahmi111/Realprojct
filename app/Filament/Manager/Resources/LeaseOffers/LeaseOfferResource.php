@@ -152,4 +152,10 @@ class LeaseOfferResource extends Resource
     {
         return ['index' => Pages\ListLeaseOffers::route('/'), 'create' => Pages\CreateLeaseOffer::route('/create')];
     }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'unit');
+    }
 }

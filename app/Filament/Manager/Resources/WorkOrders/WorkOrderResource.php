@@ -85,7 +85,7 @@ class WorkOrderResource extends Resource
                 Textarea::make('description')->label('الوصف')->required()->rows(3)->placeholder('مثال: المكيف في الصالة لا يبرد منذ أمس'),
             ]),
             Section::make('أين؟')->schema([
-                Select::make('property_id')->label('العقار')->options(fn () => Property::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->required()->live(),
+                Select::make('property_id')->label('العقار')->options(fn () => \App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id'))->required()->live(),
                 Select::make('asset_id')->label('الأصل (اختياري)')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => Asset::whereNull('archived_at')->whereHas('space', fn ($q) => $q->where('property_id', $get('property_id')))->with('space')->get()->mapWithKeys(fn ($a) => [$a->id => $a->name_ar . ($a->space ? '، ' . $a->space->name_ar : '')]))->searchable()
                     ->helperText('إن كان الأصل تحت الضمان يُوجَّه البلاغ لجهة الضمان.'),
             ])->columns(2),
@@ -180,5 +180,11 @@ class WorkOrderResource extends Resource
                     ->schema([FileUpload::make('tenant_caused')->label('موافقة موثّقة لتحميل التكلفة على المستأجر (اختياري)')->directory('work-orders/approvals')])
                     ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $data['tenant_caused'] ?? null), 'أُغلق؛ الصرف بانتظار المراجِع')),
         ];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'property_id');
     }
 }

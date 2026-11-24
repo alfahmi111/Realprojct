@@ -129,6 +129,6 @@ class HomeDashboardTest extends TestCase
     {
         $html = $this->actingAs($this->manager)->get('/manage')->getContent();
         $this->assertStringNotContainsString('ui-avatars.com', $html);
-        $this->assertStringContainsString('data:image/svg+xml;base64', $html);
+        $this->assertStringContainsString('class="wq-tb-avatar"', $html);   // the header avatar is the name's first letter, drawn locally (2026-11-24)
     }
 }

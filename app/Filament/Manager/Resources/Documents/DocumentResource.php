@@ -66,7 +66,7 @@ class DocumentResource extends Resource
     public static function ownerOptions(): array
     {
         $o = [];
-        foreach (Property::whereNull('archived_at')->orderBy('name_ar')->get() as $p) {
+        foreach (\App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->orderBy('name_ar')->get() as $p) {
             $o['العقارات']["property:{$p->id}"] = $p->name_ar;
         }
         foreach (Building::whereNull('archived_at')->with('property')->get() as $b) {
@@ -186,5 +186,11 @@ class DocumentResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListDocuments::route('/')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'document');
     }
 }

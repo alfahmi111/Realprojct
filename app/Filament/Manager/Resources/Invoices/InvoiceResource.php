@@ -123,4 +123,10 @@ class InvoiceResource extends Resource
     {
         return ['index' => Pages\ListInvoices::route('/'), 'view' => Pages\ViewInvoice::route('/{record}')];
     }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'property_id');
+    }
 }

@@ -36,7 +36,14 @@ class AgreementsRelationManager extends RelationManager
 
     public const FEE_TYPES = ['percentage' => 'نسبة من الإيجار', 'fixed' => 'مبلغ ثابت', 'mixed' => 'نسبة ومبلغ ثابت'];
 
-    public const COLLECTORS = ['manager' => 'المكتب يحصّل الإيجار', 'owner' => 'المالك يحصّل بنفسه'];
+    public const COLLECTORS = ['manager' => 'المكتب يحصّل إلى حساب الأمانات', 'owner' => 'في حساب المالك'];
+
+    /** Q33: the owner's account first; the office trust account only while the rule allows it, with its warning. */
+    public static function collectorOptions(): array
+    {
+        $opts = app(\App\Leasing\PolicyService::class)->paidToOptions(\Carbon\CarbonImmutable::today());
+        return array_intersect_key(['owner' => self::COLLECTORS['owner'], 'manager' => self::COLLECTORS['manager'] . (str_contains($opts['manager'] ?? '', 'مسودة') ? ' (تحظره مسودة اللائحة)' : '')], $opts);
+    }
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
@@ -60,7 +67,8 @@ class AgreementsRelationManager extends RelationManager
                 ->options(['all' => 'كل صرف يحتاج موافقته', 'up_to' => 'يصرف المكتب حتى مبلغ محدد دون موافقته، وما فوقه بموافقته', 'none' => 'لا يشترط موافقته على الصرف'])
                 ->helperText('يحددها المالك ويُسجَّل اختياره في العقد. ما يحتاج موافقته يصله في واجهته ليوافق أو يرفض.'),
             Ui::money('spend_cap_minor', 'المبلغ الذي يُصرف دون موافقته')->visible(fn (Get $get) => ! $get('is_self') && $get('approval_rule') === 'up_to')->required(fn (Get $get) => ! $get('is_self') && $get('approval_rule') === 'up_to'),
-            Select::make('collector')->label('من يحصّل الإيجار')->options(self::COLLECTORS)->default('manager')->required(),
+            Select::make('collector')->label('أين يودَع الإيجار')->options(fn () => self::collectorOptions())->default('owner')->required()
+                ->helperText('قرار المالك Q33: الإيداع في حساب المالك وفق مسودة لائحة إدارة الأملاك.'),
             DatePicker::make('starts_on')->label('يبدأ في')->required(),
             DatePicker::make('ends_on')->label('ينتهي في')->afterOrEqual('starts_on')->helperText('فارغ = مفتوح المدة'),
             CheckboxList::make('property_ids')->label('العقارات المشمولة')->required()->columnSpanFull()

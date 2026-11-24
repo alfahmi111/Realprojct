@@ -55,7 +55,7 @@ class PaymentResource extends Resource
             Ui::money('amount_minor', 'المبلغ')->required(),
             Select::make('method')->label('الطريقة')->options(['mada' => 'مدى', 'apple_pay' => 'Apple Pay', 'card' => 'بطاقة', 'sadad' => 'سداد', 'bank_transfer' => 'تحويل بنكي', 'cash' => 'نقداً'])->required(),
             DatePicker::make('received_on')->label('تاريخ الاستلام')->required()->default(now()),
-            Select::make('paid_to')->label('استُلم في حساب')->options(['manager' => 'المدير (حساب أمانات الملاك)', 'owner' => 'المالك مباشرة'])->required(),
+            Select::make('paid_to')->label('استُلم في حساب')->options(fn () => app(\App\Leasing\PolicyService::class)->paidToOptions(\Carbon\CarbonImmutable::today()))->default('owner')->required(),
             TextInput::make('reference')->label('المرجع'),
         ])->columns(2);
     }
@@ -82,5 +82,11 @@ class PaymentResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListPayments::route('/'), 'create' => Pages\CreatePayment::route('/create')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'payment');
     }
 }

@@ -81,7 +81,7 @@ class BillingScheduleLineResource extends Resource
             ])
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('property')->label('العقار')
-                    ->options(fn () => \App\Models\Property::whereNull('archived_at')->pluck('name_ar', 'id'))
+                    ->options(fn () => \App\Filament\Support\PropertyScope::apply(\App\Models\Property::query(), 'property')->whereNull('archived_at')->pluck('name_ar', 'id'))
                     ->query(fn ($query, array $data) => $data['value'] ? $query->whereHas('lease.unit', fn ($q) => $q->where('property_id', $data['value'])) : $query),
                 \Filament\Tables\Filters\SelectFilter::make('when')->label('الاستحقاق')
                     ->options(['due' => 'مستحقة الآن', '30' => 'خلال 30 يوماً', '90' => 'خلال 90 يوماً'])
@@ -98,5 +98,11 @@ class BillingScheduleLineResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListBillingScheduleLines::route('/')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'lease');
     }
 }

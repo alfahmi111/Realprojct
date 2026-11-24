@@ -188,10 +188,10 @@ class SystemReviewM18Test extends TestCase
         $r = app(LeaseLifecycle::class)->run($today);
         $this->assertSame('expired', $ended->fresh()->status);
         $this->assertSame(1, $r['notice_alerts']);
-        $this->assertSame(1, $r['renewal_alerts']);
-        $this->assertSame('active', $lapsed->fresh()->status);   // renewal is recorded by a person, never automatic (Q35)
+        $this->assertSame(1, $r['renewed']);
+        $this->assertSame('renewed', $lapsed->fresh()->status);   // renews automatically (owner decision Q35)
         $again = app(LeaseLifecycle::class)->run($today);
-        $this->assertSame(0, $again['notice_alerts'] + $again['renewal_alerts']);   // once only
+        $this->assertSame(0, $again['notice_alerts'] + $again['renewal_alerts'] + $again['renewed']);   // once only
         $this->assertNotNull($soon);
     }
 

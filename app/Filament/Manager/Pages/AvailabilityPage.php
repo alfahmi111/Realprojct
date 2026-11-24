@@ -75,7 +75,7 @@ class AvailabilityPage extends Page
 
     protected function getViewData(): array
     {
-        $properties = Property::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id');
+        $properties = \App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id');   // REQ-0494
         // several properties (owner request 2026-11-24): «كل العقارات» by default, each property under its own heading
         $pid = $properties->has($this->property) ? $this->property : ($properties->count() > 1 ? 0 : $properties->keys()->first());
         $span = $this->span();
