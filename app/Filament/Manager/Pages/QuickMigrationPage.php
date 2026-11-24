@@ -120,7 +120,7 @@ class QuickMigrationPage extends Page
     {
         return ImportBatch::orderByRaw("status = 'staged' desc")->orderByDesc('id')->limit(10)->get()->map(fn ($b) => [
             'id' => $b->id, 'kind' => ['ejar_pdf' => 'عقد إيجار PDF', 'excel' => 'جدول Excel', 'photo' => 'صورة عقد'][$b->kind] ?? $b->kind,
-            'status' => $b->status, 'at' => $b->created_at?->format('Y-m-d H:i'),
+            'status' => $b->status, 'at' => $b->created_at?->copy()->setTimezone(config('app.display_timezone', 'Asia/Riyadh'))->format('Y-m-d H:i'),
             'tenant' => collect($b->reviewed ?? [])->get('tenant_name') ?? collect($b->extracted)->firstWhere('field', 'tenant_name')['value'] ?? null,
             'lease_id' => $b->created_refs['lease_id'] ?? null,
         ])->all();

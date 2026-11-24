@@ -88,7 +88,16 @@ class OwnerHome extends Page
                 ->action(function (array $data) use ($current, $R) {
                     $a = $current();
                     $cap = $R::cap($data);
-                    $a->forceFill(['spend_cap_minor' => $cap === null ? null : \App\Support\Money\Money::of($cap)])->save();
+                    // an agreement is never edited: the old one is archived and a successor with the new rule starts today
+                    // (PROJECT_LOCK 2.أ; review M18 — the portal used to rewrite the active agreement in place)
+                    \Illuminate\Support\Facades\DB::transaction(function () use ($a, $cap) {
+                        $a->archive();
+                        app(\App\Properties\BuildingWizard::class)->createAgreement($a->owner, $a->properties()->get()->all(), [
+                            'is_self' => $a->is_self, 'fee_type' => $a->fee_type, 'fee_percentage_bp' => $a->fee_percentage_bp, 'fee_fixed_minor' => $a->fee_fixed_minor,
+                            'spend_cap_minor' => $cap === null ? null : \App\Support\Money\Money::of($cap), 'collector' => $a->collector,
+                            'starts_on' => now()->toDateString(), 'ends_on' => $a->ends_on?->toDateString(),
+                        ]);
+                    });
                     \Filament\Notifications\Notification::make()->title('حُفظ: ' . $R::ruleText($cap))->success()->send();
                 }),
         ];

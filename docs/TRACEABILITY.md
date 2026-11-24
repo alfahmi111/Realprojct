@@ -376,7 +376,7 @@
 | REQ-0369 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0370 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0371 | §7.6و | BUILD | MVP | DONE | app/Privacy/DataRetention.php, app/Console/Commands/ApplyDataRetention.php, app/Filament/Manager/Pages/SubscriberSettingsPage.php, app/Migration/DataExport.php | tests/Feature/Foundation/DataRetentionTest.php | مدة لكل نوع يحددها المكتب، الفارغ = احتفاظ؛ لا مدد نظامية مخترعة؛ المالية والعقود والتدقيق لا تُحذف |
-| REQ-0372 | §7.6و | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php |  |
+| REQ-0372 | §7.6و | BUILD | MVP | IN-PROGRESS | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php | · مراجعة M18 (2026-11-24): الجدول وقراءته موجودان، ولا شاشة يُدخل بها المكتب حساباته؛ تُبنى مع أول مزوّد يتعاقد عليه المالك |
 | REQ-0373 | §7.6ز | BUILD | MVP | DONE | app/Filament/Support/MyPreferencesPage.php, resources/views/brand/preferences.blade.php, app/Http/Middleware/ApplyUserPreferences.php | tests/Feature/Screens/BrandingAndPreferencesTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0375 | §7.6ح | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |

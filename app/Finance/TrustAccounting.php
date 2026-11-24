@@ -43,7 +43,16 @@ class TrustAccounting
                 continue;
             }
             $months = $this->monthKeys(CarbonImmutable::parse($inv->period_start), CarbonImmutable::parse($inv->period_end));
-            $parts = $inv->subtotal_minor->split(count($months));
+            // a full month weighs the same as any other full month; a partial month by its share of that month's days
+            // (review M18: 15 Jan–14 Apr was recognised 25% in each of Jan, Feb, Mar and Apr)
+            $pStart = CarbonImmutable::parse($inv->period_start);
+            $pEnd = CarbonImmutable::parse($inv->period_end);
+            $weights = array_map(function ($ym) use ($pStart, $pEnd) {
+                $m = CarbonImmutable::parse($ym . '-01');
+                $covered = (int) $m->max($pStart)->diffInDays($m->endOfMonth()->startOfDay()->min($pEnd)) + 1;
+                return intdiv($covered * 10000, $m->daysInMonth);
+            }, $months);
+            $parts = $inv->subtotal_minor->allocate($weights);
             $idx = array_search($start->format('Y-m'), $months, true);
             if ($idx === false || $parts[$idx]->isZero()) {
                 continue;

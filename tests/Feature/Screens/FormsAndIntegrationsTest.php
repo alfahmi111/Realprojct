@@ -40,7 +40,7 @@ class FormsAndIntegrationsTest extends TestCase
         $this->assertSame('manual', $rows['ejar']['state']);
         $this->assertSame('simulator', $rows['payments']['state']);
         $this->assertSame('none', $rows['sms']['state']);
-        $this->assertSame('live', $rows['whatsapp']['state']);
+        $this->assertSame('none', $rows['whatsapp']['state']);   // an unknown driver name is not «linked» (review M18)
         $this->assertSame('none', $rows['nafath']['state']);   // P2 layer: not linked until a provider is chosen
         $this->assertCount(11, $rows);
     }

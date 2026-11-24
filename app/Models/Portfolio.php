@@ -15,6 +15,11 @@ class Portfolio extends Model
 
     protected $fillable = ['name_ar', 'name_en', 'owner_id'];
 
+    protected function casts(): array
+    {
+        return ['archived_at' => 'datetime'];   // review M18
+    }
+
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class);

@@ -20,7 +20,9 @@ class RunNotifications extends Command
     public function handle(TenantContext $ctx): int
     {
         $now = CarbonImmutable::now();
+        $failed = 0;
         foreach ($ctx->run(null, fn () => Subscriber::whereNull('archived_at')->pluck('id')) as $sid) {
+            try {   // one office's error must not stop the run for the others (review M18)
             $ctx->run($sid, function () use ($now) {
                 if ($this->option('daily')) {
                     app(PaymentReminders::class)->run($now->startOfDay());
@@ -38,7 +40,12 @@ class RunNotifications extends Command
                     app(NotificationCenter::class)->sendDigests($now);
                 }
             });
+            } catch (\Throwable $e) {
+                report($e);
+                $this->error("subscriber $sid failed: " . $e->getMessage());
+                $failed++;
+            }
         }
-        return self::SUCCESS;
+        return $failed ? self::FAILURE : self::SUCCESS;
     }
 }

@@ -146,8 +146,21 @@ class WorkOrderResource extends Resource
                 SelectFilter::make('priority')->label('الأولوية')->options(self::PRIORITY_AR),
                 SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
             ])
-            ->recordActions([
-                ViewAction::make(),
+            ->recordActions(array_merge([ViewAction::make()], self::flowActions()));
+    }
+
+    public static function getPages(): array
+    {
+        return ['index' => Pages\ListWorkOrders::route('/'), 'create' => Pages\CreateWorkOrder::route('/create'), 'view' => Pages\ViewWorkOrder::route('/{record}')];
+    }
+    /**
+     * The work order flow (triage → estimate → assign → cost → close), shared by the table and the work order page
+     * (review M18: the page had no actions, so «افرز» from the inbox led nowhere).
+     */
+    public static function flowActions(): array
+    {
+        $svc = fn () => app(MaintenanceService::class);
+        return [
                 Action::make('triage')->label('فرز')->visible(fn (WorkOrder $r) => $r->status === 'reported')
                     ->schema([Select::make('priority')->label('الأولوية')->options(['emergency' => 'طارئ', 'urgent' => 'عاجل', 'normal' => 'عادي', 'scheduled' => 'مجدول'])->required()])
                     ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->triage($r, $data['priority']))),
@@ -166,11 +179,6 @@ class WorkOrderResource extends Resource
                 Action::make('close')->label('إغلاق وتحويل التكلفة')->visible(fn (WorkOrder $r) => in_array($r->status, ['confirmed', 'completed'], true))
                     ->schema([FileUpload::make('tenant_caused')->label('موافقة موثّقة لتحميل التكلفة على المستأجر (اختياري)')->directory('work-orders/approvals')])
                     ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $data['tenant_caused'] ?? null), 'أُغلق؛ الصرف بانتظار المراجِع')),
-            ]);
-    }
-
-    public static function getPages(): array
-    {
-        return ['index' => Pages\ListWorkOrders::route('/'), 'create' => Pages\CreateWorkOrder::route('/create'), 'view' => Pages\ViewWorkOrder::route('/{record}')];
+        ];
     }
 }

@@ -43,7 +43,10 @@ class TechnicianHome extends Page
 
     public array $after = [];
 
-    public array $cost = ['kind' => 'part', 'description' => '', 'quantity' => 1, 'unit_cost' => ''];
+    /** per work order id: [kind, description, quantity, unit_cost] (review M18: one shared state leaked between cards) */
+    public array $cost = [];
+
+    public const COST_DEFAULT = ['kind' => 'part', 'description' => '', 'quantity' => 1, 'unit_cost' => ''];
 
     public string $scan = '';
 
@@ -83,21 +86,26 @@ class TechnicianHome extends Page
 
     public function start(int $id): void
     {
-        Ui::attempt(fn () => app(MaintenanceService::class)->start($this->mine($id), $this->store($this->before)), 'بدأ التنفيذ');
-        $this->before = [];
+        $this->validate(["before.$id.*" => 'image|max:8192']);   // each order has its own photos (review M18)
+        Ui::attempt(fn () => app(MaintenanceService::class)->start($this->mine($id), $this->store($this->before[$id] ?? [])), 'بدأ التنفيذ');
+        unset($this->before[$id]);
     }
 
     public function addCost(int $id): void
     {
-        $this->validate(['cost.description' => 'required', 'cost.quantity' => 'required|integer|min:1', 'cost.unit_cost' => ['required', 'regex:/^\d{1,9}(\.\d{1,2})?$/']]);
-        Ui::attempt(fn () => app(MaintenanceService::class)->addCost($this->mine($id), $this->cost['kind'], $this->cost['description'], (int) $this->cost['quantity'], Money::parse($this->cost['unit_cost'])), 'سُجّلت التكلفة');
-        $this->cost = ['kind' => 'part', 'description' => '', 'quantity' => 1, 'unit_cost' => ''];
+        $this->cost[$id] = ($this->cost[$id] ?? []) + self::COST_DEFAULT;
+        $this->validate(["cost.$id.description" => 'required', "cost.$id.quantity" => 'required|integer|min:1', "cost.$id.unit_cost" => ['required', 'regex:/^\d{1,9}(\.\d{1,2})?$/']],
+            [], ["cost.$id.description" => 'البند', "cost.$id.quantity" => 'الكمية', "cost.$id.unit_cost" => 'سعر الوحدة']);
+        $c = $this->cost[$id];
+        Ui::attempt(fn () => app(MaintenanceService::class)->addCost($this->mine($id), $c['kind'], $c['description'], (int) $c['quantity'], Money::parse($c['unit_cost'])), 'سُجّلت التكلفة');
+        unset($this->cost[$id]);
     }
 
     public function complete(int $id): void
     {
-        Ui::attempt(fn () => app(MaintenanceService::class)->complete($this->mine($id), $this->store($this->after)), 'أُنجز العمل');
-        $this->after = [];
+        $this->validate(["after.$id.*" => 'image|max:8192']);
+        Ui::attempt(fn () => app(MaintenanceService::class)->complete($this->mine($id), $this->store($this->after[$id] ?? [])), 'أُنجز العمل');
+        unset($this->after[$id]);
     }
 
     public function doScan(): void

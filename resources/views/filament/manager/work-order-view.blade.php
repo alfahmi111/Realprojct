@@ -17,14 +17,14 @@
         <div class="wq-contract-stamp">
             <span class="wq-chip {{ $w->status === 'reported' ? 'wq-s-late' : (in_array($w->status, ['completed', 'confirmed', 'closed'], true) ? 'wq-st-active' : 'wq-st-draft') }}">{{ $R::STATUS_AR[$w->status] ?? $w->status }}</span>
             <strong>{{ $R::TYPE_AR[$w->type] ?? $w->type }}@if ($w->priority && ! ($w->priority === 'emergency' && $w->type === 'emergency'))، {{ $R::PRIORITY_AR[$w->priority] }}@endif</strong>
-            <small>{{ $w->reported_at?->format('Y-m-d H:i') }}</small>
+            <small>{{ $w->reported_at?->copy()->setTimezone(config('app.display_timezone', 'Asia/Riyadh'))->format('Y-m-d H:i') }}</small>
         </div>
     </header>
 
     {{-- Stages from report to close: a real sequence --}}
     <ol class="wq-flow" aria-label="مراحل أمر العمل">
         @foreach ($d['flow'] as $i => $s)
-            <li class="is-{{ $s['state'] }}"><span>{{ $i + 1 }}</span><strong>{{ $s['label'] }}</strong>@if ($s['at'])<small>{{ $s['at']->format('m-d H:i') }}</small>@endif</li>
+            <li class="is-{{ $s['state'] }}"><span>{{ $i + 1 }}</span><strong>{{ $s['label'] }}</strong>@if ($s['at'])<small>{{ $s['at']->copy()->setTimezone(config('app.display_timezone', 'Asia/Riyadh'))->format('m-d H:i') }}</small>@endif</li>
         @endforeach
     </ol>
     @if ($w->status === 'awaiting_owner_approval')
@@ -55,6 +55,18 @@
         </section>
     </div>
 
+    @if (count($d['photos']))
+        <section class="wq-sheet">
+            <h2><span>د</span>الصور</h2>
+            @foreach ($d['photos'] as $g)
+                <h3>{{ $g['label'] }}</h3>
+                <div class="wq-wo-photos">
+                    @foreach ($g['urls'] as $i => $u)<a href="{{ $u }}" target="_blank"><img src="{{ $u }}" alt="{{ $g['label'] }} {{ $i + 1 }}" loading="lazy"></a>@endforeach
+                </div>
+            @endforeach
+        </section>
+    @endif
+
     <section class="wq-sheet">
         <h2><span>ج</span>التكلفة</h2>
         <dl class="wq-fields">
@@ -74,6 +86,6 @@
                 </table>
             </div>
         @endif
-        <p class="wq-note">الإجراءات (الفرز، التقدير، الإسناد، إضافة التكلفة، الإغلاق) من <a href="{{ $base }}/work-orders">أوامر العمل</a>.</p>
+        <p class="wq-note">الفرز والتقدير والإسناد والتكلفة والإغلاق من الأزرار أعلى الصفحة.</p>
     </section>
 </x-filament-panels::page>

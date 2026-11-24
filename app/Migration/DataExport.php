@@ -63,10 +63,17 @@ class DataExport
         if ($rows) {
             fputcsv($h, array_keys($rows[0]), escape: '');
             foreach ($rows as $r) {
-                fputcsv($h, array_map(fn ($v) => is_array($v) || is_object($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v, $r), escape: '');
+                fputcsv($h, array_map(fn ($v) => self::cell(is_array($v) || is_object($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v), $r), escape: '');
             }
         }
         rewind($h);
         return stream_get_contents($h);
+    }
+
+    /** A text cell that Excel would run as a formula (=, +, -, @, tab, CR) is prefixed with ' (review M18: the public
+     *  waitlist form fills prospects' names, so =HYPERLINK(...) could run when the manager opens the export). */
+    private static function cell(mixed $v): mixed
+    {
+        return is_string($v) && $v !== '' && ! is_numeric($v) && in_array($v[0], ['=', '+', '-', '@', "	", ""], true) ? "'" . $v : $v;
     }
 }

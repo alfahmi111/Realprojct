@@ -122,6 +122,8 @@ class ImportExportTest extends TestCase
     {
         $tenantUser = $this->makeUser(\App\Models\Subscriber::find($this->manager->subscriber_id), 'tenant');
         $this->actingAs($tenantUser)->get('/export')->assertForbidden();
-        $this->actingAs($this->manager)->get('/export')->assertOk()->assertHeader('content-disposition');
+        $this->actingAs($this->manager)->get('/export')->assertForbidden();   // review M18: no export before two-factor is enrolled
+        $this->manager->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
+        $this->actingAs($this->manager->fresh())->get('/export')->assertOk()->assertHeader('content-disposition');
     }
 }

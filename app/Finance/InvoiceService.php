@@ -81,6 +81,7 @@ class InvoiceService
                 ["vat_payable:owner:{$owner->id}", null, $tax],
             ], $invoice, $owner->id, $invoice->property_id);
             $this->submitEInvoice($invoice);
+            app(PaymentService::class)->applyCredit($lease->tenant, $issueDate);   // earlier payments settle it (review M18)
             return $invoice;
         });
     }
@@ -129,6 +130,7 @@ class InvoiceService
                 ["receivable:{$owner->id}", $inv->total_minor, null], ["expense_on_behalf:{$owner->id}", null, $net], ["vat_payable:owner:{$owner->id}", null, $tax],
             ], $inv, $owner->id, $inv->property_id);
             $this->submitEInvoice($inv);
+            app(PaymentService::class)->applyCredit($lease->tenant, $issueDate);   // review M18
             return $inv;
         });
     }

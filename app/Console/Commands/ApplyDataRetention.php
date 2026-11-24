@@ -20,7 +20,13 @@ class ApplyDataRetention extends Command
         $now = CarbonImmutable::now();
         $total = 0;
         foreach ($ctx->run(null, fn () => Subscriber::whereNull('archived_at')->pluck('id')) as $sid) {
-            $done = $ctx->run($sid, fn () => app(DataRetention::class)->apply($now));
+            try {   // review M18: isolate each office
+                $done = $ctx->run($sid, fn () => app(DataRetention::class)->apply($now));
+            } catch (\Throwable $e) {
+                report($e);
+                $this->error("subscriber $sid failed: " . $e->getMessage());
+                continue;
+            }
             foreach ($done as $type => $count) {
                 $this->line("subscriber $sid: $type −$count");
                 $total += $count;

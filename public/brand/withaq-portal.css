@@ -268,3 +268,4 @@
 .wq-circ-media { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
 .wq-circ-media img, .wq-circ-media video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 1px solid var(--color-line); background: var(--color-bg); }
 .wq-circ-file { display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 10px; border: 1px dashed var(--color-line); color: var(--color-primary); font-weight: 700; font-size: .85rem; }
+.wq-err { display: block; margin-top: 4px; color: var(--status-late-fg); font-size: .8rem; font-weight: 700; }

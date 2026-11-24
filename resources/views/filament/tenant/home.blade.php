@@ -110,12 +110,14 @@
                         <select class="wq-input" wire:model="assetId"><option value="">— بدون تحديد —</option>@foreach ($unit['assets'] as $a)<option value="{{ $a['id'] }}">{{ $a['name'] }}</option>@endforeach</select></label>
                     <label class="wq-field"><span>وصف المشكلة</span>
                         <textarea class="wq-input" wire:model="description" placeholder="مثال: المكيف لا يبرد منذ أمس" required></textarea></label>
+                    @error('description')<small class="wq-err">{{ $message }}</small>@enderror
                     <label class="wq-file">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>
                         <span wire:loading.remove wire:target="photos">{{ count($photos) ? count($photos) . ' ملف مرفق' : 'أرفق صوراً أو فيديو للمشكلة' }}</span>
                         <span wire:loading wire:target="photos">جارٍ الرفع…</span>
-                        <input type="file" wire:model="photos" multiple accept="image/*,video/*" aria-label="صور أو فيديو">
+                        <input type="file" wire:model="photos" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" aria-label="صور أو فيديو">
                     </label>
+                    @error('photos.*')<small class="wq-err">{{ $message }}</small>@enderror
                     <label class="wq-check"><input type="checkbox" wire:model="emergency"> طارئ (انقطاع كهرباء، تسريب غاز…)</label>
                     <x-filament::button type="submit" icon="heroicon-m-paper-airplane">إرسال البلاغ</x-filament::button>
                 </form>
