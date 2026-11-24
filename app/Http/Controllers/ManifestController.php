@@ -29,7 +29,18 @@ class ManifestController
             'start_url' => url('/'),
             'scope' => url('/'),
             'display' => 'standalone',
-            'icons' => [$logo ? ['src' => $logo, 'sizes' => '512x512', 'type' => 'image/png'] : ['src' => asset('brand/withaq-favicon.svg'), 'sizes' => 'any', 'type' => 'image/svg+xml']],
+            'icons' => $logo ? [['src' => $logo, 'sizes' => '512x512', 'type' => 'image/png']] : self::platformIcons(),
         ], 200, ['Content-Type' => 'application/manifest+json']);
+    }
+
+    /** The platform's own icons: the Kufic waw-and-embrace symbol, white on the brand ink (brand guide 2026-11-25). */
+    public static function platformIcons(): array
+    {
+        return [
+            ['src' => asset('brand/icons/icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png'],
+            ['src' => asset('brand/icons/icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png'],
+            ['src' => asset('brand/icons/maskable-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
+            ['src' => asset('brand/withaq-favicon.svg'), 'sizes' => 'any', 'type' => 'image/svg+xml'],
+        ];
     }
 }

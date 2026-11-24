@@ -35,7 +35,7 @@ trait ConfiguresPanel
             ->defaultAvatarProvider(LocalAvatarProvider::class)
             ->colors(fn () => app(ThemeService::class)->filamentColors())
             ->brandLogo(fn () => view('brand.logo'))
-            ->brandLogoHeight('2rem')
+            ->brandLogoHeight('3.25rem')   // the Kufic wordmark: at least 64 px wide (brand guide minimum)
             ->favicon(asset('brand/withaq-favicon.svg'))
             // Identity fonts served locally (no external request): Tajawal for text, Cairo for headings.
             ->maxContentWidth(\Filament\Support\Enums\Width::Full)   // owner request 2026-11-24: use the whole screen
@@ -52,7 +52,7 @@ trait ConfiguresPanel
             )
             ->multiFactorAuthenticationRequiredMiddlewareName(EnsureTwoFactorForRole::class)
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => Blade::render(
-                '<style id="theme-tokens">{!! $css !!}</style><link rel="manifest" href="{{ url(\'/manifest.webmanifest\') }}">',
+                '<style id="theme-tokens">{!! $css !!}</style><link rel="manifest" href="{{ url(\'/manifest.webmanifest\') }}"><link rel="apple-touch-icon" href="{{ asset(\'brand/icons/apple-touch-icon.png\') }}">',
                 ['css' => app(ThemeService::class)->css()],
             ))
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('brand.preferences'))
