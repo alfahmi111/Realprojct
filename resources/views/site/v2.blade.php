@@ -7,6 +7,9 @@
      * sketch drawn for the page (two-point perspective, hatching, a light watercolour wash with the unit-status colours on
      * windows) with glass cards shaped like the system's screens floating over it, and room for a licensed photo of a person.
      * The Kufic-cell building held by the logo's «embrace» follows as its own section.
+     * Structure (owner request 2026-11-25, «like mamarat.co, your own way»): hero, a strip of commitments in place of client
+     * logos, why (six cards), four apps in device frames, the building, core features, who it is for, plans (no prices: Q36),
+     * an invitation band, what the platform never does, questions, the request form, a footer with columns.
      */
     $st = ['paid' => 'مؤجرة ومسددة', 'late' => 'عليها متأخرات', 'vacant' => 'شاغرة', 'maint' => 'في الصيانة', 'soon' => 'ستُخلى قريباً'];
     $floors = [
@@ -69,9 +72,10 @@
     <div class="w2-wrap w2-head-in">
         <a class="w2-brand" href="{{ route('site.preview') }}" aria-label="وِثاق، الصفحة الرئيسية"><span aria-hidden="true">{!! $svg('withaq-wordmark') !!}</span></a>
         <nav class="w2-nav" aria-label="أقسام الصفحة">
-            <a href="#day">يوم المكتب</a>
-            <a href="#money">المال</a>
+            <a href="#why">لماذا وِثاق</a>
             <a href="#roles">الواجهات</a>
+            <a href="#features">المزايا</a>
+            <a href="#who">لمن</a>
             <a href="#plans">الباقات</a>
             <a href="#faq">أسئلة</a>
         </nav>
@@ -138,8 +142,84 @@
     </div>
 </section>
 
-{{-- 2. The building as the office sees it: Kufic cells in each unit's status colour, held by the logo's embrace --}}
-<section class="w2-build" aria-labelledby="build-h">
+{{-- 2. What the office counts on: facts in place of client logos (we show none until there are real clients) --}}
+<section class="w2-strip" aria-label="ما يلتزم به النظام">
+    <div class="w2-wrap">
+        <ul class="w2-strip-list">
+            @foreach ([['heroicon-o-document-check', 'تجهيز بيانات التوثيق في إيجار'], ['heroicon-o-receipt-percent', 'فواتير بالحقول التي تطلبها هيئة الزكاة'], ['heroicon-o-calendar-days', 'الهجري بتقويم أم القرى'], ['heroicon-o-lock-closed', 'بيانات كل مكتب معزولة'], ['heroicon-o-finger-print', 'سجل تدقيق لا يُعدَّل']] as [$ic, $t])
+                <li>@svg($ic, 'w2-strip-ic')<span>{{ $t }}</span></li>
+            @endforeach
+        </ul>
+    </div>
+</section>
+
+{{-- 4. Why Withaq: six things the office knows without asking --}}
+<section class="w2-why" id="why" aria-labelledby="why-h">
+    <div class="w2-wrap">
+        <div class="w2-sec-title">
+            <h2 id="why-h">لماذا وِثاق؟</h2>
+            <p>ستة أشياء يعرفها المكتب والمالك دون أن يسألا أحداً.</p>
+        </div>
+        <div class="w2-why-grid">
+            @foreach ([
+                ['heroicon-o-document-chart-bar', 'تعرف أين ذهب مالك', 'كشف شهري لكل مالك: ما حُصّل، وما دُفع له مباشرة، وأتعاب المكتب بنص عقد الإدارة، وكل مصروف صيانة برقم أمره.'],
+                ['heroicon-o-banknotes', 'أمانات كل مالك منفصلة', 'لا يُحوَّل للمالك أكثر مما في أماناته فعلاً، والإلغاء والصرف والرد بموافقة شخصين.'],
+                ['heroicon-o-archive-box', 'تعرف ما تملك', 'سجل أصول لكل وحدة: المكيف والسخان والفرن بقيمته وإهلاكه، يُجرد عند التسليم والاستلام فيظهر ما تغيّر.'],
+                ['heroicon-o-wrench-screwdriver', 'صيانة بأوامر عمل', 'تصحيحية ووقائية وطارئة، وسقف صرف لا يُتجاوز دون موافقة المالك، وصور قبل العمل وبعده.'],
+                ['heroicon-o-scale', 'تبقى نظامياً', 'قواعد مثل إيقاف زيادة الإيجار في الرياض وأسباب رفض التجديد محفوظة في جدول يُحدَّث، فيمنع النظام الخطأ قبل وقوعه.'],
+                ['heroicon-o-arrow-path', 'تسوية كل ليلة', 'تُطابَق العقود بالفواتير والدفعات وملف إيجار، فيبدأ صباحك بقائمة ما يحتاج مراجعة فقط.'],
+            ] as [$ic, $t, $d])
+                <article class="w2-card">
+                    <span class="w2-card-ic">@svg($ic)</span>
+                    <h3>{{ $t }}</h3>
+                    <p>{{ $d }}</p>
+                </article>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- 5. Four windows on one record: product cards with the real screens in device frames --}}
+<section class="w2-apps" id="roles" aria-labelledby="roles-h">
+    <div class="w2-wrap">
+        <div class="w2-sec-title">
+            <h2 id="roles-h">أربع نوافذ على سجل واحد</h2>
+            <p>كل طرف يرى السجل نفسه من نافذته. هذه شاشات النظام ببيانات تجريبية.</p>
+        </div>
+        <div class="w2-apps-grid">
+            @foreach ([
+                ['office', 'لوحة المكتب', 'صباح المكتب في شاشة واحدة', 'صندوق مهام بما ينتظر قرارك، والبلاغات الجديدة، والمتأخرات، والعقود التي اقترب موعد إشعارها.',
+                 ['شجرة العقارات والمباني والوحدات', 'تقويم الإتاحة', 'عرض تأجير يمر على اعتماداتك', 'نقل بياناتك من Excel أو من عقود إيجار', 'حصر كل موظف في عقاراته', 'التسوية الليلية'], 'desk', 'dashboard', [1600, 878]],
+                ['owner', 'بوابة المالك', 'مبناك وكشفه في جيبك', 'عقاراته وإشغالها وتحصيلها، وكشف حسابه الشهري، والموافقة على الصرف فوق السقف من جواله.',
+                 ['كشف يفصّل الإيجار والأتعاب والصيانة', 'طلبات الموافقة بتقديرها وصورها', 'قاعدة الموافقة بعقد إدارة يحفظ القديم', 'تحقق بخطوتين'], 'desk', 'statement', [1000, 855]],
+                ['tenant', 'بوابة المستأجر', 'عقده وفواتيره في مكان واحد', 'موعد الإشعار قبل التجديد، وبلاغ العطل بصورة أو مقطع، والتعاميم من إدارة المبنى.',
+                 ['تذكير بالدفعة قبل موعدها', 'الأصول المسجلة على وحدته', 'حالة البلاغ خطوة بخطوة', 'التعاميم بالصور والملفات'], 'phone', 'tenant', [720, 1551]],
+                ['tech', 'تطبيق الفني', 'يعمل ولو انقطع الإنترنت', 'أوامره لليوم، وباركود الأصل ليعرف تاريخه، وصور قبل العمل وبعده.',
+                 ['بطاقة لكل أمر بموقعه ووصفه', 'تسجيل القطع والوقت والتكلفة', 'مزامنة تلقائية عند عودة الاتصال', 'مهامه مرتبة بالأولوية'], 'phone', 'tech', [720, 1551]],
+            ] as [$k, $tag, $t, $d, $list, $frame, $shot, $wh])
+                <article class="w2-app w2-app-{{ $k }}">
+                    <div class="w2-app-media w2-app-media-{{ $frame }}">
+                        @if ($frame === 'desk')
+                            <div class="w2-laptop"><div class="w2-laptop-screen"><img src="{{ asset("site/v2/shots/$shot.webp") }}" width="{{ $wh[0] }}" height="{{ $wh[1] }}" alt="{{ $tag }}: {{ $t }}" loading="lazy" decoding="async"></div><div class="w2-laptop-base" aria-hidden="true"></div></div>
+                        @else
+                            <div class="w2-phone"><img src="{{ asset("site/v2/shots/$shot.webp") }}" width="{{ $wh[0] }}" height="{{ $wh[1] }}" alt="{{ $tag }}: {{ $t }}" loading="lazy" decoding="async"></div>
+                        @endif
+                    </div>
+                    <div class="w2-app-body">
+                        <span class="w2-tag">{{ $tag }}</span>
+                        <h3>{{ $t }}</h3>
+                        <p>{{ $d }}</p>
+                        <ul class="w2-checks">@foreach ($list as $li)<li>{{ $li }}</li>@endforeach</ul>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+        <p class="w2-apps-note">@svg('heroicon-o-device-phone-mobile', 'w2-note-ic') يُثبَّت من المتصفح على الجوال دون متجر تطبيقات. الملاك والمستأجرون والفنيون دون رسوم على المكتب.</p>
+    </div>
+</section>
+
+{{-- 6. The building as the office sees it: Kufic cells in each unit's status colour, held by the logo's embrace --}}
+<section class="w2-build" id="building" aria-labelledby="build-h">
     <div class="w2-wrap w2-build-in">
         <div class="w2-build-text">
             <h2 id="build-h">هكذا يرى المكتب مبناه كل صباح</h2>
@@ -171,191 +251,131 @@
     </div>
 </section>
 
-{{-- 2. The problem, told by the three parties --}}
-<section class="w2-voices" aria-labelledby="voices-h">
+{{-- 7. Core features: the real screens, an illustration that says it is one, and two sketches --}}
+<section class="w2-feat" id="features" aria-labelledby="feat-h">
     <div class="w2-wrap">
-        <h2 id="voices-h" class="w2-eyebrow-h">مبنى واحد، وثلاث روايات</h2>
-        <ol class="w2-voice-list">
-            <li><span class="w2-who">المالك</span><p>لا يعرف كم أدرّ مبناه هذا الشهر، ولا كم أخذ المكتب منه.</p></li>
-            <li><span class="w2-who">المكتب</span><p>يدير العقود والدفعات بين ملف Excel ومحادثات واتساب.</p></li>
-            <li><span class="w2-who">المستأجر</span><p>لا يعرف إلى من يتوجه حين يتعطل المكيف.</p></li>
-        </ol>
-        <p class="w2-resolve">وِثاق يجعلها رواية واحدة: سجل لكل وحدة، يراه كل طرف من نافذته.</p>
-    </div>
-</section>
-
-{{-- 3. The office's morning, the real screen --}}
-<section class="w2-day" id="day" aria-labelledby="day-h">
-    <div class="w2-wrap">
-        <div class="w2-day-head">
-            <h2 id="day-h">صباح المكتب في شاشة واحدة</h2>
-            <p>هذه شاشة النظام نفسه ببيانات تجريبية، لا رسم توضيحي.</p>
+        <div class="w2-sec-title">
+            <h2 id="feat-h">المزايا الأساسية</h2>
+            <p>ما يعمل اليوم في النظام، من التسليم إلى كشف آخر الشهر.</p>
         </div>
-        <figure class="w2-shot w2-shot-wide">
-            <div class="w2-shot-frame">
-                <img src="{{ asset('site/v2/shots/dashboard.webp') }}" width="1600" height="878" alt="الشاشة الرئيسية لمدير المكتب: تحية بعدد الأمور التي تنتظره، وقائمة تجهيز المكتب، ومؤشرات الإشغال والتحصيل والمتأخرات وأوامر العمل" loading="lazy" decoding="async">
-            </div>
-            <figcaption>
-                <ul class="w2-pins">
-                    <li><b>ما ينتظرك اليوم</b> قبل أن تفتح أي قائمة، والتاريخ بالهجري والميلادي.</li>
-                    <li><b>تجهيز المكتب</b> خطوة بخطوة حتى أول كشف حساب.</li>
-                    <li><b>الإشغال والتحصيل والمتأخرات</b> محسوبة من العقود والدفعات نفسها.</li>
-                    <li><b>كل الأقسام في شريط واحد</b> العقارات والتأجير والصيانة والمالية.</li>
-                </ul>
-            </figcaption>
-        </figure>
-    </div>
-</section>
-
-{{-- 4. Three things you know without asking --}}
-<section class="w2-know" id="money" aria-labelledby="know-h">
-    <div class="w2-wrap">
-        <h2 id="know-h" class="w2-sr">ثلاثة أشياء تعرفها دون أن تسأل أحداً</h2>
-
-        <article class="w2-row">
-            <div class="w2-row-text">
-                <h3>تعرف أين ذهب مالك</h3>
-                <p>كشف شهري لكل مالك: ما حُصّل، وما دُفع له مباشرة، وأتعاب المكتب بنص عقد الإدارة، وكل مصروف صيانة برقم أمره.</p>
-                <ul class="w2-facts">
-                    <li>حساب أمانات منفصل لكل مالك</li>
-                    <li>لا يُحوَّل للمالك أكثر مما في أماناته فعلاً</li>
-                    <li>موافقة شخصين على الإلغاء والصرف والرد</li>
-                </ul>
-            </div>
-            <figure class="w2-shot">
-                <div class="w2-shot-frame"><img src="{{ asset('site/v2/shots/statement.webp') }}" width="1000" height="855" alt="كشف حساب المالك لشهر نوفمبر: الإيجار المحصّل، وما دُفع للمالك مباشرة، وأتعاب الإدارة، وصافي المحوَّل" loading="lazy" decoding="async"></div>
-                <figcaption>كشف الحساب كما يراه المالك في بوابته.</figcaption>
-            </figure>
-        </article>
-
-        <article class="w2-row w2-row-flip">
-            <div class="w2-row-text">
-                <h3>تعرف ما تملك</h3>
-                <p>لكل وحدة سجل أصول: المكيف والسخان والفرن، بقيمته الحالية وإهلاكه وموعد خروجه من الخدمة. يُجرد عند التسليم والاستلام، فيظهر ما تغيّر.</p>
-                <ul class="w2-facts">
-                    <li>صيانة تصحيحية ووقائية وطارئة بأوامر عمل</li>
-                    <li>تطبيق للفني يعمل دون إنترنت ويرفع الصور</li>
-                    <li>سقف صرف لا يُتجاوز دون موافقة المالك</li>
-                </ul>
-            </div>
-            <figure class="w2-shot">
-                <div class="w2-shot-frame"><img src="{{ asset('site/v2/shots/assets.webp') }}" width="1300" height="905" alt="جدول الأصول: كل أصل بموقعه وفئته وحالته وقيمته الحالية ونسبة إهلاكه وموعد خروجه من الخدمة" loading="lazy" decoding="async"></div>
-                <figcaption>سجل الأصول في شاشة المكتب.</figcaption>
-            </figure>
-        </article>
-
-        <article class="w2-row">
-            <div class="w2-row-text">
-                <h3>تبقى نظامياً دون أن تتابع الأنظمة</h3>
-                <p>قواعد مثل إيقاف زيادة الإيجار في الرياض وأسباب رفض التجديد محفوظة في جدول يُحدَّث، فيمنع النظام الخطأ قبل وقوعه. وكل ليلة تُطابَق العقود بالفواتير والدفعات وملف إيجار.</p>
-                <ul class="w2-facts">
-                    <li>تجهيز بيانات التوثيق في إيجار ومتابعتها</li>
-                    <li>فواتير بالحقول التي تطلبها هيئة الزكاة</li>
-                    <li>التاريخ الهجري بتقويم أم القرى في كل شاشة ومستند</li>
-                </ul>
-            </div>
-            <figure class="w2-recon" aria-label="مثال توضيحي للتسوية الليلية">
-                <div class="w2-recon-grid" role="table" aria-label="مطابقة العقود بالفواتير والدفعات وملف إيجار">
-                    <div role="row" class="w2-recon-h"><span role="columnheader">العقد</span><span role="columnheader">إيجار</span><span role="columnheader">الفاتورة</span><span role="columnheader">الدفعة</span></div>
-                    <div role="row"><span role="cell">شقة 101</span><span role="cell" class="ok">موثّق</span><span role="cell" class="ok">صادرة</span><span role="cell" class="ok">مسددة</span></div>
-                    <div role="row"><span role="cell">شقة 102</span><span role="cell" class="ok">موثّق</span><span role="cell" class="ok">صادرة</span><span role="cell" class="ok">مسددة</span></div>
-                    <div role="row" class="flag"><span role="cell">شقة 103</span><span role="cell" class="ok">موثّق</span><span role="cell" class="ok">صادرة</span><span role="cell" class="bad">لا دفعة</span></div>
-                    <div role="row"><span role="cell">محل 1</span><span role="cell" class="ok">موثّق</span><span role="cell" class="ok">صادرة</span><span role="cell" class="ok">مسددة</span></div>
+        <div class="w2-feat-grid">
+            <article class="w2-feat-card"><div class="w2-feat-img"><img src="{{ asset('site/v2/shots/statement.webp') }}" width="1000" height="855" alt="كشف حساب المالك في بوابته" loading="lazy" decoding="async"></div>
+                <h3>كشف حساب المالك</h3><p>الإيجار المحصّل وما دُفع مباشرة والأتعاب والصيانة وصافي الشهر، كما يراه المالك.</p></article>
+            <article class="w2-feat-card"><div class="w2-feat-img"><img src="{{ asset('site/v2/shots/assets.webp') }}" width="1300" height="905" alt="جدول الأصول بقيمتها ونسبة إهلاكها" loading="lazy" decoding="async"></div>
+                <h3>سجل الأصول والإهلاك</h3><p>كل أصل بموقعه وحالته وقيمته الحالية وموعد خروجه من الخدمة.</p></article>
+            <article class="w2-feat-card"><div class="w2-feat-img"><img src="{{ asset('site/v2/shots/facade.webp') }}" width="1100" height="857" alt="واجهة المبنى في شاشة المكتب" loading="lazy" decoding="async"></div>
+                <h3>واجهة المبنى اليوم</h3><p>كل وحدة بلون حالتها، وعدد كل حالة تحت الواجهة.</p></article>
+            <article class="w2-feat-card">
+                <div class="w2-feat-img w2-feat-recon" role="img" aria-label="مثال توضيحي للتسوية الليلية: شقة 103 بلا دفعة والباقي متطابق">
+                    <div class="w2-recon-grid" aria-hidden="true">
+                        <div class="w2-recon-h"><span>العقد</span><span>إيجار</span><span>الفاتورة</span><span>الدفعة</span></div>
+                        <div><span>شقة 101</span><span class="ok">موثّق</span><span class="ok">صادرة</span><span class="ok">مسددة</span></div>
+                        <div class="flag"><span>شقة 103</span><span class="ok">موثّق</span><span class="ok">صادرة</span><span class="bad">لا دفعة</span></div>
+                        <div><span>محل 1</span><span class="ok">موثّق</span><span class="ok">صادرة</span><span class="ok">مسددة</span></div>
+                    </div>
+                    <span class="w2-recon-note">مثال توضيحي</span>
                 </div>
-                <figcaption><b>صباح اليوم التالي:</b> شقة 103 في قائمة المراجعة، والباقي متطابق. <span>مثال توضيحي.</span></figcaption>
-            </figure>
-        </article>
-    </div>
-</section>
-
-{{-- 5. Four windows on one record --}}
-<section class="w2-roles" id="roles" aria-labelledby="roles-h">
-    <div class="w2-wrap w2-roles-in">
-        <div class="w2-roles-text">
-            <h2 id="roles-h">أربع نوافذ على سجل واحد</h2>
-            <p class="w2-roles-sub">يُثبَّت من المتصفح على الجوال دون متجر تطبيقات. الملاك والمستأجرون والفنيون دون رسوم على المكتب.</p>
-            <div class="w2-tabs" role="tablist" aria-label="الواجهات">
-                <button role="tab" id="t-office" aria-controls="p-office" aria-selected="true">المكتب</button>
-                <button role="tab" id="t-owner" aria-controls="p-owner" aria-selected="false" tabindex="-1">المالك</button>
-                <button role="tab" id="t-tenant" aria-controls="p-tenant" aria-selected="false" tabindex="-1">المستأجر</button>
-                <button role="tab" id="t-tech" aria-controls="p-tech" aria-selected="false" tabindex="-1">الفني</button>
-            </div>
-            <div class="w2-panel" role="tabpanel" id="p-office" aria-labelledby="t-office">
-                <p>صندوق مهام بما ينتظر قرارك، والبلاغات الجديدة، والمتأخرات، والعقود التي اقترب موعد إشعارها.</p>
-                <ul><li>شجرة العقارات والمباني والوحدات، وتقويم الإتاحة</li><li>عرض تأجير يمر على اعتماداتك ثم رابط يقبله المستأجر</li><li>نقل بياناتك القديمة من ملف Excel أو من عقود إيجار</li><li>حصر كل موظف في العقارات التي يتولاها</li></ul>
-            </div>
-            <div class="w2-panel" role="tabpanel" id="p-owner" aria-labelledby="t-owner" hidden>
-                <p>عقاراته وإشغالها وتحصيلها، وكشف حسابه الشهري، والموافقة على الصرف فوق السقف من جواله.</p>
-                <ul><li>كشف يفصّل الإيجار والأتعاب والصيانة وصافي ما يُحوَّل</li><li>طلبات الموافقة على الصيانة بتقديرها وصورها</li><li>تغيير قاعدة الموافقة بعقد إدارة جديد يحفظ القديم</li></ul>
-            </div>
-            <div class="w2-panel" role="tabpanel" id="p-tenant" aria-labelledby="t-tenant" hidden>
-                <p>عقده وفواتيره في مكان واحد، وموعد الإشعار قبل التجديد، وبلاغ العطل بصورة أو مقطع.</p>
-                <ul><li>تذكير بالدفعة قبل موعدها وعنده</li><li>الأصول المسجلة على وحدته وحالتها عند الاستلام</li><li>التعاميم من إدارة المبنى بالصور والملفات</li></ul>
-            </div>
-            <div class="w2-panel" role="tabpanel" id="p-tech" aria-labelledby="t-tech" hidden>
-                <p>أوامره لليوم، وباركود الأصل ليعرف تاريخه، وصور قبل العمل وبعده ولو انقطع الإنترنت.</p>
-                <ul><li>بطاقة لكل أمر بموقعه ووصفه وصور البلاغ</li><li>تسجيل القطع والوقت والتكلفة الفعلية</li><li>مزامنة تلقائية عند عودة الاتصال</li></ul>
-            </div>
-        </div>
-        <div class="w2-roles-stage" aria-live="polite">
-            <figure class="w2-device w2-device-desk" data-for="p-office"><img src="{{ asset('site/v2/shots/facade.webp') }}" width="1100" height="857" alt="واجهة المبنى في شاشة المكتب: كل وحدة بلون حالتها" loading="lazy" decoding="async"></figure>
-            <figure class="w2-device w2-device-desk" data-for="p-owner" hidden><img src="{{ asset('site/v2/shots/statement.webp') }}" width="1000" height="855" alt="كشف حساب المالك في بوابته" loading="lazy" decoding="async"></figure>
-            <figure class="w2-device w2-device-phone" data-for="p-tenant" hidden><img src="{{ asset('site/v2/shots/tenant.webp') }}" width="720" height="1551" alt="بوابة المستأجر على الجوال: وحدته وعقده وموعد الإشعار والأصول المسجلة" loading="lazy" decoding="async"></figure>
-            <figure class="w2-device w2-device-phone" data-for="p-tech" hidden><img src="{{ asset('site/v2/shots/tech.webp') }}" width="720" height="1551" alt="تطبيق الفني على الجوال: أمر العمل المسند إليه وتسجيل التكلفة وصور بعد الإنجاز" loading="lazy" decoding="async"></figure>
+                <h3>التسوية الليلية</h3><p>تُطابَق العقود بالفواتير والدفعات وملف إيجار، وما لا يتطابق يصلك صباحاً.</p></article>
+            <article class="w2-feat-card"><div class="w2-feat-img w2-feat-sketch"><img src="{{ asset('site/v2/art/sketch-block.svg') }}" width="547" height="428" alt="" loading="lazy" decoding="async"></div>
+                <h3>باركود المبنى وقائمة الانتظار</h3><p>لوحة على المدخل؛ من يمسحها يسجّل اهتمامه مجاناً، فتعرف كم ينتظر وحدتك قبل أن تشغر.</p></article>
+            <article class="w2-feat-card"><div class="w2-feat-img w2-feat-sketch"><img src="{{ asset('site/v2/art/sketch-offices.svg') }}" width="567" height="466" alt="" loading="lazy" decoding="async"></div>
+                <h3>انتقال دون بداية من الصفر</h3><p>املأ قالب الانتقال بعقودك أو ارفع عقود إيجار، فيقرأها النظام وتؤكدها قبل أن تُضاف.</p></article>
         </div>
     </div>
 </section>
 
-{{-- 6. The building's QR + what we never do --}}
-<section class="w2-pair" aria-label="باركود المبنى وحدود المنصة">
-    <div class="w2-wrap w2-pair-in">
-        <div class="w2-qr">
-            <h2>واجهة المبنى تستقطب مستأجره القادم</h2>
-            <p>لوحة باركود على مدخل المبنى. من يمسحها يرى أنواع الوحدات ويسجّل في قائمة الانتظار مجاناً، فتعرف قبل أن تشغر الوحدة كم مهتماً ينتظرها.</p>
-            <ol class="w2-flow">
-                <li>يمسح المار الباركود</li>
-                <li>يسجّل اهتمامه بموافقته</li>
-                <li>تصلك القائمة وتنبيه حين تطول</li>
-            </ol>
+{{-- 8. Who it is for: the three plans' audiences --}}
+<section class="w2-who-sec" id="who" aria-labelledby="who-h">
+    <div class="w2-wrap">
+        <div class="w2-sec-title">
+            <h2 id="who-h">لمن صُمّم وِثاق؟</h2>
+            <p>لمن يدير عقارات في المملكة، بنفسه أو لملاك آخرين.</p>
         </div>
-        <div class="w2-never">
-            <h2>ما لا تفعله المنصة</h2>
+        <div class="w2-who-grid">
+            @foreach ([
+                ['heroicon-o-building-office-2', 'مكاتب إدارة الأملاك', 'تدير عقارات ملاك متعددين، وتحتاج كشفاً لكل مالك وأمانات منفصلة وفريقاً بصلاحيات واضحة.',
+                 ['محاسبة الأمانات وتعدد الملاك والموردون', 'حصر كل موظف في العقارات التي يتولاها', 'عروض تأجير تمر على اعتماداتك', 'شعار المكتب ولونه على البوابات']],
+                ['heroicon-o-home-modern', 'الملاك الأفراد', 'تملك عمارة أو بضع وحدات وتديرها بنفسك، حتى 20 وحدة.',
+                 ['الصيانة وسجل الأصول وجرد التسليم', 'بوابة لكل مستأجر', 'تذكير المستأجر بالدفعة', 'الهجري والميلادي معاً']],
+                ['heroicon-o-briefcase', 'الشركات العقارية', 'محافظ كبيرة بلا حد لعدد الوحدات، وهوية كاملة، وربط مع المحاسبة.',
+                 ['وحدات غير محدودة', 'هوية كاملة ونطاق خاص', 'الربط مع برامج المحاسبة', 'موافقة شخصين على الصرف']],
+            ] as [$ic, $t, $d, $list])
+                <article class="w2-who-card">
+                    <span class="w2-card-ic">@svg($ic)</span>
+                    <h3>{{ $t }}</h3>
+                    <p>{{ $d }}</p>
+                    <ul class="w2-checks w2-checks-one">@foreach ($list as $li)<li>{{ $li }}</li>@endforeach</ul>
+                </article>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- 9. Plans: priced by units, prices announced at launch (Q36) --}}
+<section class="w2-plans" id="plans" aria-labelledby="plans-h">
+    <div class="w2-wrap">
+        <div class="w2-sec-title">
+            <h2 id="plans-h">الباقات</h2>
+            <p>التسعير بعدد الوحدات لا بعدد المستخدمين. الأسعار تُعلن عند الإطلاق.</p>
+        </div>
+        <div class="w2-plan-grid">
+            @foreach ([
+                ['مالك', 'لمن يدير عقاراته بنفسه.', 'حتى 20 وحدة', [['الصيانة وسجل الأصول وجرد التسليم', 1], ['بوابة المستأجر وبوابة المالك', 1], ['هوية المكتب: الشعار', 1], ['محاسبة الأمانات وتعدد الملاك', 0], ['الربط مع برامج المحاسبة', 0]]],
+                ['مكتب', 'لمكاتب إدارة الأملاك.', 'حتى 300 وحدة', [['كل ما في باقة مالك', 1], ['محاسبة الأمانات وتعدد الملاك والموردون', 1], ['هوية المكتب: الشعار واللون', 1], ['تصدير القيود المحاسبية', 1], ['الربط المباشر مع برامج المحاسبة', 0]]],
+                ['شركة', 'للشركات والمحافظ الكبيرة.', 'وحدات غير محدودة', [['كل ما في باقة مكتب', 1], ['هوية كاملة ونطاق خاص', 1], ['الربط مع برامج المحاسبة', 1]]],
+            ] as $n => [$name, $for, $cap, $rows])
+                <article class="w2-plan{{ $n === 1 ? ' w2-plan-mid' : '' }}">
+                    <h3>{{ $name }}</h3>
+                    <p class="w2-plan-for">{{ $for }}</p>
+                    <p class="w2-plan-units">{{ $cap }}</p>
+                    <p class="w2-plan-price">السعر يُعلن عند الإطلاق</p>
+                    <a class="w2-btn {{ $n === 1 ? '' : 'w2-btn-line' }}" href="#demo">اطلب عرضاً</a>
+                    <ul class="w2-plan-list">
+                        @foreach ($rows as [$r, $yes])<li class="{{ $yes ? 'is-yes' : 'is-no' }}"><span class="w2-sr">{{ $yes ? 'متاح:' : 'غير متاح:' }}</span>{{ $r }}</li>@endforeach
+                    </ul>
+                </article>
+            @endforeach
+        </div>
+        <div class="w2-plan-all">
+            <h3>كل الباقات تشمل</h3>
             <ul>
-                <li><b>لا تستلم أموالاً.</b> الإيجار في حساب المالك، أو في أمانات المكتب حين يسمح عقد الإدارة.</li>
-                <li><b>لا يرى مكتب بيانات مكتب آخر.</b> العزل في قاعدة البيانات نفسها، لا في الشاشات فقط.</li>
-                <li><b>لا يُحذف قيد مالي.</b> كل إجراء في سجل تدقيق لا يُعدَّل.</li>
-                <li><b>لا تنشر باسمك.</b> التوثيق في إيجار يبقى بيدك.</li>
+                <li>مستخدمون غير محدودين</li>
+                <li>الصيانة وسجل الأصول وجرد التسليم</li>
+                <li>بوابة المستأجر وبوابة المالك وتطبيق الفني</li>
+                <li>الهجري بتقويم أم القرى في كل شاشة ومستند</li>
             </ul>
         </div>
     </div>
 </section>
 
-{{-- 7. Plans --}}
-<section class="w2-plans" id="plans" aria-labelledby="plans-h">
-    <div class="w2-wrap">
-        <div class="w2-sec-head">
-            <h2 id="plans-h">الباقات</h2>
-            <p>التسعير بعدد الوحدات لا بعدد المستخدمين، والصيانة وبوابة المستأجر وسجل الأصول في كل باقة. الأسعار تُعلن عند الإطلاق.</p>
-        </div>
-        <div class="w2-table-wrap" tabindex="0" aria-label="جدول مقارنة الباقات، يمكن تمريره أفقياً">
-            <table class="w2-table">
-                <caption class="w2-sr">مقارنة الباقات</caption>
-                <thead><tr><th scope="col"><span class="w2-sr">الميزة</span></th><th scope="col">مالك</th><th scope="col">مكتب</th><th scope="col">شركة</th></tr></thead>
-                <tbody>
-                    <tr><th scope="row">عدد الوحدات</th><td>حتى 20</td><td>حتى 300</td><td>غير محدود</td></tr>
-                    <tr><th scope="row">المستخدمون</th><td>غير محدودين</td><td>غير محدودين</td><td>غير محدودين</td></tr>
-                    <tr><th scope="row">الصيانة وسجل الأصول وجرد التسليم</th><td><span class="w2-yes" aria-label="متاح">●</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td></tr>
-                    <tr><th scope="row">بوابة المستأجر وبوابة المالك</th><td><span class="w2-yes" aria-label="متاح">●</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td></tr>
-                    <tr><th scope="row">محاسبة الأمانات وتعدد الملاك والموردون</th><td><span class="w2-no" aria-label="غير متاح">—</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td><td><span class="w2-yes" aria-label="متاح">●</span></td></tr>
-                    <tr><th scope="row">هوية المكتب</th><td>الشعار</td><td>الشعار واللون</td><td>هوية كاملة ونطاق خاص</td></tr>
-                    <tr><th scope="row">الربط مع برامج المحاسبة</th><td><span class="w2-no" aria-label="غير متاح">—</span></td><td>تصدير القيود</td><td><span class="w2-yes" aria-label="متاح">●</span></td></tr>
-                </tbody>
-            </table>
+{{-- 10. The invitation band --}}
+<section class="w2-band" aria-labelledby="band-h">
+    <div class="w2-wrap w2-band-in">
+        <h2 id="band-h">جرّبه على مبنى من مبانيك.</h2>
+        <div>
+            <p>نعرض النظام على بيانات قريبة من محفظتك، ونساعدك في نقل عقودك الحالية.</p>
+            <a class="w2-btn w2-btn-sun" href="#demo">اطلب عرضاً لمكتبك</a>
         </div>
     </div>
 </section>
 
-{{-- 8. Questions --}}
+{{-- 11. What the platform never does --}}
+<section class="w2-never-sec" aria-labelledby="never-h">
+    <div class="w2-wrap">
+        <div class="w2-sec-title">
+            <h2 id="never-h">ما لا تفعله المنصة</h2>
+            <p>حدود نلتزم بها، مكتوبة في النظام نفسه.</p>
+        </div>
+        <ul class="w2-never-grid">
+            <li><span class="w2-card-ic">@svg('heroicon-o-banknotes')</span><b>لا تستلم أموالاً.</b> الإيجار في حساب المالك، أو في أمانات المكتب حين يسمح عقد الإدارة.</li>
+            <li><span class="w2-card-ic">@svg('heroicon-o-lock-closed')</span><b>لا يرى مكتب بيانات مكتب آخر.</b> العزل في قاعدة البيانات نفسها، لا في الشاشات فقط.</li>
+            <li><span class="w2-card-ic">@svg('heroicon-o-finger-print')</span><b>لا يُحذف قيد مالي.</b> كل إجراء في سجل تدقيق لا يُعدَّل.</li>
+            <li><span class="w2-card-ic">@svg('heroicon-o-megaphone')</span><b>لا تنشر باسمك.</b> التوثيق في إيجار يبقى بيدك.</li>
+        </ul>
+    </div>
+</section>
+
+{{-- 12. Questions --}}
 <section class="w2-faq" id="faq" aria-labelledby="faq-h">
     <div class="w2-wrap w2-faq-in">
         <h2 id="faq-h">أسئلة يطرحها المكتب قبل أن يبدأ</h2>
@@ -372,7 +392,7 @@
 {{-- the kinds of property an office runs, in pencil, sitting on the request band --}}
 <div class="w2-skyline" aria-hidden="true"><img src="{{ asset('site/v2/art/sketch-street.svg') }}" width="1400" height="440" alt="" loading="lazy" decoding="async"></div>
 
-{{-- 9. Demo request --}}
+{{-- 13. Demo request --}}
 <section class="w2-demo" id="demo" aria-labelledby="demo-h">
     <div class="w2-wrap w2-demo-in">
         <div class="w2-demo-text">
@@ -412,10 +432,17 @@
 </main>
 
 <footer class="w2-foot">
-    <div class="w2-wrap w2-foot-in">
-        <span class="w2-foot-logo" aria-hidden="true">{!! $svg('withaq-stacked') !!}</span>
-        <p>مزوّد برمجيات لإدارة الأملاك في المملكة العربية السعودية. لا نستلم أموالاً ولا ندير العقارات بأنفسنا.</p>
-        <a class="w2-textlink w2-textlink-light" href="{{ $loginUrl }}">دخول المكاتب والملاك</a>
+    <div class="w2-wrap">
+        <div class="w2-foot-in">
+            <div class="w2-foot-brand">
+                <span class="w2-foot-logo" aria-hidden="true">{!! $svg('withaq-stacked') !!}</span>
+                <p>كل وحدة، بكل ما فيها. مزوّد برمجيات لإدارة الأملاك في المملكة العربية السعودية؛ لا نستلم أموالاً ولا ندير العقارات بأنفسنا.</p>
+            </div>
+            <nav class="w2-foot-col" aria-label="النظام"><b>النظام</b><a href="#why">لماذا وِثاق</a><a href="#roles">الواجهات</a><a href="#features">المزايا</a><a href="#building">واجهة المبنى</a></nav>
+            <nav class="w2-foot-col" aria-label="البدء"><b>البدء</b><a href="#who">لمن صُمّم</a><a href="#plans">الباقات</a><a href="#faq">أسئلة شائعة</a><a href="#demo">اطلب عرضاً</a></nav>
+            <nav class="w2-foot-col" aria-label="الدخول"><b>الدخول</b><a href="{{ $loginUrl }}">دخول المكاتب والملاك</a></nav>
+        </div>
+        <p class="w2-foot-base">© {{ date('Y') }} وِثاق</p>
     </div>
 </footer>
 
@@ -460,22 +487,6 @@
     const u = cap.querySelector('.w2-cap-unit'), n = cap.querySelector('.w2-cap-note');
     const show = (c) => { u.textContent = c.dataset.unit + ': ' + c.dataset.state; n.textContent = c.dataset.note; };
     document.querySelectorAll('.w2-cell').forEach((c) => ['mouseenter', 'focus', 'click'].forEach((e) => c.addEventListener(e, () => show(c))));
-
-    // the roles: tabs switch the text and the real screen beside it (arrow keys move between tabs, RTL)
-    const tabs = [...document.querySelectorAll('.w2-tabs [role=tab]')];
-    const shots = [...document.querySelectorAll('.w2-roles-stage [data-for]')];
-    const select = (t, focus = true) => {
-        tabs.forEach((x) => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
-        shots.forEach((s) => { s.hidden = s.dataset.for !== t.getAttribute('aria-controls'); });
-        if (focus) t.focus();
-    };
-    tabs.forEach((t, i) => {
-        t.addEventListener('click', () => select(t));
-        t.addEventListener('keydown', (e) => {
-            const d = e.key === 'ArrowLeft' ? 1 : e.key === 'ArrowRight' ? -1 : 0;
-            if (d) { e.preventDefault(); select(tabs[(i + d + tabs.length) % tabs.length]); }
-        });
-    });
 
     // the header gains an edge once the opening has scrolled past
     const head = document.querySelector('.w2-head');

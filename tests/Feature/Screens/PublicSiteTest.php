@@ -61,7 +61,9 @@ class PublicSiteTest extends TestCase
         }
         $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
         // the opening keeps the slogan while three stories slide under it, each with a pencil sketch and cards shaped like the system (owner, office, tenant + technician)
-        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/sketch-villa.svg', 'w2-float', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح'] as $needle) {
+        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/sketch-villa.svg', 'w2-float', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح',
+                     // the mamarat-like structure, in our own terms: why, apps in device frames, features, who, plans without prices (Q36)
+                     'لماذا وِثاق؟', 'المزايا الأساسية', 'لمن صُمّم وِثاق؟', 'كل الباقات تشمل', 'السعر يُعلن عند الإطلاق', 'site/v2/shots/tenant.webp'] as $needle) {
             $this->assertStringContainsString($needle, $html, $needle);
         }
         foreach (['sketch-villa', 'sketch-offices', 'sketch-block', 'sketch-street'] as $art) {   // pencil sketches drawn for the page
