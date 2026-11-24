@@ -35,29 +35,21 @@
     ];
     $panelId = filament()->getCurrentPanel()?->getId() ?? 'manager';
     $door = $doors[$panelId] ?? $doors['manager'];
-    // A small façade: windows in the five fixed unit-status colours (the signature of the manager's home).
-    $windows = ['paid','paid','late','paid','vacant', 'paid','maint','paid','paid','paid', 'soon','paid','paid','vacant','paid', 'paid','paid','paid','late','paid'];
+    // The public page's hand-drawn sketch that fits the door (original drawings, public/site/v2/art).
+    $art = ['owner' => 'slide-owner', 'tenant' => 'slide-tenant', 'technician' => 'slide-tenant'][$panelId] ?? 'slide-office';
 @endphp
 {{-- Identity panel beside the sign-in card (layout of the owner's design; no third-party logos). --}}
 <aside class="wq-auth-aside" aria-label="وِثاق">
     <div class="wq-auth-brand">
-        {{-- The stacked logo (Kufic wordmark over Withaq), white on the identity panel; its aria-label names the platform. --}}
+        {{-- The stacked logo (Kufic wordmark over Withaq), deep teal on the morning mint; its aria-label names the platform. --}}
         <h1 class="wq-auth-title"><span class="wq-auth-logo">{!! file_get_contents(public_path('brand/withaq-stacked.svg')) !!}</span></h1>
         <div class="wq-auth-kicker">منصة إدارة الأملاك والأصول العقارية</div>
     </div>
 
     <span class="wq-auth-door">{{ $door['door'] }}</span>
 
-    {{-- The building as Kufic cells, held by the logo's embrace (same language as the public page) --}}
-    <figure class="wq-auth-facade" aria-hidden="true">
-        <div class="wq-facade-grid">
-            @foreach (array_slice($windows, 0, 19) as $i => $w)
-                <span class="wq-win wq-win-{{ $w }}" style="--i: {{ 18 - $i }}"></span>
-            @endforeach
-            <span class="wq-facade-door"></span>
-        </div>
-        <span class="wq-emb wq-emb-r"></span><span class="wq-emb wq-emb-b"></span><span class="wq-emb wq-emb-l"></span>
-    </figure>
+    {{-- The same original sketch as the public page (decorative: the door label says who this is for) --}}
+    <img class="wq-auth-art" src="{{ asset('site/v2/art/' . $art . '.svg') }}" width="640" height="520" alt="" aria-hidden="true" decoding="async">
 
     <ul class="wq-auth-points">
         @foreach ($door['points'] as [$icon, $text])

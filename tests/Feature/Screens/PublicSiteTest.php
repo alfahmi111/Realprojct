@@ -60,6 +60,15 @@ class PublicSiteTest extends TestCase
             $this->assertFileExists(public_path("site/v2/shots/$shot.webp"));
         }
         $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
+        // the opening keeps the slogan while three stories slide under it, each with an original sketch (owner, office, tenant + technician)
+        foreach (['aria-roledescription="carousel"', 'للمالك', 'للمكتب', 'للمستأجر والفني', 'site/v2/art/slide-owner.svg', 'w2-pause', 'هكذا يرى المكتب مبناه كل صباح'] as $needle) {
+            $this->assertStringContainsString($needle, $html, $needle);
+        }
+        foreach (['slide-owner', 'slide-office', 'slide-tenant', 'skyline', 'who-owner', 'who-office', 'who-tenant'] as $art) {
+            $svg = file_get_contents(public_path("site/v2/art/$art.svg"));
+            $this->assertStringNotContainsString('<image', $svg, $art);   // drawn vector sketches, no embedded photos
+            $this->assertStringContainsString('<title>', $svg, $art);
+        }
         // the current page is untouched and still at «/»
         $this->get('/')->assertOk()->assertSee('ثلاثة أشياء تعرفها دون أن تسأل أحداً')->assertDontSee('site/v2/v2.css', false);
         // a signed-in user can still review the preview (only «/» sends them to their interface)

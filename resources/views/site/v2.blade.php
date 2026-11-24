@@ -2,8 +2,10 @@
     /*
      * The new public page (preview at /preview, owner request 2026-11-25). Same facts as the current page; nothing on it
      * is invented: every feature is built, the screenshots are the system itself (demo data), the reconciliation figure is
-     * marked as an illustration. Art direction: the page is built on the logo's Kufic cell — the building in the opening
-     * is made of cells coloured by each unit's real status palette (dark tokens), held by the logo's «embrace».
+     * marked as an illustration. Art direction (revised 2026-11-25 at the owner's request): a light, sunny page; the slogan
+     * «كل وحدة، بكل ما فيها» stays while three short stories slide under it, each with an original hand-drawn sketch (no stock,
+     * no AI imagery) of Saudi people and buildings whose windows use the platform's unit-status colours. The Kufic-cell
+     * building held by the logo's «embrace» follows as its own section.
      */
     $st = ['paid' => 'مؤجرة ومسددة', 'late' => 'عليها متأخرات', 'vacant' => 'شاغرة', 'maint' => 'في الصيانة', 'soon' => 'ستُخلى قريباً'];
     $floors = [
@@ -13,6 +15,17 @@
         ['الدور الأول', [['101', 'paid', 'عقد حتى جمادى الآخرة 1449'], ['102', 'paid', 'عقد حتى رمضان 1448'], ['103', 'late', 'فاتورة غير مسددة'], ['104', 'paid', 'عقد حتى ذي القعدة 1448']]],
     ];
     $shops = [['محل 1', 'paid', 'صيدلية، عقد تجاري حتى 1450'], ['محل 2', 'vacant', 'شاغر منذ 20 يوماً'], ['محل 3', 'paid', 'مغسلة، عقد حتى 1449']];
+    $slides = [
+        ['who' => 'للمالك', 'art' => 'slide-owner', 'h' => 'كشف شهري يفصّل كل ريال في مبناك.',
+         'p' => 'ما حُصّل، وما دُفع لك مباشرة، وأتعاب المكتب بنص عقد الإدارة، وكل مصروف صيانة برقم أمره. تقرؤه من جوالك.',
+         'alt' => 'رسم: مالك سعودي بثوب وشماغ يقرأ كشف حسابه على جواله أمام مبناه'],
+        ['who' => 'للمكتب', 'art' => 'slide-office', 'h' => 'العقود والتحصيل والصيانة في مكان واحد.',
+         'p' => 'صندوق مهام بما ينتظر قرارك، والمتأخرات، والعقود التي اقترب موعد إشعارها، ولكل وحدة سجل أصولها.',
+         'alt' => 'رسم: موظفة مكتب عقاري بعباءة تتابع حالة الوحدات على جهازها اللوحي'],
+        ['who' => 'للمستأجر والفني', 'art' => 'slide-tenant', 'h' => 'بلاغ بصورة، وفني يعرف تاريخ الجهاز.',
+         'p' => 'يبلّغ المستأجر عن العطل من جواله بصورة أو مقطع، ويستلم الفني أمر العمل ومعه سجل الأصل، ولو انقطع الإنترنت.',
+         'alt' => 'رسم: مستأجر يصوّر مكيفاً معطلاً بجواله ليبلّغ عنه، وفني صيانة يصل بصندوق عدته'],
+    ];
     $svg = fn (string $f) => file_get_contents(public_path("brand/$f.svg"));
     $i = 0;
 @endphp
@@ -24,7 +37,7 @@
     <title>وِثاق | كل وحدة، بكل ما فيها</title>
     <meta name="description" content="منصة سعودية لمكاتب إدارة الأملاك: العقود والتحصيل وكشف حساب المالك، والصيانة وسجل أصول كل وحدة، وبوابات للمالك والمستأجر والفني، مع قواعد إيجار والضريبة مطبّقة.">
     <meta name="robots" content="noindex">
-    <meta name="theme-color" content="#121716">
+    <meta name="theme-color" content="#E4F3EE">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
     <link rel="icon" href="{{ asset('brand/withaq-favicon.svg') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('brand/icons/apple-touch-icon.png') }}">
@@ -54,23 +67,58 @@
 
 <main id="main">
 
-{{-- 1. Opening: the building as Kufic cells, held by the logo's embrace --}}
+{{-- 1. Opening: the slogan stays, three short stories slide under it (owner, office, tenant + technician), each with an original sketch --}}
 <section class="w2-hero" aria-labelledby="hero-h">
-    <div class="w2-wrap w2-hero-in">
+    <div class="w2-wrap w2-hero-in" data-slider>
         <div class="w2-hero-text">
             <p class="w2-kicker">إدارة الأملاك والأصول للمكاتب العقارية في المملكة</p>
-            <h1 id="hero-h">كل وحدة،<br>بكل ما فيها.</h1>
-            <p class="w2-lead">عقدها وتحصيلها، وأجهزتها وصيانتها، ومن سكنها وكم أدرّت. ويصل كل مالك إلى كشف يفصّل كل ريال.</p>
+            <h1 id="hero-h" class="w2-slogan">كل وحدة،<br>بكل ما فيها.</h1>
+            <div class="w2-slides" aria-roledescription="carousel" aria-label="ما يقدّمه وِثاق لكل طرف">
+                @foreach ($slides as $n => $sl)
+                    <div class="w2-slide{{ $n === 0 ? ' is-on' : '' }}" role="group" aria-roledescription="شريحة" aria-label="{{ $n + 1 }} من {{ count($slides) }}: {{ $sl['who'] }}" @if ($n) aria-hidden="true" @endif>
+                        <p class="w2-slide-who">{{ $sl['who'] }}</p>
+                        <p class="w2-slide-h">{{ $sl['h'] }}</p>
+                        <p class="w2-slide-p">{{ $sl['p'] }}</p>
+                    </div>
+                @endforeach
+            </div>
             <div class="w2-cta">
                 <a class="w2-btn" href="#demo">اطلب عرضاً لمكتبك</a>
-                <a class="w2-textlink w2-textlink-light" href="{{ $loginUrl }}">دخول المكاتب والملاك</a>
+                <a class="w2-textlink" href="{{ $loginUrl }}">دخول المكاتب والملاك</a>
             </div>
-            <p class="w2-today"><span>اليوم</span> <strong>{{ $hijri }}</strong> <span class="w2-today-g">{{ $greg }}</span></p>
+            <div class="w2-slide-nav">
+                <div class="w2-dots" role="group" aria-label="اختر الشريحة">
+                    @foreach ($slides as $n => $sl)
+                        <button type="button" class="w2-dot{{ $n === 0 ? ' is-on' : '' }}" data-go="{{ $n }}" @if ($n === 0) aria-current="true" @endif><span>{{ $sl['who'] }}</span><i aria-hidden="true"></i></button>
+                    @endforeach
+                </div>
+                <button type="button" class="w2-pause" aria-label="إيقاف التقليب التلقائي" data-play="تشغيل التقليب التلقائي" data-stop="إيقاف التقليب التلقائي"><span aria-hidden="true"></span></button>
+            </div>
         </div>
+        <div class="w2-hero-art">
+            @foreach ($slides as $n => $sl)
+                <img class="w2-art{{ $n === 0 ? ' is-on' : '' }}" src="{{ asset('site/v2/art/' . $sl['art'] . '.svg') }}" width="640" height="520" alt="{{ $sl['alt'] }}" @if ($n) aria-hidden="true" @else fetchpriority="high" @endif decoding="async">
+            @endforeach
+        </div>
+    </div>
+</section>
 
+{{-- 2. The building as the office sees it: Kufic cells in each unit's status colour, held by the logo's embrace --}}
+<section class="w2-build" aria-labelledby="build-h">
+    <div class="w2-wrap w2-build-in">
+        <div class="w2-build-text">
+            <h2 id="build-h">هكذا يرى المكتب مبناه كل صباح</h2>
+            <p>كل خانة وحدة بلون حالتها اليوم. مرّر على أي خانة أو اضغطها.</p>
+            <div class="w2-cap" aria-live="polite">
+                <strong class="w2-cap-unit">19 وحدة في مبنى واحد</strong>
+                <span class="w2-cap-note">اختر خانة لترى حالتها.</span>
+            </div>
+            <ul class="w2-legend" aria-label="ألوان الحالة">
+                @foreach ($st as $k => $label)<li><i class="w2-s-{{ $k }}" aria-hidden="true"></i>{{ $label }}</li>@endforeach
+            </ul>
+        </div>
         <figure class="w2-facade" aria-label="مثال لمبنى في النظام: كل خانة وحدة بلون حالتها اليوم">
             <div class="w2-facade-box">
-                {{-- the logo's embrace, in square bars like the wordmark: down the right side, along the base, up the left --}}
                 <span class="w2-emb w2-emb-r" aria-hidden="true"></span><span class="w2-emb w2-emb-b" aria-hidden="true"></span><span class="w2-emb w2-emb-l" aria-hidden="true"></span>
                 <div class="w2-cells" role="list">
                     @foreach ($floors as [$floor, $flats])
@@ -81,16 +129,9 @@
                     @foreach ($shops as [$code, $s, $note])
                         <button type="button" role="listitem" class="w2-cell w2-shop w2-s-{{ $s }}" style="--i: {{ 19 - (++$i) }}" data-unit="{{ $code }}" data-state="{{ $st[$s] }}" data-note="{{ $note }}" aria-label="الدور الأرضي، {{ $code }}: {{ $st[$s] }}، {{ $note }}"><span>{{ $code }}</span></button>
                     @endforeach
-                    <span class="w2-door" aria-hidden="true"><svg viewBox="0 0 7 7" class="w2-qr-mark"><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="currentColor"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="var(--ink)"/></svg></span>
+                    <span class="w2-door" aria-hidden="true"><svg viewBox="0 0 7 7" class="w2-qr-mark"><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="currentColor"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#fff"/></svg></span>
                 </div>
             </div>
-            <figcaption class="w2-cap" aria-live="polite">
-                <strong class="w2-cap-unit">هكذا يرى المكتب مبناه كل صباح</strong>
-                <span class="w2-cap-note">19 وحدة، لكل منها حالتها اليوم. مرّر على أي خانة.</span>
-            </figcaption>
-            <ul class="w2-legend" aria-label="ألوان الحالة">
-                @foreach ($st as $k => $label)<li><i class="w2-s-{{ $k }}" aria-hidden="true"></i>{{ $label }}</li>@endforeach
-            </ul>
         </figure>
     </div>
 </section>
@@ -100,9 +141,9 @@
     <div class="w2-wrap">
         <h2 id="voices-h" class="w2-eyebrow-h">مبنى واحد، وثلاث روايات</h2>
         <ol class="w2-voice-list">
-            <li><span class="w2-who">المالك</span><p>لا يعرف كم أدرّ مبناه هذا الشهر، ولا كم أخذ المكتب منه.</p></li>
-            <li><span class="w2-who">المكتب</span><p>يدير العقود والدفعات بين ملف Excel ومحادثات واتساب.</p></li>
-            <li><span class="w2-who">المستأجر</span><p>لا يعرف إلى من يتوجه حين يتعطل المكيف.</p></li>
+            <li><img class="w2-face" src="{{ asset('site/v2/art/who-owner.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المالك</span><p>لا يعرف كم أدرّ مبناه هذا الشهر، ولا كم أخذ المكتب منه.</p></li>
+            <li><img class="w2-face" src="{{ asset('site/v2/art/who-office.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المكتب</span><p>يدير العقود والدفعات بين ملف Excel ومحادثات واتساب.</p></li>
+            <li><img class="w2-face" src="{{ asset('site/v2/art/who-tenant.svg') }}" width="120" height="120" alt="" loading="lazy"><span class="w2-who">المستأجر</span><p>لا يعرف إلى من يتوجه حين يتعطل المكيف.</p></li>
         </ol>
         <p class="w2-resolve">وِثاق يجعلها رواية واحدة: سجل لكل وحدة، يراه كل طرف من نافذته.</p>
     </div>
@@ -293,6 +334,9 @@
     </div>
 </section>
 
+{{-- the kinds of property an office runs, sketched, sitting on the request band --}}
+<div class="w2-skyline" aria-hidden="true"><img src="{{ asset('site/v2/art/skyline.svg') }}" width="1200" height="260" alt="" loading="lazy"></div>
+
 {{-- 9. Demo request --}}
 <section class="w2-demo" id="demo" aria-labelledby="demo-h">
     <div class="w2-wrap w2-demo-in">
@@ -342,6 +386,37 @@
 
 <script>
 (() => {
+    // the opening: three stories under the slogan. Auto-advances every 7s; pauses on hover, on focus, with the button,
+    // when the tab is hidden, and never starts under reduced motion. Swipe on touch.
+    const root = document.querySelector('[data-slider]');
+    const slides = [...root.querySelectorAll('.w2-slide')], arts = [...root.querySelectorAll('.w2-art')], dots = [...root.querySelectorAll('.w2-dot')];
+    const pause = root.querySelector('.w2-pause');
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let at = 0, timer = null, stopped = still, held = false;
+    const go = (n) => {
+        at = (n + slides.length) % slides.length;
+        [slides, arts].forEach((set) => set.forEach((el, k) => { el.classList.toggle('is-on', k === at); el.setAttribute('aria-hidden', k !== at); }));
+        dots.forEach((d, k) => { d.classList.toggle('is-on', k === at); k === at ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current'); });
+        restart();
+    };
+    const restart = () => {
+        clearTimeout(timer);
+        root.classList.remove('is-running'); void root.offsetWidth;
+        if (!stopped && !held && !document.hidden) { root.classList.add('is-running'); timer = setTimeout(() => go(at + 1), 7000); }
+    };
+    const setStopped = (v) => { stopped = v; root.classList.toggle('is-stopped', v); pause.setAttribute('aria-label', v ? pause.dataset.play : pause.dataset.stop); restart(); };
+    dots.forEach((d) => d.addEventListener('click', () => go(+d.dataset.go)));
+    pause.addEventListener('click', () => setStopped(!stopped));
+    root.addEventListener('mouseenter', () => { held = true; restart(); });
+    root.addEventListener('mouseleave', () => { held = false; restart(); });
+    root.addEventListener('focusin', () => { held = true; restart(); });
+    root.addEventListener('focusout', () => { held = false; restart(); });
+    document.addEventListener('visibilitychange', restart);
+    let x0 = null;
+    const art = root.querySelector('.w2-hero-art');
+    art.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
+    art.addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(at + (dx > 0 ? 1 : -1)); });   // RTL: swipe right = next
+    setStopped(stopped);
     // the facade: hovering, focusing or tapping a cell explains it
     const cap = document.querySelector('.w2-cap');
     const u = cap.querySelector('.w2-cap-unit'), n = cap.querySelector('.w2-cap-note');
@@ -364,10 +439,17 @@
         });
     });
 
-    // the header darkens its edge once the opening has scrolled past
+    // the header gains an edge once the opening has scrolled past
     const head = document.querySelector('.w2-head');
     const io = new IntersectionObserver(([e]) => head.classList.toggle('is-past', !e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' });
     io.observe(document.querySelector('.w2-hero'));
+
+    // the building rises and the embrace is drawn once, when its section first comes into view
+    const build = document.querySelector('.w2-build');
+    if ('IntersectionObserver' in window) {
+        const seen = new IntersectionObserver(([e]) => { if (e.isIntersecting) { build.classList.add('is-seen'); seen.disconnect(); } }, { threshold: .3 });
+        seen.observe(build);
+    } else { build.classList.add('is-seen'); }
 })();
 </script>
 </body>
