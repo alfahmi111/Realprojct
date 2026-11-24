@@ -48,14 +48,15 @@
 
     <span class="wq-auth-door">{{ $door['door'] }}</span>
 
+    {{-- The building as Kufic cells, held by the logo's embrace (same language as the public page) --}}
     <figure class="wq-auth-facade" aria-hidden="true">
-        <div class="wq-facade-roof"></div>
         <div class="wq-facade-grid">
-            @foreach ($windows as $i => $w)
-                <span class="wq-win wq-win-{{ $w }}" style="--i: {{ $i }}"></span>
+            @foreach (array_slice($windows, 0, 19) as $i => $w)
+                <span class="wq-win wq-win-{{ $w }}" style="--i: {{ 18 - $i }}"></span>
             @endforeach
+            <span class="wq-facade-door"></span>
         </div>
-        <div class="wq-facade-door"></div>
+        <span class="wq-emb wq-emb-r"></span><span class="wq-emb wq-emb-b"></span><span class="wq-emb wq-emb-l"></span>
     </figure>
 
     <ul class="wq-auth-points">

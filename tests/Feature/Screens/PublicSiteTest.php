@@ -47,6 +47,35 @@ class PublicSiteTest extends TestCase
         $this->assertSame(1, SiteLead::count());
     }
 
+    public function test_req_0271_the_new_page_is_previewed_at_its_own_path_and_the_current_page_stays(): void
+    {
+        $html = $this->get('/preview')->assertOk()->getContent();
+        foreach (['كل وحدة،', 'تعرف أين ذهب مالك', 'أربع نوافذ على سجل واحد', 'ما لا تفعله المنصة', 'الباقات', 'site/v2/v2.css', 'fonts/fonts.css',
+                     'site/v2/shots/dashboard.webp', 'name="from" value="preview"', 'noindex', 'مثال توضيحي'] as $needle) {
+            $this->assertStringContainsString($needle, $html, $needle);
+        }
+        $this->assertStringNotContainsString('fonts.googleapis.com', $html);   // fonts are local
+        $this->assertStringNotContainsString('ريال شهرياً', $html);            // no invented prices (Q36)
+        foreach (['dashboard', 'statement', 'assets', 'facade', 'tenant', 'tech'] as $shot) {   // the real screens it shows
+            $this->assertFileExists(public_path("site/v2/shots/$shot.webp"));
+        }
+        $this->assertFileExists(public_path('fonts/noto-kufi-arabic-var-arabic.woff2'));
+        // the current page is untouched and still at «/»
+        $this->get('/')->assertOk()->assertSee('ثلاثة أشياء تعرفها دون أن تسأل أحداً')->assertDontSee('site/v2/v2.css', false);
+        // a signed-in user can still review the preview (only «/» sends them to their interface)
+        $s = $this->makeSubscriber();
+        $this->actingAs($this->makeUser($s, 'manager'))->get('/preview')->assertOk();
+    }
+
+    public function test_the_demo_form_on_the_new_page_returns_to_the_new_page(): void
+    {
+        $this->post('/demo', ['name' => 'سعد', 'phone' => '0512345678', 'consent' => '1', 'from' => 'preview'])
+            ->assertRedirect(route('site.preview') . '#demo')->assertSessionHas('demo_sent');
+        $this->assertSame(1, SiteLead::count());
+        $this->post('/demo', ['name' => 'سعد', 'phone' => '0512345678', 'consent' => '1', 'from' => 'elsewhere'])
+            ->assertRedirect(route('site.home') . '#demo');   // anything else goes back to the current page
+    }
+
     public function test_the_platform_admin_reads_the_requests(): void
     {
         SiteLead::create(['name' => 'نورة', 'phone' => '0555555555', 'consented_at' => now()]);
