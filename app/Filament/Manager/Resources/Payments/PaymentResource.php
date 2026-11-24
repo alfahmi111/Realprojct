@@ -56,7 +56,8 @@ class PaymentResource extends Resource
             Select::make('method')->label('الطريقة')->options(['mada' => 'مدى', 'apple_pay' => 'Apple Pay', 'card' => 'بطاقة', 'sadad' => 'سداد', 'bank_transfer' => 'تحويل بنكي', 'cash' => 'نقداً'])->required(),
             DatePicker::make('received_on')->label('تاريخ الاستلام')->required()->default(now()),
             Select::make('paid_to')->label('استُلم في حساب')->options(fn () => app(\App\Leasing\PolicyService::class)->paidToOptions(\App\Support\Dates\Today::date()))->default('owner')->required(),
-            TextInput::make('reference')->label('المرجع'),
+            TextInput::make('reference')->label('رقم العملية المرجعي')->maxLength(255)
+                ->helperText('رقم الحوالة أو عملية إيجار أو سداد كما يظهر في كشف الحساب. يمنع تسجيل الحركة نفسها مرتين، فلا تكتب فيه ملاحظات. اتركه فارغاً إن لم يكن للدفعة رقم (النقد غالباً).'),
         ])->columns(2);
     }
 

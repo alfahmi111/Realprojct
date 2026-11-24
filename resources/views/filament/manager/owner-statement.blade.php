@@ -31,7 +31,7 @@
                     <p>{{ $s['owner'] }}</p>
                 </div>
                 <div class="wq-stmt-net">
-                    <small>صافي المحوَّل للمالك</small>
+                    <small>صافي الشهر للمالك</small>
                     <strong>{{ $s['net'] }}</strong>
                 </div>
             </header>
@@ -51,8 +51,32 @@
                     <li class="is-out"><span class="wq-cascade-label">هامش المدير على فواتير الموردين</span><span class="wq-cascade-track"><span style="{{ $step($r['margin']) }}"></span></span><b>− {{ $s['margin_total'] }}</b></li>
                 @endif
                 @if ($r['recovered'])<li class="is-in"><span class="wq-cascade-label">صيانة استُردت من المستأجر<small>تكلفة حُمّلت على المستأجر وسدّدها</small></span><span class="wq-cascade-track"><span style="--w: {{ max(1, intdiv($r['recovered'] * 100, $max)) }}%"></span></span><b>+ {{ $s['recovered'] }}</b></li>@endif
-                <li class="is-net"><span class="wq-cascade-label">صافي المحوَّل للمالك</span><span class="wq-cascade-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
+                <li class="is-net"><span class="wq-cascade-label">صافي الشهر للمالك<small>يُحوَّل بطلب يعتمده مراجِع؛ انظر حركة الأمانات أدناه</small></span><span class="wq-cascade-track"><span style="--w: {{ max(0, min(100, intdiv($r['net'] * 100, $max))) }}%"></span></span><b>{{ $s['net'] }}</b></li>
             </ol>
+
+            {{-- M22: what was actually transferred and what is still available, carried from month to month --}}
+            <section class="wq-trust" aria-label="حركة أمانات المالك">
+                <h3>حركة الأمانات</h3>
+                <dl>
+                    <dt>متاح من الأشهر السابقة<small>صافي ما سبق ناقص ما حُوّل منه</small></dt><dd>{{ $s['opening_available'] }}</dd>
+                    <dt>صافي هذا الشهر</dt><dd>{{ $s['net'] }}</dd>
+                    @forelse ($s['disbursements'] as $t)
+                        <dt>حُوّل للمالك<small>{{ $t['date'] }}</small></dt><dd class="is-out">− {{ $t['amount'] }}</dd>
+                    @empty
+                        <dt>حُوّل للمالك هذا الشهر</dt><dd>{{ $s['disbursed'] }}</dd>
+                    @endforelse
+                    <dt class="is-total">المتاح للصرف في نهاية الشهر</dt><dd class="is-total">{{ $s['available'] }}</dd>
+                </dl>
+                <div class="wq-trust-now">
+                    <div>
+                        <small>المتاح للصرف الآن من أمانات المكتب</small>
+                        <strong>{{ $s['available_now'] }}</strong>
+                        @if ($s['has_pending'])<small>بانتظار الاعتماد: طلبات تحويل بمبلغ {{ $s['pending_disbursements'] }}</small>@endif
+                        @if ($r['owner_direct'])<small>ما قبضه المالك في حسابه مباشرة ({{ $s['owner_direct'] }}) ليس من هذا الرصيد.</small>@endif
+                    </div>
+                    <div class="wq-noprint">{{ $this->disburseAction }}</div>
+                </div>
+            </section>
 
             @unless ($s['fee_deducted'])
                 <p class="wq-note">أتعاب الإدارة ({{ $s['fee_text'] }}) تبلغ {{ $s['fee'] }} وضريبتها {{ $s['fee_vat'] }}، وتُفوتَر على المالك منفصلة فلا تُخصم من هذا الكشف.</p>

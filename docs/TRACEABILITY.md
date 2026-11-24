@@ -73,7 +73,7 @@
 | REQ-0066 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0067 | §3.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0068 | §3.1 | BUILD | MVP | DONE | app/, config/, docs/PACKAGES.md | tests/Feature/Foundation/ArchitectureTest.php | الآلية جاهزة؛ تُطبَّق على كل كيان مالي وتعاقدي عند إنشائه |
-| REQ-0069 | §3.1 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php |  |
+| REQ-0069 | §3.1 | BUILD | MVP | DONE | app/Approvals/DualApproval.php | tests/Feature/Foundation/DualApprovalTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0070 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0071 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0072 | §4.1 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -134,7 +134,7 @@
 | REQ-0127 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0128 | §4.5 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0129 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
-| REQ-0130 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
+| REQ-0130 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0131 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0132 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
 | REQ-0133 | §4.6 | BUILD | MVP | DONE | app/Properties/, app/Models/ | tests/Feature/Properties/PropertyModelTest.php |  |
@@ -192,7 +192,7 @@
 | REQ-0185 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0186 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0187 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
-| REQ-0188 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0188 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0189 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0190 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0191 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
@@ -320,7 +320,7 @@
 | REQ-0313 | §7.4 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php | MIXED→MVP: §12 L942؛ قراءات العدادات P2 §12 L968، ومهام الجرد غير التأسيسي P2 §12 L963 |
 | REQ-0314 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0315 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
-| REQ-0316 | §7.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0316 | §7.5 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0317 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0318 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
 | REQ-0319 | §7.5 | BUILD | MVP | DONE | app/Dashboards/, app/Portals/, app/Finance/AccountingExport.php, public/sw.js, resources/js/offline-queue.js | tests/Feature/Portals/PortalsTest.php |  |
@@ -432,10 +432,10 @@
 | REQ-0425 | §9.2 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L967 — قرار Q5 |
 | REQ-0426 | §9.2 | BUILD | MVP | READ |  |  | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) · حجة تسويقية — لا بناء |
 | REQ-0427 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
-| REQ-0428 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
-| REQ-0429 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0428 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
+| REQ-0429 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0430 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
-| REQ-0431 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
+| REQ-0431 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0432 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0433 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |
 | REQ-0434 | §9.3 | BUILD | MVP | DONE | app/Finance/, app/Plans/, app/Compliance/ | tests/Feature/Finance/FinanceTest.php |  |

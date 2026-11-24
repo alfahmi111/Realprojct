@@ -72,29 +72,141 @@ class TrustAccounting
      */
     public function requestExpense(User $maker, Owner $owner, int $propertyId, Money $vendorCost, string $descriptionAr, ?string $workOrderRef, CarbonImmutable $on, ?Money $margin = null): ApprovalRequest
     {
+        SoleOwner::assert($propertyId, 'تكلفة الصيانة');   // M22: never charged to the first owner of a shared property
         $payload = ['owner_id' => $owner->id, 'property_id' => $propertyId, 'cost_minor' => $vendorCost->minor(), 'margin_minor' => $margin?->minor() ?? 0, 'description' => $descriptionAr, 'work_order' => $workOrderRef];
-        return $this->approvals->submit($maker, 'trust.disburse', $payload, function () use ($owner, $propertyId, $vendorCost, $descriptionAr, $workOrderRef, $on, $margin) {
-            DB::transaction(function () use ($owner, $propertyId, $vendorCost, $descriptionAr, $workOrderRef, $on, $margin) {
-                $this->ledger->post($on->toDateString(), 'expense.maintenance', $descriptionAr . ($workOrderRef ? " ($workOrderRef)" : ''), [
-                    ["expense_on_behalf:{$owner->id}", $vendorCost, null], ['trust_bank', null, $vendorCost],
-                ], null, $owner->id, $propertyId, $workOrderRef);
-                if ($margin && $margin->isPositive()) {
-                    $this->ledger->post($on->toDateString(), 'expense.vendor_margin', 'هامش المدير على فاتورة المورّد' . ($workOrderRef ? " ($workOrderRef)" : ''), [
-                        ["fee_expense:{$owner->id}", $margin, null], ['manager_revenue', null, $margin],
-                    ], null, $owner->id, $propertyId);
-                }
-            });
-        }, 'owner', (string) $owner->id);
+        // the balance is checked when the request is approved and posted, not here: a work order can close and its
+        // payment wait in the approval queue until the owner's trust balance covers it
+        return $this->approvals->submit($maker, 'trust.disburse', $payload,
+            fn () => $this->postExpense($owner->id, $propertyId, $vendorCost, $margin, $descriptionAr, $workOrderRef, $on->toDateString()), 'owner', (string) $owner->id);
     }
 
-    /** The owner's monthly statement (REQ-0305, REQ-0306, REQ-0431). */
+    /**
+     * Pay a cost out of trust for the owner (REQ-0069, REQ-0429). M22: under the owner's lock and in one transaction
+     * with the posting, the owner's available trust balance must cover the cost and any manager margin.
+     */
+    public function postExpense(int $ownerId, int $propertyId, Money $cost, ?Money $margin, string $descriptionAr, ?string $workOrderRef, string $date): void
+    {
+        DB::transaction(function () use ($ownerId, $propertyId, $cost, $margin, $descriptionAr, $workOrderRef, $date) {
+            SoleOwner::assert($propertyId, 'تكلفة الصيانة');
+            $this->lockOwner($ownerId);
+            $owner = Owner::findOrFail($ownerId);
+            $need = $margin && $margin->isPositive() ? $cost->plus($margin) : $cost;
+            $this->assertAvailable($owner, $need, 'تكلفة الصيانة', CarbonImmutable::parse($date));
+            $this->ledger->post($date, 'expense.maintenance', $descriptionAr . ($workOrderRef ? " ($workOrderRef)" : ''), [
+                ["expense_on_behalf:{$ownerId}", $cost, null], ['trust_bank', null, $cost],
+            ], null, $ownerId, $propertyId, $workOrderRef);
+            if ($margin && $margin->isPositive()) {
+                $this->ledger->post($date, 'expense.vendor_margin', 'هامش المدير على فاتورة المورّد' . ($workOrderRef ? " ($workOrderRef)" : ''), [
+                    ["fee_expense:{$ownerId}", $margin, null], ['manager_revenue', null, $margin],
+                ], null, $ownerId, $propertyId);
+            }
+        });
+    }
+
+    /** Transfer the owner's net out of trust: the same lock and balance check as {@see postExpense()} (M22). */
+    public function postDisbursement(int $ownerId, Money $amount, string $date): void
+    {
+        DB::transaction(function () use ($ownerId, $amount, $date) {
+            $this->lockOwner($ownerId);
+            $this->assertAvailable(Owner::findOrFail($ownerId), $amount, 'التحويل', CarbonImmutable::parse($date));
+            $this->ledger->post($date, 'owner.disbursement', 'تحويل صافي المالك', [
+                ["owner_payable:{$ownerId}", $amount, null], ['trust_bank', null, $amount],
+            ], null, $ownerId);
+        });
+    }
+
+    /**
+     * What the office may still pay out of trust for this owner: the running total of the monthly statements' net
+     * (rent held by the office, less the fee when deducted, maintenance and margins, plus recovered maintenance) from
+     * the first month of the relationship to the month of `$on`, less what was already transferred. Rent paid straight
+     * into the owner's account is never part of it; nor are deposits or tenant credit not yet applied to an invoice.
+     */
+    public function availableBalance(Owner $owner, ?CarbonImmutable $on = null): Money
+    {
+        return $this->runningThrough($owner, ($on ?? \App\Support\Dates\Today::date())->startOfMonth());
+    }
+
+    /** Postgres advisory lock per owner, released at commit: two postings for one owner run one after the other. */
+    public const LOCK_NAMESPACE = 22070;
+
+    private function lockOwner(int $ownerId): void
+    {
+        DB::select('select pg_advisory_xact_lock(?, ?)', [self::LOCK_NAMESPACE, $ownerId]);
+    }
+
+    private function assertAvailable(Owner $owner, Money $need, string $whatAr, CarbonImmutable $on): void
+    {
+        $available = $this->availableBalance($owner, $on);
+        if ($need->greaterThan($available)) {
+            $fmt = fn (Money $m) => $m->toDecimalString();
+            throw new FinanceException('رصيد أمانات المالك «' . $owner->name_ar . '» المتاح للصرف ' . $fmt($available) . ' لا يكفي ل' . $whatAr . ' (' . $fmt($need) . ')، فلم يُرحَّل شيء. '
+                . 'يبقى الطلب معلّقاً حتى يصل تحصيل يغطيه أو يُرفض، والمبلغ الذي قبضه المالك في حسابه مباشرة لا يُصرف منه المكتب.');
+        }
+    }
+
+    private function runningThrough(Owner $owner, CarbonImmutable $lastMonth): Money
+    {
+        $total = Money::zero();
+        $first = $this->firstMonth($owner);
+        for ($m = $first; $m !== null && $m->lessThanOrEqualTo($lastMonth); $m = $m->addMonthNoOverflow()) {
+            $total = $total->plus($this->core($owner, $m, false)['net_to_owner'])->minus($this->disbursedIn($owner, $m));
+        }
+        return $total;
+    }
+
+    /** First month of trust activity for the owner: an agreement's start or the earliest ledger line attributed to them. */
+    private function firstMonth(Owner $owner): ?CarbonImmutable
+    {
+        $dates = array_filter([
+            ManagementAgreement::where('owner_id', $owner->id)->whereNull('archived_at')->min('starts_on'),
+            DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
+                ->where(fn ($q) => $q->where('l.owner_id', $owner->id)->orWhere('e.owner_id', $owner->id))->min('e.entry_date'),
+        ]);
+        return $dates ? CarbonImmutable::parse(min(array_map(fn ($d) => CarbonImmutable::parse($d)->toDateString(), $dates)))->startOfMonth() : null;
+    }
+
+    /** Net transferred to the owner in a month (reversals net out). */
+    private function disbursedIn(Owner $owner, CarbonImmutable $month): Money
+    {
+        $r = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->where('l.account', "owner_payable:{$owner->id}")
+            ->whereBetween('e.entry_date', [$month->startOfMonth()->toDateString(), $month->endOfMonth()->toDateString()])
+            ->selectRaw('coalesce(sum(l.debit_minor),0) as d, coalesce(sum(l.credit_minor),0) as c')->first();
+        return Money::of((int) $r->d - (int) $r->c);
+    }
+
+    /**
+     * The owner's monthly statement (REQ-0305, REQ-0306, REQ-0431). M22 adds the running position: what was available
+     * at the start of the month, what was transferred in it, and what remains available at its end.
+     */
     public function statement(Owner $owner, CarbonImmutable $month): array
+    {
+        $s = $this->core($owner, $month, true);
+        $opening = $this->runningThrough($owner, $month->startOfMonth()->subMonthNoOverflow());
+        $disbursed = $this->disbursedIn($owner, $month);
+        $transfers = JournalEntry::where('owner_id', $owner->id)->where('kind', 'like', 'owner.disbursement%')
+            ->whereBetween('entry_date', [$month->startOfMonth()->toDateString(), $month->endOfMonth()->toDateString()])->with('lines')->orderBy('entry_date')->get()
+            ->map(fn ($e) => ['date' => $e->entry_date->toDateString(), 'description' => $e->memo_ar,
+                'amount' => ($l = $e->lines->firstWhere('account', "owner_payable:{$owner->id}")) ? $l->debit_minor->minus($l->credit_minor) : Money::zero()]);
+        return $s + ['opening_available' => $opening, 'disbursed' => $disbursed, 'disbursements' => $transfers->all(),
+            'available' => $opening->plus($s['net_to_owner'])->minus($disbursed)];
+    }
+
+    /** One month's net only, without the running position (lists that show a figure per owner). */
+    public function monthlyNet(Owner $owner, CarbonImmutable $month): Money
+    {
+        return $this->core($owner, $month, true)['net_to_owner'];
+    }
+
+    private function core(Owner $owner, CarbonImmutable $month, bool $requireAgreement): array
     {
         $from = $month->startOfMonth()->toDateString();
         $to = $month->endOfMonth()->toDateString();
         $agreement = ManagementAgreement::where('owner_id', $owner->id)->whereNull('archived_at')
-            ->where('starts_on', '<=', $to)->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', $from))->orderByDesc('starts_on')->first()
-            ?? throw new FinanceException('No management agreement covers this owner for the month.');
+            ->where('starts_on', '<=', $to)->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', $from))->orderByDesc('starts_on')->first();
+        if (! $agreement && $requireAgreement) {
+            throw new FinanceException('No management agreement covers this owner for the month.');
+        }
+        // (the running balance also walks months outside any agreement: their money and costs still count, with no fee)
 
         // Collected rent = live allocations of payments received in the month on the owner's rent invoices.
         $allocs = PaymentAllocation::query()
@@ -139,7 +251,7 @@ class TrustAccounting
         $parts = [];
         foreach ($byProperty as $pid => $amount) {
             $ag = $agreementOf[$pid] ?? $agreement;
-            if ($ag->fee_type !== 'fixed') {
+            if ($ag && $ag->fee_type !== 'fixed') {
                 $feePct = $feePct->plus($amount->percentage($ag->fee_percentage_bp));
             }
         }
@@ -152,7 +264,10 @@ class TrustAccounting
         }
         $fee = $feePct->plus($feeFixed);
         $managerRegistered = (bool) $this->settings->get('finance.vat_registered');
-        $feeTreatment = $this->vat->treatment('management_fee', null, $managerRegistered, 'long', $month->endOfMonth());
+        // a month with no fee needs no VAT rate (the running balance walks months before the first rate on record);
+        // a real fee in such a month still stops with the missing-rate error instead of guessing a rate
+        $feeTreatment = $fee->isZero() ? ['code' => VatEngine::STANDARD_MANAGEMENT_FEE, 'rate_bp' => 0]
+            : $this->vat->treatment('management_fee', null, $managerRegistered, 'long', $month->endOfMonth());
         $feeVat = $this->vat->tax($fee, $feeTreatment['rate_bp']);
 
         $maintenance = JournalEntry::where('owner_id', $owner->id)->where('kind', 'expense.maintenance')->whereBetween('entry_date', [$from, $to])->with('lines')->orderBy('entry_date')->get()
@@ -182,7 +297,7 @@ class TrustAccounting
             'owner_id' => $owner->id, 'month' => $month->format('Y-m'),
             'collected_rent' => $collectedGross, 'collected_rent_net_of_vat' => $collectedNet,
             'collected_by_owner' => $ownerDirect, 'held_by_manager' => $heldByManager, 'maintenance_recovered' => $recovered,
-            'management_fee' => ['type' => $agreement->fee_type, 'percentage_bp' => $agreement->fee_percentage_bp, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
+            'management_fee' => ['type' => $agreement?->fee_type ?? 'percentage', 'percentage_bp' => $agreement?->fee_percentage_bp ?? 0, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
                 'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted, 'agreements' => count($parts) > 1 ? $parts : []],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
             'vendor_margin' => $margins->all(), 'vendor_margin_total' => $marginTotal,
@@ -233,9 +348,17 @@ class TrustAccounting
         if (! $amount->isPositive()) {
             throw new FinanceException('Nothing to transfer.');
         }
-        return $this->approvals->submit($maker, 'trust.disburse', ['owner_id' => $owner->id, 'amount_minor' => $amount->minor()], fn () => $this->ledger->post($on->toDateString(), 'owner.disbursement', 'تحويل صافي المالك', [
-            ["owner_payable:{$owner->id}", $amount, null], ['trust_bank', null, $amount],
-        ], null, $owner->id), 'owner', (string) $owner->id);
+        // early answer for the employee; the binding check runs again under the lock when it is approved (M22)
+        $this->assertAvailable($owner, $amount, 'التحويل', $on);
+        return $this->approvals->submit($maker, 'trust.disburse', ['owner_id' => $owner->id, 'amount_minor' => $amount->minor()],
+            fn () => $this->postDisbursement($owner->id, $amount, $on->toDateString()), 'owner', (string) $owner->id);
+    }
+
+    /** Transfers of this owner still waiting for a checker (shown on the statement so a second one is not raised blindly). */
+    public function pendingDisbursements(Owner $owner): Money
+    {
+        return Money::sum(ApprovalRequest::where('action', 'trust.disburse')->where('status', 'pending')->where('subject_type', 'owner')->where('subject_id', (string) $owner->id)
+            ->get()->filter(fn ($r) => isset($r->payload['amount_minor']) && ! isset($r->payload['cost_minor']))->map(fn ($r) => Money::of((int) $r->payload['amount_minor']))->all());
     }
 
     /** Manager revenue in a period — only fee kinds ever credit it (REQ-0430). */

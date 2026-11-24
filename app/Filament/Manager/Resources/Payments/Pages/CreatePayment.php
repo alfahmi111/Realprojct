@@ -19,6 +19,8 @@ class CreatePayment extends CreateRecord
     {
         try {
             return app(PaymentService::class)->record(Tenant::findOrFail($data['tenant_id']), Money::of((int) $data['amount_minor']), $data['method'], CarbonImmutable::parse($data['received_on']), $data['paid_to'], auth()->user(), $data['reference'] ?? null);
+        } catch (\App\Finance\DuplicatePaymentException $e) {   // M22: the same outside transaction, already recorded
+            throw \Illuminate\Validation\ValidationException::withMessages(['data.reference' => $e->getMessage()]);
         } catch (\App\Finance\FinanceException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages(['data.amount_minor' => \App\Support\Messages::ar($e->getMessage())]);
         }

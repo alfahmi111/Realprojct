@@ -13,7 +13,7 @@ class Payment extends Model
 {
     use Archivable, Auditable, BelongsToSubscriber;
 
-    protected $fillable = ['tenant_id', 'receipt_number', 'amount_minor', 'method', 'source', 'received_on', 'reference', 'gateway_payment_id', 'paid_to', 'recorded_by'];
+    protected $fillable = ['tenant_id', 'receipt_number', 'amount_minor', 'method', 'source', 'received_on', 'reference', 'external_key', 'gateway_payment_id', 'paid_to', 'recorded_by'];
 
     protected function casts(): array
     {

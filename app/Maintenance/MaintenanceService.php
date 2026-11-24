@@ -9,7 +9,6 @@ use App\Models\Asset;
 use App\Models\CostLine;
 use App\Models\Lease;
 use App\Models\ManagementAgreement;
-use App\Models\OwnershipShare;
 use App\Models\PpmPlan;
 use App\Models\User;
 use App\Models\Vendor;
@@ -199,12 +198,17 @@ class MaintenanceService
                 throw new MaintenanceException('التكلفة الفعلية ' . $total->toDecimalString() . ' تتجاوز ما وافق عليه المالك أو سقف الصرف (' . $ceiling->toDecimalString() . '). اطلب موافقة المالك على المبلغ قبل الإغلاق.');
             }
         }
+        // M22: a property with several owners has no rule yet for splitting the cost — stop before anything is saved,
+        // with the reason, instead of charging the first owner on file
+        if (! $wo->warranty_id && $total->isPositive() && ($n = \App\Finance\SoleOwner::shareCount($wo->property_id)) > 1) {
+            throw new MaintenanceException(\App\Finance\SoleOwner::message($n, 'تكلفة الصيانة') . ' يبقى أمر العمل مفتوحاً حتى ذلك.');
+        }
         DB::transaction(function () use ($wo, $by, $total, $tenantCausedApprovalDoc) {
             $wo->forceFill(['status' => 'closed', 'closed_at' => now()])->save();
             if ($wo->warranty_id || $total->isZero()) {
                 return;
             }
-            $owner = OwnershipShare::where('property_id', $wo->property_id)->first()?->owner;
+            $owner = \App\Finance\SoleOwner::of($wo->property_id, 'تكلفة الصيانة');
             $this->trust->requestExpense($by, $owner, $wo->property_id, $total, 'أمر عمل ' . $wo->number . ': ' . mb_substr($wo->description, 0, 80), $wo->number, \App\Support\Dates\Today::date());
             if ($tenantCausedApprovalDoc !== null) {
                 $lease = Lease::findOrFail($wo->lease_id ?? throw new MaintenanceException('A recharge needs the lease.'));

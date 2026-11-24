@@ -86,6 +86,12 @@ class DualApproval
     {
         $this->assertCanDecide($req, $checker);
         return DB::transaction(function () use ($req, $checker, $execute) {
+            // M22: two checkers approving at once (or a stale screen) must not execute it twice — lock the row and
+            // re-read its status inside the transaction that executes it
+            $current = ApprovalRequest::whereKey($req->getKey())->lockForUpdate()->first();
+            if (! $current || $current->status !== 'pending') {
+                throw new ApprovalException('هذا الطلب حُسم من قبل؛ حدّث الصفحة.');
+            }
             $req->forceFill(['status' => 'approved', 'checker_id' => $checker->id, 'decided_at' => now()])->save();
             $execute($req);
             return $req;
@@ -95,8 +101,15 @@ class DualApproval
     public function reject(ApprovalRequest $req, User $checker, string $reason): ApprovalRequest
     {
         $this->assertCanDecide($req, $checker);
-        $req->forceFill(['status' => 'rejected', 'checker_id' => $checker->id, 'decided_at' => now(), 'reason' => $reason])->save();
-        return $req;
+        return DB::transaction(function () use ($req, $checker, $reason) {
+            // a stale screen must not turn an executed request into «rejected» (M22)
+            $current = ApprovalRequest::whereKey($req->getKey())->lockForUpdate()->first();
+            if (! $current || $current->status !== 'pending') {
+                throw new ApprovalException('هذا الطلب حُسم من قبل؛ حدّث الصفحة.');
+            }
+            $req->forceFill(['status' => 'rejected', 'checker_id' => $checker->id, 'decided_at' => now(), 'reason' => $reason])->save();
+            return $req;
+        });
     }
 
     private function assertCanDecide(ApprovalRequest $req, User $checker): void

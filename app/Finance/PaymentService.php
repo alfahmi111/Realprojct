@@ -37,39 +37,83 @@ class PaymentService
             throw new FinanceException('Payments go to the manager or the owner only — never the platform (REQ-0436).');
         }
         app(\App\Leasing\PolicyService::class)->assertOfficeCollectionAllowed($paidTo, $receivedOn);   // Q33
-        $payment = DB::transaction(function () use ($tenant, $amount, $method, $receivedOn, $paidTo, $by, $reference, $source) {
-            $payment = Payment::create([
-                'tenant_id' => $tenant->id, 'receipt_number' => $this->numbering->next('receipt', (int) $receivedOn->format('Y')),
-                'amount_minor' => $amount, 'method' => $method, 'source' => $source, 'received_on' => $receivedOn->toDateString(),
-                'reference' => $reference, 'paid_to' => $paidTo, 'recorded_by' => $by?->id,
-            ]);
-            $left = $amount;
-            $open = Invoice::where('tenant_id', $tenant->id)->where('status', 'issued')->with('allocations')
-                ->orderBy('period_start')->orderBy('issue_date')->orderBy('id')->get();
-            $lines = [];
-            foreach ($open as $inv) {
-                if ($left->isZero()) {
-                    break;
-                }
-                $due = $this->invoices->outstanding($inv);
-                if (! $due->isPositive()) {
-                    continue;
-                }
-                $take = Money::min($due, $left);
-                PaymentAllocation::create(['payment_id' => $payment->id, 'invoice_id' => $inv->id, 'amount_minor' => $take]);
-                $left = $left->minus($take);
-                $owner = $inv->seller_owner_id;
-                $lines[] = [$paidTo === 'owner' ? "owner_direct:$owner" : 'trust_bank', $take, null, $owner];
-                $lines[] = ["receivable:$owner", null, $take, $owner];
+        // M22: the same external transaction is recorded once, whatever tenant or method is picked on the screen
+        $key = self::externalKey($reference);
+        $this->assertNotRecorded($key, $paidTo);
+        try {
+            $payment = DB::transaction(fn () => $this->store($tenant, $amount, $method, $receivedOn, $paidTo, $by, $reference, $source, $key));
+        } catch (\Illuminate\Database\QueryException $e) {
+            // two requests passed the check together: the unique index lets one through and refuses the other here
+            if ($key !== null && $e->getCode() === '23505' && str_contains($e->getMessage(), 'payments_external_key_unique')) {
+                $this->assertNotRecorded($key, $paidTo);
             }
-            if ($left->isPositive()) {
-                $lines[] = [$paidTo === 'owner' ? 'owner_direct:unassigned' : 'trust_bank', $left, null];
-                $lines[] = ["tenant_credit:{$tenant->id}", null, $left];
-            }
-            $this->ledger->post($receivedOn->toDateString(), 'payment', 'سند قبض ' . $payment->receipt_number, $lines, $payment);
-            return $payment;
-        });
+            throw $e;
+        }
         app(SadadBilling::class)->syncTenant($tenant);   // a SADAD bill follows what is still due (review M18 F12)
+        return $payment;
+    }
+
+    /**
+     * The external transaction's identity: its reference (transfer number, Ejar or SADAD operation, gateway id) with
+     * spaces, dashes and case removed and Arabic digits read as Latin, so «EJR-٧٧٨٩٠١» and «ejr 778901» are the same
+     * transaction. No reference → no key: such a payment cannot be matched to an outside movement (cash, as a rule).
+     */
+    public static function externalKey(?string $reference): ?string
+    {
+        if ($reference === null) {
+            return null;
+        }
+        $s = strtr($reference, ['٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4', '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4', '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9']);
+        $s = preg_replace('/[^\p{L}\p{N}]+/u', '', mb_strtoupper($s)) ?? '';
+        return $s === '' ? null : mb_substr($s, 0, 200);
+    }
+
+    /** Refuse a transaction already recorded (and not reversed) in the same receiving account. */
+    private function assertNotRecorded(?string $key, string $paidTo): void
+    {
+        if ($key === null) {
+            return;
+        }
+        $existing = Payment::where('external_key', $key)->where('paid_to', $paidTo)->where('status', 'recorded')->first();
+        if ($existing) {
+            throw new DuplicatePaymentException('هذه الحركة مسجّلة من قبل بسند القبض ' . $existing->receipt_number . ' بتاريخ ' . $existing->received_on->toDateString()
+                . ' (المرجع «' . $existing->reference . '» في ' . ($paidTo === 'owner' ? 'حساب المالك' : 'حساب أمانات المكتب') . '). لا تُسجَّل الحركة نفسها مرتين؛ وإن كانت دفعة أخرى فأدخل مرجعها هي.');
+        }
+    }
+
+    private function store(Tenant $tenant, Money $amount, string $method, CarbonImmutable $receivedOn, string $paidTo, ?User $by, ?string $reference, string $source, ?string $key): Payment
+    {
+        // receipt, FIFO allocation (REQ-0188) and the ledger entry, inside the caller's transaction
+        $payment = Payment::create([
+            'tenant_id' => $tenant->id, 'receipt_number' => $this->numbering->next('receipt', (int) $receivedOn->format('Y')),
+            'amount_minor' => $amount, 'method' => $method, 'source' => $source, 'received_on' => $receivedOn->toDateString(),
+            'reference' => $reference, 'external_key' => $key, 'paid_to' => $paidTo, 'recorded_by' => $by?->id,
+        ]);
+        $left = $amount;
+        $open = Invoice::where('tenant_id', $tenant->id)->where('status', 'issued')->with('allocations')
+            ->orderBy('period_start')->orderBy('issue_date')->orderBy('id')->get();
+        $lines = [];
+        foreach ($open as $inv) {
+            if ($left->isZero()) {
+                break;
+            }
+            $due = $this->invoices->outstanding($inv);
+            if (! $due->isPositive()) {
+                continue;
+            }
+            $take = Money::min($due, $left);
+            PaymentAllocation::create(['payment_id' => $payment->id, 'invoice_id' => $inv->id, 'amount_minor' => $take]);
+            $left = $left->minus($take);
+            $owner = $inv->seller_owner_id;
+            $lines[] = [$paidTo === 'owner' ? "owner_direct:$owner" : 'trust_bank', $take, null, $owner];
+            $lines[] = ["receivable:$owner", null, $take, $owner];
+        }
+        if ($left->isPositive()) {
+            $lines[] = [$paidTo === 'owner' ? 'owner_direct:unassigned' : 'trust_bank', $left, null];
+            $lines[] = ["tenant_credit:{$tenant->id}", null, $left];
+        }
+        $this->ledger->post($receivedOn->toDateString(), 'payment', 'سند قبض ' . $payment->receipt_number, $lines, $payment);
         return $payment;
     }
 
@@ -180,10 +224,24 @@ class PaymentService
         if ($total->greaterThan($held)) {
             throw new FinanceException('Deductions exceed the deposit held.');
         }
+        $this->depositOwner($lease, $total);   // M22: refuse before the request exists, with the reason
         $payload = ['lease_id' => $lease->id, 'deductions' => array_map(fn ($d) => ['description' => $d['description'], 'amount_minor' => $d['amount']->minor(), 'document' => $d['document']], $deductions)];
         return $this->approvals->submit($maker, 'deposit.refund', $payload, function () use ($lease, $held, $total, $on) {
-            $owner = $lease->unit->property->shares->first()?->owner_id;
+            $owner = $this->depositOwner($lease, $total);
             $this->ledger->post($on->toDateString(), 'deposit.refund', 'رد تأمين العقد ' . $lease->id, $this->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
         }, 'lease', (string) $lease->id);
+    }
+
+    /**
+     * The owner credited with deposit deductions (M22): the property's only owner. With several owners, deductions wait
+     * for the accountant's rule instead of going to the first owner on file; a full refund credits nobody (null).
+     */
+    public function depositOwner(Lease $lease, Money $deductions): ?int
+    {
+        $propertyId = (int) $lease->unit->property_id;
+        if ($deductions->isPositive()) {
+            return SoleOwner::of($propertyId, 'خصومات التأمين')->id;
+        }
+        return SoleOwner::shareCount($propertyId) === 1 ? (int) \App\Models\OwnershipShare::where('property_id', $propertyId)->value('owner_id') : null;
     }
 }

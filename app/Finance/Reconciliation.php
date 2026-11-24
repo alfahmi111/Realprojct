@@ -58,6 +58,19 @@ class Reconciliation
                 $this->flag('unallocated_payment', 'payment', $p->id, ['receipt' => $p->receipt_number, 'unallocated' => $p->amount_minor->minus($allocated)->toDecimalString()], $today, $found);
             }
         }
+        // 6. The same outside transaction recorded more than once (M22): rows from before the unique key existed keep
+        //    no key, so a person reviews them and reverses the extra one through maker/checker; nothing is changed here.
+        $byKey = [];
+        foreach (Payment::where('status', 'recorded')->whereNotNull('reference')->orderBy('id')->get(['id', 'paid_to', 'reference', 'receipt_number']) as $p) {
+            if (($k = PaymentService::externalKey($p->reference)) !== null) {
+                $byKey[$p->paid_to . '|' . $k][] = $p;
+            }
+        }
+        foreach ($byKey as $same) {
+            foreach (array_slice($same, 1) as $dup) {
+                $this->flag('duplicate_payment_reference', 'payment', $dup->id, ['receipt' => $dup->receipt_number, 'first_receipt' => $same[0]->receipt_number, 'reference' => $dup->reference], $today, $found);
+            }
+        }
         return $found;
     }
 

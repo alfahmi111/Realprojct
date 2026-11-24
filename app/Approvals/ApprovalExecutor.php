@@ -71,27 +71,16 @@ class ApprovalExecutor
         }
     }
 
+    /** Same path as an unreviewed posting: owner lock + available-balance check + entries, in one transaction (M22). */
     private function expense(array $p, string $date): void
     {
-        $cost = Money::of((int) $p['cost_minor']);
-        $ref = $p['work_order'] ?? null;
-        $this->ledger->post($date, 'expense.maintenance', $p['description'] . ($ref ? " ($ref)" : ''), [
-            ["expense_on_behalf:{$p['owner_id']}", $cost, null], ['trust_bank', null, $cost],
-        ], null, (int) $p['owner_id'], (int) $p['property_id'], $ref);
-        if (($p['margin_minor'] ?? 0) > 0) {
-            $m = Money::of((int) $p['margin_minor']);
-            $this->ledger->post($date, 'expense.vendor_margin', 'هامش المدير على فاتورة المورّد' . ($ref ? " ($ref)" : ''), [
-                ["fee_expense:{$p['owner_id']}", $m, null], ['manager_revenue', null, $m],
-            ], null, (int) $p['owner_id'], (int) $p['property_id']);
-        }
+        $margin = ($p['margin_minor'] ?? 0) > 0 ? Money::of((int) $p['margin_minor']) : null;
+        app(\App\Finance\TrustAccounting::class)->postExpense((int) $p['owner_id'], (int) $p['property_id'], Money::of((int) $p['cost_minor']), $margin, $p['description'], $p['work_order'] ?? null, $date);
     }
 
     private function disburse(array $p, string $date): void
     {
-        $amount = Money::of((int) $p['amount_minor']);
-        $this->ledger->post($date, 'owner.disbursement', 'تحويل صافي المالك', [
-            ["owner_payable:{$p['owner_id']}", $amount, null], ['trust_bank', null, $amount],
-        ], null, (int) $p['owner_id']);
+        app(\App\Finance\TrustAccounting::class)->postDisbursement((int) $p['owner_id'], Money::of((int) $p['amount_minor']), $date);
     }
 
     private function depositRefund(array $p, string $date): void
@@ -102,7 +91,7 @@ class ApprovalExecutor
         if ($total->greaterThan($held)) {
             throw new FinanceException('Deductions exceed the deposit held.');
         }
-        $owner = $lease->unit->property->shares->first()?->owner_id;
+        $owner = app(\App\Finance\PaymentService::class)->depositOwner($lease, $total);   // M22: never the first owner by default
         $this->ledger->post($date, 'deposit.refund', 'رد تأمين العقد ' . $lease->id, app(\App\Finance\PaymentService::class)->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
     }
 }
