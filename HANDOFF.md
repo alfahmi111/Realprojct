@@ -36,6 +36,9 @@
 - الترحيل (الإضافة فقط): `php artisan migrate`
 - فحص الإطلاق: `php artisan platform:launch-check --production-config`
 - الحزمة الكاملة: `composer ci` (الاختبارات + فحص ثغرات الحزم + التتبع)
+- فحص تعارض أصناف CSS: `php tools/css_clash_check.php`
+
+**مراجع التوثيق:** `docs/SYSTEM_OVERVIEW.md` (خريطة النظام: المجلدات، والواجهات، والتكاملات، والأمان، والتشغيل) · `docs/USER_GUIDE.md` (دليل الاستخدام لكل دور) · `docs/OPERATIONS.md` (التشغيل وبوابة الإطلاق) · `docs/QUESTIONS.md` (القرارات) · `docs/TRACEABILITY.md` (المتطلبات واختباراتها).
 
 ---
 
