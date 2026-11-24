@@ -18,7 +18,8 @@ class NightlyReconciliation extends Command
 
     public function handle(TenantContext $ctx): int
     {
-        $today = CarbonImmutable::parse($this->option('date') ?? 'today');
+        // Riyadh's date (review M18 L13): the job runs at 02:00 UTC = 05:00 Riyadh, but a manual run near midnight must not slip a day
+        $today = $this->option('date') ? CarbonImmutable::parse($this->option('date')) : \App\Support\Dates\Today::date();
         $failed = 0;
         foreach ($ctx->run(null, fn () => Subscriber::whereNull('archived_at')->pluck('id')) as $sid) {
             try {   // one office's error must not stop the run for the others (review M18)
