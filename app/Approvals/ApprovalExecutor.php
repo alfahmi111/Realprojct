@@ -33,7 +33,14 @@ class ApprovalExecutor
 
     public function reject(ApprovalRequest $req, User $checker, string $reason): ApprovalRequest
     {
-        return $this->approvals->reject($req, $checker, $reason);
+        $done = $this->approvals->reject($req, $checker, $reason);
+        // Q37: a refused payment from trust leaves the work order «payment refused» so the owner can pay the vendor himself
+        if ($req->action === 'trust.disburse' && ! empty($req->payload['work_order'])) {
+            foreach (\App\Models\WorkOrder::where('number', $req->payload['work_order'])->where('property_id', (int) ($req->payload['property_id'] ?? 0))->where('payment_status', 'awaiting_trust_approval')->get() as $wo) {
+                $wo->forceFill(['payment_status' => 'trust_rejected'])->save();
+            }
+        }
+        return $done;
     }
 
     public function execute(ApprovalRequest $r): void
@@ -86,12 +93,8 @@ class ApprovalExecutor
     private function depositRefund(array $p, string $date): void
     {
         $lease = Lease::with('unit.property.shares')->findOrFail($p['lease_id']);
-        $held = $this->ledger->balance("deposit_liability:{$lease->id}")->negate();
         $total = Money::sum(array_map(fn ($d) => Money::of((int) $d['amount_minor']), $p['deductions']));
-        if ($total->greaterThan($held)) {
-            throw new FinanceException('Deductions exceed the deposit held.');
-        }
-        $owner = app(\App\Finance\PaymentService::class)->depositOwner($lease, $total);   // M22: never the first owner by default
-        $this->ledger->post($date, 'deposit.refund', 'رد تأمين العقد ' . $lease->id, app(\App\Finance\PaymentService::class)->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
+        // M22: the same locked path as a direct posting — what is still held is re-read under the lease's lock
+        app(\App\Finance\PaymentService::class)->postDepositRefund($lease, $total, $date);
     }
 }

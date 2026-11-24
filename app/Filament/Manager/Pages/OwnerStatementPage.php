@@ -90,8 +90,9 @@ class OwnerStatementPage extends Page
             $trust = app(TrustAccounting::class);
             $owner = \App\Filament\Support\PropertyScope::apply(Owner::query(), 'owner')->findOrFail($d['owner_id']);
             // M22: beside the month, what can be transferred today and what already waits for a checker
+            $position = $trust->position($owner);
             return $trust->statement($owner, CarbonImmutable::parse($d['month'] . '-01'))
-                + ['available_now' => $trust->availableBalance($owner), 'pending_disbursements' => $trust->pendingDisbursements($owner)];
+                + ['available_now' => $position['available'], 'position' => $position, 'pending_disbursements' => $trust->pendingDisbursements($owner)];
         }, $quiet ? '' : 'جاهز');
         $this->statement = $s ? $this->present($s) + ['owner' => Owner::find($d['owner_id'])?->name_ar] : null;
     }
@@ -130,6 +131,13 @@ class OwnerStatementPage extends Page
             'opening_available' => $m($s['opening_available']), 'disbursed' => $m($s['disbursed']), 'available' => $m($s['available']),
             'available_now' => $m($s['available_now']), 'pending_disbursements' => $m($s['pending_disbursements']), 'has_pending' => $s['pending_disbursements']->isPositive(),
             'disbursements' => array_map(fn ($x) => ['date' => $x['date'], 'amount' => $m($x['amount'])], $s['disbursements']),
+            // cash and what the office is owed, apart; and the ledger-vs-statements check
+            'trust_cash' => $m($s['position']['trust_cash']), 'owed_to_office' => $m($s['position']['owed_to_office']),
+            'fees_owed' => $m($s['position']['fees_owed']), 'margins_owed' => $m($s['position']['margins_owed']),
+            'owner_owes' => $m($s['position']['owner_owes']), 'has_owner_owes' => $s['position']['owner_owes']->isPositive(),
+            'difference' => $m($s['position']['difference']), 'has_difference' => ! $s['position']['difference']->isZero(),
+            'owner_paid' => array_map(fn ($x) => ['date' => $x['date'], 'work_order' => $x['work_order'], 'amount' => $m($x['amount'])], $s['maintenance_owner_paid']),
+            'owner_paid_total' => $m($s['maintenance_owner_paid_total']),
             // integers for the waterfall bars
             'raw' => ['collected' => $minor($s['collected_rent']), 'fee' => $s['management_fee']['deducted'] ? $minor($s['management_fee']['amount']) : 0, 'vat' => $s['management_fee']['deducted'] ? $minor($s['management_fee']['vat']) : 0,
                 'maintenance' => $minor($s['maintenance_total']), 'margin' => $minor($s['vendor_margin_total']), 'net' => $minor($s['net_to_owner']),

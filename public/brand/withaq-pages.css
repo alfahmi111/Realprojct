@@ -325,6 +325,8 @@
 .wq-trust-now { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-top: 2px solid var(--color-ink); }
 .wq-trust-now strong { font-family: 'Cairo', sans-serif; font-size: 1.35rem; color: var(--status-paid-fg); font-variant-numeric: tabular-nums; }
 .wq-trust-now small { display: block; color: var(--color-muted); font-size: .8rem; }
+.wq-trust dl + h3 { border-top: 1px solid var(--color-line); }
+.wq-trust-now small.is-out { color: var(--status-late-fg); font-weight: 700; }
 @media (max-width: 700px) { .wq-cascade li { grid-template-columns: 1fr auto; } .wq-cascade-track { grid-column: 1 / -1; grid-row: 2; } }
 @media print {
     .fi-sidebar, .fi-topbar, .wq-noprint, .wq-pager, .fi-header { display: none !important; }

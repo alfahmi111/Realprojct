@@ -193,7 +193,7 @@
 | REQ-0186 | §5.4 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0187 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0188 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
-| REQ-0189 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
+| REQ-0189 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0190 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0191 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0192 | §5.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
@@ -234,7 +234,7 @@
 | REQ-0227 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0228 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
 | REQ-0229 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
-| REQ-0230 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php |  |
+| REQ-0230 | §6.3 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php, tests/Feature/Finance/TrustSafetyM22Test.php |  |
 | REQ-0231 | §6.4 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L956 |
 | REQ-0232 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0233 | §6.4 | BUILD | MVP | DONE | app/Maintenance/, database/migrations/2026_11_22_004000_create_maintenance_tables.php | tests/Feature/Maintenance/MaintenanceTest.php | MIXED→MVP: §12 L942؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |

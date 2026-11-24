@@ -65,7 +65,14 @@
                     @empty
                         <dt>حُوّل للمالك هذا الشهر</dt><dd>{{ $s['disbursed'] }}</dd>
                     @endforelse
-                    <dt class="is-total">المتاح للصرف في نهاية الشهر</dt><dd class="is-total">{{ $s['available'] }}</dd>
+                    <dt class="is-total">رصيد المالك في نهاية الشهر<small>سالب = مستحق على المالك للمكتب</small></dt><dd class="is-total">{{ $s['available'] }}</dd>
+                </dl>
+                {{-- now: the cash held for the owner, what the office is owed out of it, and what can be transferred — apart --}}
+                <h3>الآن</h3>
+                <dl>
+                    <dt>النقد في أمانات المكتب لحساب المالك<small>من قيود الدفتر</small></dt><dd>{{ $s['trust_cash'] }}</dd>
+                    <dt>مستحق للمكتب لم يُقتطع<small>أتعاب {{ $s['fees_owed'] }} وهامش موردين {{ $s['margins_owed'] }}</small></dt><dd class="is-out">− {{ $s['owed_to_office'] }}</dd>
+                    @if ($s['has_owner_owes'])<dt>مستحق على المالك للمكتب<small>المستحق أكبر من النقد المحفوظ له</small></dt><dd class="is-out">{{ $s['owner_owes'] }}</dd>@endif
                 </dl>
                 <div class="wq-trust-now">
                     <div>
@@ -73,10 +80,24 @@
                         <strong>{{ $s['available_now'] }}</strong>
                         @if ($s['has_pending'])<small>بانتظار الاعتماد: طلبات تحويل بمبلغ {{ $s['pending_disbursements'] }}</small>@endif
                         @if ($r['owner_direct'])<small>ما قبضه المالك في حسابه مباشرة ({{ $s['owner_direct'] }}) ليس من هذا الرصيد.</small>@endif
+                        @if ($s['has_difference'])<small class="is-out" role="alert">فرق بين الدفتر والكشوف قدره {{ $s['difference'] }}؛ يُصرف الأقل منهما حتى تُراجَع القيود.</small>@endif
                     </div>
                     <div class="wq-noprint">{{ $this->disburseAction }}</div>
                 </div>
             </section>
+
+            @if ($s['owner_paid'])
+                {{-- Q37 (أ): paid by the owner to the vendor himself — not deducted above, not from trust --}}
+                <section class="wq-trust" aria-label="صيانة دفعها المالك">
+                    <h3>صيانة دفعها المالك للمورّد مباشرة</h3>
+                    <dl>
+                        @foreach ($s['owner_paid'] as $op)
+                            <dt>{{ $op['work_order'] }}<small>{{ $op['date'] }}</small></dt><dd>{{ $op['amount'] }}</dd>
+                        @endforeach
+                        <dt class="is-total">المجموع<small>لا يُخصم من صافي الشهر ولا من الأمانات</small></dt><dd class="is-total">{{ $s['owner_paid_total'] }}</dd>
+                    </dl>
+                </section>
+            @endif
 
             @unless ($s['fee_deducted'])
                 <p class="wq-note">أتعاب الإدارة ({{ $s['fee_text'] }}) تبلغ {{ $s['fee'] }} وضريبتها {{ $s['fee_vat'] }}، وتُفوتَر على المالك منفصلة فلا تُخصم من هذا الكشف.</p>

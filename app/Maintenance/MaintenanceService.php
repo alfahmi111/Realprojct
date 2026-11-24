@@ -186,9 +186,12 @@ class MaintenanceService
      * Close and turn the cost into an accounting entry (REQ-0230): paid from the owner's trust under maker/checker.
      * Warranty work costs the owner nothing. Tenant-caused damage becomes a recharge invoice with documented approval (REQ-0232).
      */
-    public function close(WorkOrder $wo, User $by, ?string $tenantCausedApprovalDoc = null): WorkOrder
+    public function close(WorkOrder $wo, User $by, ?string $tenantCausedApprovalDoc = null, string $payer = 'trust'): WorkOrder
     {
         $this->expect($wo, ['confirmed', 'completed']);
+        if (! in_array($payer, ['trust', 'owner'], true)) {
+            throw new MaintenanceException('اختر من يدفع للمورّد: أمانات المالك لدى المكتب أو المالك مباشرة.');
+        }
         $total = $this->totalCost($wo);
         // the actual cost may not exceed what the owner approved, or the ceiling when no approval was needed
         // (review M18: only the estimate was checked, so a 400 estimate could close at 5,000 paid from trust)
@@ -203,18 +206,54 @@ class MaintenanceService
         if (! $wo->warranty_id && $total->isPositive() && ($n = \App\Finance\SoleOwner::shareCount($wo->property_id)) > 1) {
             throw new MaintenanceException(\App\Finance\SoleOwner::message($n, 'تكلفة الصيانة') . ' يبقى أمر العمل مفتوحاً حتى ذلك.');
         }
-        DB::transaction(function () use ($wo, $by, $total, $tenantCausedApprovalDoc) {
+        DB::transaction(function () use ($wo, $by, $total, $tenantCausedApprovalDoc, $payer) {
             $wo->forceFill(['status' => 'closed', 'closed_at' => now()])->save();
             if ($wo->warranty_id || $total->isZero()) {
+                $wo->forceFill(['payment_status' => 'not_required'])->save();
                 return;
             }
             $owner = \App\Finance\SoleOwner::of($wo->property_id, 'تكلفة الصيانة');
-            $this->trust->requestExpense($by, $owner, $wo->property_id, $total, 'أمر عمل ' . $wo->number . ': ' . mb_substr($wo->description, 0, 80), $wo->number, \App\Support\Dates\Today::date());
+            if ($payer === 'owner') {
+                // Q37 (أ): the work is done; the owner pays the vendor himself and the proof is recorded later — no trust movement
+                $wo->forceFill(['paid_by' => 'owner', 'payment_status' => 'awaiting_owner_payment'])->save();
+            } else {
+                $req = $this->trust->requestExpense($by, $owner, $wo->property_id, $total, 'أمر عمل ' . $wo->number . ': ' . mb_substr($wo->description, 0, 80), $wo->number, \App\Support\Dates\Today::date());
+                // executed at once when dual approval is off (postExpense then marks it paid); otherwise it waits for a checker
+                $wo->forceFill(['paid_by' => 'trust', 'payment_status' => $req->fresh()->status === 'approved' ? 'paid_from_trust' : 'awaiting_trust_approval'])->save();
+            }
             if ($tenantCausedApprovalDoc !== null) {
                 $lease = Lease::findOrFail($wo->lease_id ?? throw new MaintenanceException('A recharge needs the lease.'));
                 $wo->forceFill(['tenant_caused' => true, 'tenant_caused_approval' => $tenantCausedApprovalDoc])->save();
                 $this->invoices->issueRecharge($lease, 'تكلفة صيانة بسبب سوء الاستخدام — ' . $wo->number, $total, \App\Support\Dates\Today::date());
             }
+        });
+        return $wo;
+    }
+
+    /**
+     * Q37 (أ): the owner paid the vendor straight from his own account. Recorded with the proof of payment; the entry
+     * moves the cost against the owner's own account (owner_direct), never trust, so the owner's trust balance and the
+     * statement's net are untouched — the statement lists it apart as «paid by the owner».
+     */
+    public function recordOwnerPayment(WorkOrder $wo, User $by, string $proof, CarbonImmutable $paidOn, ?string $reference = null): WorkOrder
+    {
+        if ($wo->status !== 'closed' || ! in_array($wo->payment_status, ['awaiting_owner_payment', 'trust_rejected'], true)) {
+            throw new MaintenanceException('يُسجَّل سداد المالك لأمر عمل مغلق ينتظر سداد المالك، أو رُفض صرفه من الأمانات.');
+        }
+        if (trim($proof) === '') {
+            throw new MaintenanceException('أرفق إثبات سداد المالك للمورّد (إيصال أو صورة الحوالة).');
+        }
+        if ($paidOn->greaterThan(\App\Support\Dates\Today::date())) {
+            throw new MaintenanceException('تاريخ السداد لا يكون في المستقبل.');
+        }
+        $total = $this->totalCost($wo);
+        $owner = \App\Finance\SoleOwner::of($wo->property_id, 'تكلفة الصيانة');
+        DB::transaction(function () use ($wo, $by, $proof, $paidOn, $reference, $total, $owner) {
+            app(\App\Finance\Ledger::class)->post($paidOn->toDateString(), 'expense.maintenance.owner_paid', 'أمر عمل ' . $wo->number . ' دفعه المالك للمورّد مباشرة', [
+                ["expense_on_behalf:{$owner->id}", $total, null], ["owner_direct:{$owner->id}", null, $total],
+            ], null, $owner->id, $wo->property_id, $wo->number);
+            $wo->forceFill(['paid_by' => 'owner', 'payment_status' => 'paid_by_owner', 'owner_payment_proof' => $proof, 'owner_paid_on' => $paidOn->toDateString(),
+                'owner_payment_reference' => $reference, 'owner_payment_amount_minor' => $total, 'owner_payment_recorded_by' => $by->id])->save();
         });
         return $wo;
     }

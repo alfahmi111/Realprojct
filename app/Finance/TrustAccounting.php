@@ -100,6 +100,12 @@ class TrustAccounting
                     ["fee_expense:{$ownerId}", $margin, null], ['manager_revenue', null, $margin],
                 ], null, $ownerId, $propertyId);
             }
+            // Q37: the work order shows its payment apart from its work stage
+            if ($workOrderRef !== null) {
+                foreach (\App\Models\WorkOrder::where('number', $workOrderRef)->where('property_id', $propertyId)->get() as $wo) {
+                    $wo->forceFill(['paid_by' => 'trust', 'payment_status' => 'paid_from_trust'])->save();
+                }
+            }
         });
     }
 
@@ -123,7 +129,49 @@ class TrustAccounting
      */
     public function availableBalance(Owner $owner, ?CarbonImmutable $on = null): Money
     {
-        return $this->runningThrough($owner, ($on ?? \App\Support\Dates\Today::date())->startOfMonth());
+        return $this->position($owner, $on)['available'];
+    }
+
+    /**
+     * The owner's trust position, from two independent sides (M22, before merge):
+     *  - the ledger: trust cash attributed to the owner (trust_bank lines carrying his id: rent held, recovered
+     *    maintenance, less maintenance and transfers paid out), less what the office is owed out of it — management
+     *    fees deducted from remittance and vendor margins — which stay in trust until the office takes them;
+     *  - the statements: the running total of the monthly net less transfers.
+     * `available` never exceeds either side and is never negative; when the office is owed more than the cash it holds,
+     * the shortfall is `owner_owes`, shown apart from the cash. `difference` (ledger − statements) must be zero; a
+     * non-zero value is shown on the statement page.
+     *
+     * @return array{trust_cash: Money, fees_owed: Money, margins_owed: Money, owed_to_office: Money, available: Money, owner_owes: Money, ledger_based: Money, statement_based: Money, difference: Money}
+     */
+    public function position(Owner $owner, ?CarbonImmutable $on = null): array
+    {
+        $last = ($on ?? \App\Support\Dates\Today::date())->startOfMonth();
+        $r = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
+            ->where('l.account', 'trust_bank')->where('l.owner_id', $owner->id)->where('e.entry_date', '<=', $last->endOfMonth()->toDateString())
+            ->selectRaw('coalesce(sum(l.debit_minor),0) as d, coalesce(sum(l.credit_minor),0) as c')->first();
+        $cash = Money::of((int) $r->d - (int) $r->c);
+        $fees = Money::zero();
+        $margins = Money::zero();
+        $statements = Money::zero();
+        $first = $this->firstMonth($owner);
+        for ($m = $first; $m !== null && $m->lessThanOrEqualTo($last); $m = $m->addMonthNoOverflow()) {
+            $c = $this->core($owner, $m, false);
+            if ($c['management_fee']['deducted']) {
+                $fees = $fees->plus($c['management_fee']['amount'])->plus($c['management_fee']['vat']);
+            }
+            $margins = $margins->plus($c['vendor_margin_total']);
+            $statements = $statements->plus($c['net_to_owner'])->minus($this->disbursedIn($owner, $m));
+        }
+        $owed = $fees->plus($margins);
+        $ledger = $cash->minus($owed);
+        $available = $ledger->lessThan($statements) ? $ledger : $statements;
+        return [
+            'trust_cash' => $cash, 'fees_owed' => $fees, 'margins_owed' => $margins, 'owed_to_office' => $owed,
+            'available' => $available->isPositive() ? $available : Money::zero(),
+            'owner_owes' => $owed->greaterThan($cash) ? $owed->minus($cash) : Money::zero(),
+            'ledger_based' => $ledger, 'statement_based' => $statements, 'difference' => $ledger->minus($statements),
+        ];
     }
 
     /** Postgres advisory lock per owner, released at commit: two postings for one owner run one after the other. */
@@ -274,6 +322,9 @@ class TrustAccounting
             ->map(fn ($e) => ['date' => $e->entry_date->toDateString(), 'description' => $e->memo_ar, 'work_order' => $e->external_ref, 'amount' => $e->lines->firstWhere('account', "expense_on_behalf:{$owner->id}")->debit_minor]);
         $margins = JournalEntry::where('owner_id', $owner->id)->where('kind', 'expense.vendor_margin')->whereBetween('entry_date', [$from, $to])->with('lines')->get()
             ->map(fn ($e) => ['description' => $e->memo_ar, 'amount' => $e->lines->firstWhere('account', "fee_expense:{$owner->id}")->debit_minor]);
+        // Q37 (أ): costs the owner paid the vendor himself — listed for him, never deducted from trust or from the net
+        $ownerPaid = JournalEntry::where('owner_id', $owner->id)->where('kind', 'expense.maintenance.owner_paid')->whereBetween('entry_date', [$from, $to])->with('lines')->orderBy('entry_date')->get()
+            ->map(fn ($e) => ['date' => $e->entry_date->toDateString(), 'description' => $e->memo_ar, 'work_order' => $e->external_ref, 'amount' => $e->lines->firstWhere('account', "expense_on_behalf:{$owner->id}")->debit_minor]);
         $maintTotal = Money::sum($maintenance->pluck('amount')->all());
         $marginTotal = Money::sum($margins->pluck('amount')->all());
 
@@ -300,6 +351,7 @@ class TrustAccounting
             'management_fee' => ['type' => $agreement?->fee_type ?? 'percentage', 'percentage_bp' => $agreement?->fee_percentage_bp ?? 0, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
                 'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted, 'agreements' => count($parts) > 1 ? $parts : []],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
+            'maintenance_owner_paid' => $ownerPaid->all(), 'maintenance_owner_paid_total' => Money::sum($ownerPaid->pluck('amount')->all()),
             'vendor_margin' => $margins->all(), 'vendor_margin_total' => $marginTotal,
             'net_to_owner' => $net,
         ];
