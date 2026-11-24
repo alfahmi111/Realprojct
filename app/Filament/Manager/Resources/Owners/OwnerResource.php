@@ -92,7 +92,7 @@ class OwnerResource extends Resource
         $agreement = fn (\App\Models\Owner $o) => $o->agreements->filter(fn ($a) => $a->starts_on <= now() && ($a->ends_on === null || $a->ends_on >= now()))->sortByDesc('starts_on')->first();
         $net = function (\App\Models\Owner $o) {
             static $cache = [];
-            return $cache[$o->id] ??= rescue(fn () => app(\App\Finance\TrustAccounting::class)->statement($o, \Carbon\CarbonImmutable::today()->subMonthNoOverflow()->startOfMonth())['net_to_owner'], null, false);
+            return $cache[$o->id] ??= rescue(fn () => app(\App\Finance\TrustAccounting::class)->statement($o, \App\Support\Dates\Today::date()->subMonthNoOverflow()->startOfMonth())['net_to_owner'], null, false);
         };
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with(['shares.property', 'agreements'])->orderBy('name_ar'))
             ->columns([
@@ -102,7 +102,7 @@ class OwnerResource extends Resource
                     ->state(fn (\App\Models\Owner $o) => $o->shares->map(fn ($s) => $s->property?->name_ar . ($s->share_numerator == $s->share_denominator ? '' : ' (' . $s->share_numerator . '/' . $s->share_denominator . ')'))->filter()->implode('، ') ?: null),
                 TextColumn::make('fee')->label('أتعاب الإدارة')->placeholder('لا عقد إدارة ساري')
                     ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? RelationManagers\AgreementsRelationManager::feeText($a) : null)
-                    ->description(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->collector === 'manager' ? 'المكتب يحصّل' : 'المالك يحصّل') : null),
+                    ->description(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? ($a->collector === 'manager' ? 'المكتب يحصّل (أمانات)' : 'في حساب المالك') : null),
                 TextColumn::make('cap')->label('موافقته على الصرف')->placeholder('—')
                     ->state(fn (\App\Models\Owner $o) => ($a = $agreement($o)) ? RelationManagers\AgreementsRelationManager::ruleText($a->spend_cap_minor) : null),
                 TextColumn::make('net')->label('صافي الشهر الماضي')->placeholder('—')
@@ -126,5 +126,11 @@ class OwnerResource extends Resource
             'create' => Pages\CreateOwner::route('/create'),
             'edit' => Pages\EditOwner::route('/{record}/edit'),
         ];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'owner');
     }
 }

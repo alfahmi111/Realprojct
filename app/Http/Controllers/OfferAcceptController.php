@@ -23,7 +23,7 @@ class OfferAcceptController
         try {
             $leasing->acceptOffer($token);
         } catch (LeasingException $e) {
-            return back()->withErrors(['offer' => $e->getMessage()]);
+            return back()->withErrors(['offer' => \App\Support\Messages::ar($e->getMessage())]);
         }
         return response()->view('public.offer-accepted');
     }

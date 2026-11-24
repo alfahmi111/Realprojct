@@ -19,7 +19,7 @@ class Lease extends Model
 
     protected function casts(): array
     {
-        return ['starts_on' => 'date', 'ends_on' => 'date', 'non_renewal_notice_on' => 'date', 'closed_at' => 'datetime', 'annual_rent_minor' => MoneyCast::class, 'deposit_minor' => MoneyCast::class, 'archived_at' => 'datetime'];
+        return ['starts_on' => 'date', 'ends_on' => 'date', 'non_renewal_notice_on' => 'date', 'closed_at' => 'datetime', 'annual_rent_minor' => MoneyCast::class, 'deposit_minor' => MoneyCast::class, 'archived_at' => 'datetime', 'auto_renewed_at' => 'datetime', 'terminated_at' => 'datetime'];
     }
 
     public function unit(): \Illuminate\Database\Eloquent\Relations\BelongsTo

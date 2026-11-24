@@ -85,4 +85,10 @@ class WarrantyResource extends Resource
             'edit' => Pages\EditWarranty::route('/{record}/edit'),
         ];
     }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'warranty');
+    }
 }

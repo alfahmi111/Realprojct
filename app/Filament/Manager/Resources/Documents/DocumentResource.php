@@ -66,7 +66,7 @@ class DocumentResource extends Resource
     public static function ownerOptions(): array
     {
         $o = [];
-        foreach (Property::whereNull('archived_at')->orderBy('name_ar')->get() as $p) {
+        foreach (\App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->orderBy('name_ar')->get() as $p) {
             $o['العقارات']["property:{$p->id}"] = $p->name_ar;
         }
         foreach (Building::whereNull('archived_at')->with('property')->get() as $b) {
@@ -144,8 +144,8 @@ class DocumentResource extends Resource
                 SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
                 SelectFilter::make('expiry')->label('الانتهاء')->options(['expired' => 'منتهية', '30' => 'خلال 30 يوماً', '90' => 'خلال 90 يوماً'])
                     ->query(fn ($query, array $data) => match ($data['value'] ?? null) {
-                        'expired' => $query->where('expires_on', '<', now()->toDateString()),
-                        '30', '90' => $query->whereBetween('expires_on', [now()->toDateString(), now()->addDays((int) $data['value'])->toDateString()]),
+                        'expired' => $query->where('expires_on', '<', \App\Support\Dates\Today::string()),
+                        '30', '90' => $query->whereBetween('expires_on', [\App\Support\Dates\Today::string(), now()->addDays((int) $data['value'])->toDateString()]),
                         default => $query,
                     }),
             ])
@@ -165,7 +165,7 @@ class DocumentResource extends Resource
                             $vault()->add(self::resolveOwner($data['owner']), $data['kind'], (string) ($data['title'] ?? ''), $data['file'], $data['expires_on'] ?? null, auth()->user());
                             Notification::make()->title('رُفع المستند')->success()->send();
                         } catch (\Throwable $e) {
-                            Notification::make()->title('تعذّر الرفع')->body($e->getMessage())->danger()->send();
+                            Notification::make()->title('تعذّر الرفع')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->send();
                         }
                     }),
             ])
@@ -186,5 +186,11 @@ class DocumentResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListDocuments::route('/')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'document');
     }
 }

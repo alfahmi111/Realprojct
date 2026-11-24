@@ -97,7 +97,7 @@ class AssetResource extends Resource
     public static function table(Table $table): Table
     {
         $val = app(\App\Maintenance\AssetValuation::class);
-        $today = \Carbon\CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with('space'))
             ->columns([
                 TextColumn::make('qr_code')->label('الرمز')->searchable()->toggleable(isToggledHiddenByDefault: true),
@@ -124,5 +124,11 @@ class AssetResource extends Resource
             'create' => Pages\CreateAsset::route('/create'),
             'edit' => Pages\EditAsset::route('/{record}/edit'),
         ];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'space');
     }
 }

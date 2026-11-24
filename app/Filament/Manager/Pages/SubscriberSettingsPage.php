@@ -81,7 +81,7 @@ class SubscriberSettingsPage extends Page
             return '—';
         }
         $admin = app(\App\Plans\SubscriberAdmin::class);
-        $today = \Carbon\CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         $plan = \App\Plans\PlanEntitlements::PLANS[$s->plan] ?? null;
         $parts = ['باقة ' . ($plan['ar'] ?? $s->plan) . ($plan && $plan['max_units'] ? ' (حتى ' . $plan['max_units'] . ' وحدة)' : ' (وحدات غير محدودة)')];
         $parts[] = 'الحالة: ' . \App\Plans\SubscriberAdmin::STATE_AR[$admin->state($s, $today)];
@@ -118,7 +118,24 @@ class SubscriberSettingsPage extends Page
                 ])->columns(3),
             Section::make('التكاملات')
                 ->description('حالة الربط بكل جهة خارجية. المزوّد الفعلي يُختار ويُربط بقرار من إدارة المنصة.')
-                ->schema([\Filament\Schemas\Components\View::make('filament.manager.integrations-status')->viewData(fn () => ['rows' => \App\Integrations\IntegrationStatus::all()])]),
+                ->schema([
+                    \Filament\Schemas\Components\View::make('filament.manager.integrations-status')->viewData(fn () => ['rows' => \App\Integrations\IntegrationStatus::all()]),
+                    // the office's own accounts with each provider (REQ-0372): in its name or an owner's, never the platform's
+                    Actions::make([
+                        Action::make('integrationAccount')->label('حسابات المكتب لدى المزوّدين')->icon('heroicon-o-key')->color('gray')
+                            ->modalHeading('حساب المكتب لدى مزوّد')
+                            ->modalDescription('الحساب يكون باسم المكتب أو أحد ملاكه؛ المنصة لا تستلم أموالاً. البيانات تُحفظ مشفّرة ولا تُعرض بعد حفظها، واكتب قيماً جديدة لاستبدالها.')
+                            ->schema([
+                                Select::make('kind')->label('المزوّد')->options(\App\Integrations\IntegrationAccounts::KINDS)->required()->live(),
+                                Select::make('holder')->label('الحساب باسم')->options(fn () => collect(app(\App\Integrations\IntegrationAccounts::class)->holders())->mapWithKeys(fn ($n) => [$n => $n])->all())->required(),
+                                \Filament\Forms\Components\KeyValue::make('credentials')->label('بيانات الحساب')->keyLabel('الاسم (مثل: merchant_id)')->valueLabel('القيمة')
+                                    ->helperText(fn (\Filament\Schemas\Components\Utilities\Get $get) => ($row = collect(app(\App\Integrations\IntegrationAccounts::class)->list())->firstWhere('kind', $get('kind'))) && $row['keys']
+                                        ? 'محفوظ: ' . implode('، ', $row['keys']) . '. اتركه فارغاً للإبقاء عليه.' : 'من لوحة المزوّد: المفتاح ورقم التاجر ونحوهما.'),
+                                Toggle::make('active')->label('مفعّل')->default(true),
+                            ])
+                            ->action(fn (array $data) => Ui::attempt(fn () => app(\App\Integrations\IntegrationAccounts::class)->save($data['kind'], $data['holder'], (array) ($data['credentials'] ?? []), (bool) $data['active']), 'حُفظ حساب المكتب')),
+                    ]),
+                ]),
             Section::make('هوية المكتب')->description('شعار مكتبك ولونه يظهران لموظفيك وملاكك ومستأجريك في كل الواجهات، وفي صفحة المبنى العامة. الشعار مربع أو أفقي، PNG أو SVG بخلفية شفافة.')->schema([
                 \Filament\Forms\Components\FileUpload::make('theme__logo_light')->label('الشعار')->image()->disk('local')->visibility('private')
                     ->directory(fn () => 'branding/' . (auth()->user()?->subscriber_id ?? 'x'))->maxSize(1024)->acceptedFileTypes(['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'])
@@ -187,7 +204,7 @@ class SubscriberSettingsPage extends Page
                             ->body($v->status === 'mismatch' ? 'الاسم في السجل: ' . $v->returned_name : ($v->details['cr_expires_on'] ?? null ? 'ينتهي السجل ' . $v->details['cr_expires_on'] : null))
                             ->{$v->status === 'verified' ? 'success' : 'warning'}()->send();
                     } catch (\Throwable $e) {
-                        \Filament\Notifications\Notification::make()->title('تعذّر التحقق')->body($e->getMessage())->danger()->send();
+                        \Filament\Notifications\Notification::make()->title('تعذّر التحقق')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->send();
                     }
                 }),
         ];

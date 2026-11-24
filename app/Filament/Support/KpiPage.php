@@ -32,7 +32,7 @@ abstract class KpiPage extends Page
     /** @return array{0:CarbonImmutable,1:CarbonImmutable,2:string} */
     public function range(): array
     {
-        $to = CarbonImmutable::today();
+        $to = \App\Support\Dates\Today::date();
         return match ($this->period) {
             'quarter' => [$to->startOfQuarter(), $to, 'هذا الربع'],
             'year' => [$to->startOfYear(), $to, 'منذ بداية السنة'],

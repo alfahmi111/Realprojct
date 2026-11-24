@@ -8,8 +8,10 @@ use App\Models\User;
 use App\Models\UserScope;
 
 /**
- * Role + scope (REQ-0494): which properties a user sees. Managers and institutional owners see the whole subscriber;
- * staff with scope rows see only their portfolios/properties/buildings. RLS already confines everyone to the subscriber.
+ * Role + scope (REQ-0494): which properties a user sees. The spec gives staff «permissions by role» (§3); a scope is an
+ * optional narrowing the manager adds per person. So: no scope rows = the whole office (what the role permits), scope rows
+ * = only those portfolios/properties/buildings (M19: applied on every screen, so the old «nothing until scoped» default
+ * would have emptied every screen for unscoped staff). RLS already confines everyone to the subscriber.
  */
 final class Scope
 {
@@ -18,7 +20,7 @@ final class Scope
     {
         $rows = UserScope::where('user_id', $user->id)->get();
         if ($rows->isEmpty()) {
-            return in_array($user->role, [Role::Manager, Role::InstitutionalOwner], true) ? null : [];
+            return null;
         }
         $ids = [];
         foreach ($rows as $r) {

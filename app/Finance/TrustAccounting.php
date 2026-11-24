@@ -104,9 +104,12 @@ class TrustAccounting
         $collectedGross = Money::sum($allocs->map(fn ($a) => $a->amount_minor)->all());
         // Net of VAT, in proportion to each invoice's tax share (integers only).
         $collectedNet = Money::zero();
+        $netByProperty = [];
         foreach ($allocs as $a) {
             $inv = Invoice::find($a->invoice_id);
-            $collectedNet = $collectedNet->plus($a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor())));
+            $part = $a->amount_minor->multiplyRatio($inv->subtotal_minor->minor(), max(1, $inv->total_minor->minor()));
+            $collectedNet = $collectedNet->plus($part);
+            $netByProperty[(int) $inv->property_id] = ($netByProperty[(int) $inv->property_id] ?? Money::zero())->plus($part);
         }
 
         // Fee terms are office settings (owner's decision 2026-11-23): basis of the percentage, period of the fixed
@@ -114,11 +117,39 @@ class TrustAccounting
         $basis = $this->settings->get('finance.fee.percentage_basis') ?? 'collected';
         $period = $this->settings->get('finance.fee.fixed_period') ?? 'monthly';
         $collection = $this->settings->get('finance.fee.collection') ?? 'deduct_from_remittance';
-        $base = $basis === 'due'
-            ? Money::sum(Invoice::where('seller_owner_id', $owner->id)->where('kind', 'rent')->where('status', 'issued')->whereBetween('issue_date', [$from, $to])->get()->map(fn ($i) => $i->subtotal_minor)->all())
-            : $collectedNet;
-        $feePct = $agreement->fee_type === 'fixed' ? Money::zero() : $base->percentage($agreement->fee_percentage_bp);
-        $feeFixed = $agreement->fee_type === 'percentage' || ! $this->fixedFeeDue($agreement, $month, $period) ? Money::zero() : $agreement->fee_fixed_minor;
+        $dueByProperty = [];
+        if ($basis === 'due') {
+            foreach (Invoice::where('seller_owner_id', $owner->id)->where('kind', 'rent')->where('status', 'issued')->whereBetween('issue_date', [$from, $to])->get() as $i) {
+                $dueByProperty[(int) $i->property_id] = ($dueByProperty[(int) $i->property_id] ?? Money::zero())->plus($i->subtotal_minor);
+            }
+        }
+        $byProperty = $basis === 'due' ? $dueByProperty : $netByProperty;
+        $base = Money::sum(array_values($byProperty));
+        // An owner may hold several agreements in force (different properties, different terms): each property's rent
+        // carries the fee of the agreement that covers it; a fixed amount is due once per agreement (review M18 F12).
+        $covering = ManagementAgreement::where('owner_id', $owner->id)->whereNull('archived_at')
+            ->where('starts_on', '<=', $to)->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', $from))->orderBy('starts_on')->with('properties')->get();
+        $agreementOf = [];
+        foreach ($covering as $ag) {
+            foreach ($ag->properties as $p) {
+                $agreementOf[(int) $p->id] = $ag;   // the latest agreement wins for a property
+            }
+        }
+        $feePct = Money::zero();
+        $parts = [];
+        foreach ($byProperty as $pid => $amount) {
+            $ag = $agreementOf[$pid] ?? $agreement;
+            if ($ag->fee_type !== 'fixed') {
+                $feePct = $feePct->plus($amount->percentage($ag->fee_percentage_bp));
+            }
+        }
+        $feeFixed = Money::zero();
+        foreach ($covering as $ag) {
+            if ($ag->fee_type !== 'percentage' && $this->fixedFeeDue($ag, $month, $period)) {
+                $feeFixed = $feeFixed->plus($ag->fee_fixed_minor);
+            }
+            $parts[] = ['type' => $ag->fee_type, 'percentage_bp' => $ag->fee_percentage_bp, 'fixed_part' => $ag->fee_type === 'percentage' ? Money::zero() : $ag->fee_fixed_minor, 'basis' => $basis];
+        }
         $fee = $feePct->plus($feeFixed);
         $managerRegistered = (bool) $this->settings->get('finance.vat_registered');
         $feeTreatment = $this->vat->treatment('management_fee', null, $managerRegistered, 'long', $month->endOfMonth());
@@ -152,7 +183,7 @@ class TrustAccounting
             'collected_rent' => $collectedGross, 'collected_rent_net_of_vat' => $collectedNet,
             'collected_by_owner' => $ownerDirect, 'held_by_manager' => $heldByManager, 'maintenance_recovered' => $recovered,
             'management_fee' => ['type' => $agreement->fee_type, 'percentage_bp' => $agreement->fee_percentage_bp, 'percentage_part' => $feePct, 'fixed_part' => $feeFixed, 'amount' => $fee, 'vat' => $feeVat, 'tax_code' => $feeTreatment['code'],
-                'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted],
+                'basis' => $basis, 'base' => $base, 'fixed_period' => $period, 'collection' => $collection, 'deducted' => $deducted, 'agreements' => count($parts) > 1 ? $parts : []],
             'maintenance' => $maintenance->all(), 'maintenance_total' => $maintTotal,
             'vendor_margin' => $margins->all(), 'vendor_margin_total' => $marginTotal,
             'net_to_owner' => $net,
@@ -165,6 +196,9 @@ class TrustAccounting
      */
     public static function feeText(array $fee): string
     {
+        if (! empty($fee['agreements'])) {   // several agreements: each one's terms, joined
+            return implode(' + ', array_unique(array_map(fn ($p) => self::feeText($p), $fee['agreements'])));
+        }
         $bp = (int) ($fee['percentage_bp'] ?? 0);
         $pct = rtrim(rtrim(number_format($bp / 100, 2, '.', ''), '0'), '.') . '% من ' . (($fee['basis'] ?? 'collected') === 'due' ? 'الإيجار المستحق' : 'المحصَّل');
         $fixed = $fee['fixed_part'] ?? null;

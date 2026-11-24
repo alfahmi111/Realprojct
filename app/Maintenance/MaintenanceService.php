@@ -52,7 +52,29 @@ class MaintenanceService
             'reported_by_type' => $reporterType, 'reported_by_user_id' => $reporter?->id, 'description' => $description,
             'photos_report' => $photos, 'reported_at' => $now,
         ]);
+        $this->announce($wo, $now);
         return $wo;
+    }
+
+    /**
+     * Tell the maintenance supervisors about a new report (the events existed but nothing sent them — review M18 L11).
+     * Unhandled, it escalates once to the managers: an emergency after an hour, any other report after a day.
+     * An office without a supervisor tells its managers directly. Preventive orders made by the daily job stay quiet.
+     */
+    private function announce(WorkOrder $wo, CarbonImmutable $now): void
+    {
+        if ($wo->type === 'preventive') {
+            return;
+        }
+        $emergency = $wo->type === 'emergency';
+        $supervisors = User::where('role', 'maintenance_supervisor')->whereNull('archived_at')->get()->all();
+        $targets = $supervisors ?: User::where('role', 'manager')->whereNull('archived_at')->get()->all();
+        if (! $targets) {
+            return;
+        }
+        app(\App\Notifications\NotificationCenter::class)->dispatch($emergency ? 'maintenance.emergency' : 'maintenance.new_report', $targets,
+            ['رقم الأمر' => (string) $wo->number, 'الوصف' => mb_substr((string) $wo->description, 0, 120)], $now, urgent: $emergency,
+            escalate: $supervisors ? ['after_hours' => $emergency ? 1 : 24, 'to_role' => 'manager'] : null, subject: $wo);
     }
 
     /**
@@ -110,7 +132,7 @@ class MaintenanceService
     public function assign(WorkOrder $wo, ?User $technician = null, ?Vendor $vendor = null, ?CarbonImmutable $on = null): WorkOrder
     {
         $this->expect($wo, ['estimated']);
-        $warranty = $wo->asset_id ? $this->activeWarranty(Asset::find($wo->asset_id), $on ?? CarbonImmutable::today()) : null;
+        $warranty = $wo->asset_id ? $this->activeWarranty(Asset::find($wo->asset_id), $on ?? \App\Support\Dates\Today::date()) : null;
         if ($warranty) {
             $wo->forceFill(['assignee_type' => 'vendor', 'vendor_id' => $warranty->vendor_id, 'warranty_id' => $warranty->id, 'assignee_user_id' => null, 'status' => 'assigned'])->save();
             return $wo;
@@ -183,11 +205,11 @@ class MaintenanceService
                 return;
             }
             $owner = OwnershipShare::where('property_id', $wo->property_id)->first()?->owner;
-            $this->trust->requestExpense($by, $owner, $wo->property_id, $total, 'أمر عمل ' . $wo->number . ': ' . mb_substr($wo->description, 0, 80), $wo->number, CarbonImmutable::today());
+            $this->trust->requestExpense($by, $owner, $wo->property_id, $total, 'أمر عمل ' . $wo->number . ': ' . mb_substr($wo->description, 0, 80), $wo->number, \App\Support\Dates\Today::date());
             if ($tenantCausedApprovalDoc !== null) {
                 $lease = Lease::findOrFail($wo->lease_id ?? throw new MaintenanceException('A recharge needs the lease.'));
                 $wo->forceFill(['tenant_caused' => true, 'tenant_caused_approval' => $tenantCausedApprovalDoc])->save();
-                $this->invoices->issueRecharge($lease, 'تكلفة صيانة بسبب سوء الاستخدام — ' . $wo->number, $total, CarbonImmutable::today());
+                $this->invoices->issueRecharge($lease, 'تكلفة صيانة بسبب سوء الاستخدام — ' . $wo->number, $total, \App\Support\Dates\Today::date());
             }
         });
         return $wo;
@@ -258,7 +280,7 @@ class MaintenanceService
      */
     public function spendCap(int $propertyId): ?Money
     {
-        $today = CarbonImmutable::today()->toDateString();
+        $today = \App\Support\Dates\Today::date()->toDateString();
         $caps = ManagementAgreement::whereNull('archived_at')->whereHas('properties', fn ($q) => $q->where('properties.id', $propertyId))
             ->where('starts_on', '<=', $today)->where(fn ($q) => $q->whereNull('ends_on')->orWhere('ends_on', '>=', $today))
             ->get()->map(fn ($a) => $a->spend_cap_minor)->filter(fn ($c) => $c !== null);

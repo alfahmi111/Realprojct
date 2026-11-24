@@ -39,7 +39,34 @@ final class SadadBilling
             throw new \RuntimeException('الفاتورة مسددة.');
         }
         $r = $this->gateway->issueBill(['number' => $invoice->number, 'amount_minor' => $due->minor(), 'due_on' => (string) ($invoice->period_start ?? $invoice->issue_date), 'customer' => (string) $invoice->tenant?->name_ar]);
-        $invoice->forceFill(['sadad_bill_number' => $r['bill_number'], 'sadad_issued_at' => now()])->save();
+        $invoice->forceFill(['sadad_bill_number' => $r['bill_number'], 'sadad_issued_at' => now(), 'sadad_amount_minor' => $due->minor()])->save();
         return $invoice;
+    }
+
+    /**
+     * Keep a SADAD bill equal to what is still due (review M18 F12): after a partial payment by another channel (or a
+     * reversal) the bill is reissued for the new balance; a settled invoice keeps its old number for the record.
+     */
+    public function sync(Invoice $invoice): Invoice
+    {
+        if (! $invoice->sadad_bill_number || $invoice->status !== 'issued' || ! $this->available()) {
+            return $invoice;
+        }
+        $due = $this->invoices->outstanding($invoice);
+        if (! $due->isPositive() || $due->minor() === (int) $invoice->sadad_amount_minor) {
+            return $invoice;
+        }
+        $invoice->forceFill(['sadad_bill_number' => null])->save();
+        return $this->issue($invoice);
+    }
+
+    public function syncTenant(\App\Models\Tenant $tenant): void
+    {
+        if (! $this->available()) {
+            return;
+        }
+        foreach (Invoice::where('tenant_id', $tenant->id)->where('status', 'issued')->whereNotNull('sadad_bill_number')->get() as $i) {
+            $this->sync($i);
+        }
     }
 }

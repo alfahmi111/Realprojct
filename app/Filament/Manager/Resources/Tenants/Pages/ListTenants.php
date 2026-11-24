@@ -38,7 +38,7 @@ class ListTenants extends ListRecords
     public function tree(): array
     {
         $profiles = app(TenantProfiles::class)->all();
-        $tree = app(PortfolioTree::class)->build(app(HomeOverview::class)->propertyIds(auth()->user()), CarbonImmutable::today());
+        $tree = app(PortfolioTree::class)->build(app(HomeOverview::class)->propertyIds(auth()->user()), \App\Support\Dates\Today::date());
         $q = trim($this->q);
         $placed = [];
         $out = [];

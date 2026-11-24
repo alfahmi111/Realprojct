@@ -87,7 +87,7 @@ class SubscriberResource extends Resource
     public static function table(Table $table): Table
     {
         $admin = app(SubscriberAdmin::class);
-        $today = CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([

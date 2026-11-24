@@ -42,7 +42,7 @@ final class ReadOnlyGuard
             return $this->readOnly = false;
         }
         $s = app(\App\Tenancy\TenantContext::class)->run(null, fn () => Subscriber::find($user->subscriber_id));
-        return $this->readOnly = $s !== null && $this->admin->isReadOnly($s, CarbonImmutable::today());
+        return $this->readOnly = $s !== null && $this->admin->isReadOnly($s, \App\Support\Dates\Today::date());
     }
 
     /** After a renewal or a grace extension in the same request. */

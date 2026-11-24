@@ -34,7 +34,7 @@ class ViewProperty extends ViewRecord
     public function data(): array
     {
         $p = $this->record->load(['shares.owner', 'portfolio']);
-        $today = CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         $tree = app(PortfolioTree::class)->build([$p->id], $today)[0] ?? null;
         $building = Building::where('property_id', $p->id)->whereNull('archived_at')->orderBy('id')->first();
         return [

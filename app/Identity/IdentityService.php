@@ -118,13 +118,19 @@ final class IdentityService
         };
     }
 
-    /** Arabic names compared after removing diacritics, tatweel, hamza forms, taa marbuta and extra spaces. */
+    /**
+     * Arabic names compared after removing diacritics, tatweel, hamza forms, taa marbuta and extra spaces; also the hidden
+     * direction and zero-width marks that copy-paste leaves, and the space in compound names («عبد الله» = «عبدالله»,
+     * «أبو بكر» = «ابوبكر») (review M18 L16).
+     */
     public function sameName(?string $a, ?string $b): bool
     {
         $n = function (?string $s) {
-            $s = preg_replace('/[\x{064B}-\x{0652}\x{0640}]/u', '', (string) $s);
-            $s = strtr($s, ['أ' => 'ا', 'إ' => 'ا', 'آ' => 'ا', 'ة' => 'ه', 'ى' => 'ي']);
-            return trim(preg_replace('/\s+/u', ' ', $s));
+            $s = preg_replace('/[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2066}-\x{2069}\x{FEFF}\x{061C}]/u', '', (string) $s);
+            $s = preg_replace('/[\x{064B}-\x{0652}\x{0670}\x{0640}]/u', '', $s);
+            $s = strtr($s, ['أ' => 'ا', 'إ' => 'ا', 'آ' => 'ا', 'ٱ' => 'ا', 'ة' => 'ه', 'ى' => 'ي', 'ؤ' => 'و', 'ئ' => 'ي']);
+            $s = trim(preg_replace('/\s+/u', ' ', $s));
+            return preg_replace('/(^|\s)(عبد|ابو|ابي|بن|ال) (?=\S)/u', '$1$2', $s);
         };
         return $a !== null && $b !== null && $n($a) !== '' && $n($a) === $n($b);
     }

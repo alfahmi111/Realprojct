@@ -24,7 +24,7 @@ class CreateLeaseOffer extends CreateRecord
         try {
             return app(LeasingService::class)->createOffer(auth()->user(), $unit, $tenant, $terms);
         } catch (\App\Leasing\LeasingException $e) {
-            throw \Illuminate\Validation\ValidationException::withMessages(['data.annual_rent_minor' => $e->getMessage()]);
+            throw \Illuminate\Validation\ValidationException::withMessages(['data.annual_rent_minor' => \App\Support\Messages::ar($e->getMessage())]);
         }
     }
 

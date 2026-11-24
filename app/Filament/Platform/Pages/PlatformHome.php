@@ -20,6 +20,6 @@ class PlatformHome extends Dashboard
 
     protected function getViewData(): array
     {
-        return ['o' => app(PlatformOverview::class)->build(CarbonImmutable::today())];
+        return ['o' => app(PlatformOverview::class)->build(\App\Support\Dates\Today::date())];
     }
 }

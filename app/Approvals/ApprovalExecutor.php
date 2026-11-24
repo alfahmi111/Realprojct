@@ -39,7 +39,7 @@ class ApprovalExecutor
     public function execute(ApprovalRequest $r): void
     {
         $p = $r->payload;
-        $today = CarbonImmutable::today()->toDateString();
+        $today = \App\Support\Dates\Today::date()->toDateString();
         DB::transaction(function () use ($r, $p, $today) {
             match ($r->action) {
                 'invoice.cancel' => $this->cancelInvoice(Invoice::findOrFail($p['invoice_id'])),
@@ -103,8 +103,6 @@ class ApprovalExecutor
             throw new FinanceException('Deductions exceed the deposit held.');
         }
         $owner = $lease->unit->property->shares->first()?->owner_id;
-        $this->ledger->post($date, 'deposit.refund', 'رد تأمين العقد ' . $lease->id, [
-            ["deposit_liability:{$lease->id}", $held, null], ['trust_bank', null, $held->minus($total)], ["rent_income:$owner", null, $total],
-        ], $lease, $owner);
+        $this->ledger->post($date, 'deposit.refund', 'رد تأمين العقد ' . $lease->id, app(\App\Finance\PaymentService::class)->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
     }
 }

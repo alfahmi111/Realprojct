@@ -197,7 +197,7 @@
 | REQ-0190 | §5.5 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
 | REQ-0191 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) |
 | REQ-0192 | §5.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
-| REQ-0193 | §5.6 | BUILD | P2 | TODO |  |  | MIXED→P2: §12 L958 |
+| REQ-0193 | §5.6 | BUILD | P2 | DONE | app/Leasing/LeaseLifecycle.php, app/Leasing/LeasingService.php | tests/Feature/Leasing/OwnerDecisionsM19Test.php | MIXED→P2: §12 L958 · بُني بأمر المالك Q35 (2026-11-24): «يجدد العقد تلقائياً ويمكن إنهاؤه» — تجديد بنفس المدة والإيجار، وإنهاء مبكر بالتناسب |
 | REQ-0194 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: افتراضي: لا تذكره §12.P2/P3 (L956–L975)؛ التصنيف حسب النية يعتمد على الاستطلاع P2 §12 L958 |
 | REQ-0195 | §5.6 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php | MIXED→MVP: §12 L939؛ افتراضي: لا تذكره §12.P2/P3 (L956–L975) · NEEDS-PRO-REVIEW: الرموز تُطابَق مع النص الرسمي قبل الإطلاق |
 | REQ-0196 | §5.7 | BUILD | MVP | DONE | app/Leasing/, app/Models/Lease.php, database/migrations/2026_11_22_002000_create_leasing_tables.php | tests/Feature/Leasing/LeasingEngineTest.php |  |
@@ -376,7 +376,7 @@
 | REQ-0369 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0370 | §7.6و | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0371 | §7.6و | BUILD | MVP | DONE | app/Privacy/DataRetention.php, app/Console/Commands/ApplyDataRetention.php, app/Filament/Manager/Pages/SubscriberSettingsPage.php, app/Migration/DataExport.php | tests/Feature/Foundation/DataRetentionTest.php | مدة لكل نوع يحددها المكتب، الفارغ = احتفاظ؛ لا مدد نظامية مخترعة؛ المالية والعقود والتدقيق لا تُحذف |
-| REQ-0372 | §7.6و | BUILD | MVP | IN-PROGRESS | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php | · مراجعة M18 (2026-11-24): الجدول وقراءته موجودان، ولا شاشة يُدخل بها المكتب حساباته؛ تُبنى مع أول مزوّد يتعاقد عليه المالك |
+| REQ-0372 | §7.6و | BUILD | MVP | DONE | app/Integrations/, config/integrations.php | tests/Feature/Foundation/IntegrationsAndProviderLimitsTest.php, tests/Feature/Foundation/DeferredFixesM19Test.php | · M19 (2026-11-24): شاشة «حسابات المكتب لدى المزوّدين» في إعدادات المكتب (`IntegrationAccounts`): باسم المكتب أو ملاكه فقط، مشفّرة، لا تُعرض بعد الحفظ |
 | REQ-0373 | §7.6ز | BUILD | MVP | DONE | app/Filament/Support/MyPreferencesPage.php, resources/views/brand/preferences.blade.php, app/Http/Middleware/ApplyUserPreferences.php | tests/Feature/Screens/BrandingAndPreferencesTest.php | الإعداد موجود؛ تطبيقه في الواجهة لاحقاً |
 | REQ-0374 | §7.6ح | BUILD | MVP | DONE | app/Settings/ | tests/Feature/Foundation/SettingsTest.php |  |
 | REQ-0375 | §7.6ح | BUILD | MVP | DONE | app/Theming/ThemeService.php, app/Filament/Support/ConfiguresPanel.php | tests/Feature/Foundation/ThemeTest.php |  |

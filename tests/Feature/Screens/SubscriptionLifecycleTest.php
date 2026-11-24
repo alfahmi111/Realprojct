@@ -147,6 +147,7 @@ class SubscriptionLifecycleTest extends TestCase
         $count = fn (string $e) => DB::table('notifications_outbox')->where('event', $e)->count();
         $this->endedDaysAgo(3);
         $this->assertSame('subscription.grace', app(SubscriptionNotices::class)->run(CarbonImmutable::today()));
+        $this->assertNull(app(SubscriptionNotices::class)->run(CarbonImmutable::today()), 'a second run the same day sends nothing (review M18 D4)');
         $this->endedDaysAgo(8);
         $this->assertSame('subscription.read_only', app(SubscriptionNotices::class)->run(CarbonImmutable::today()));
         $this->endedDaysAgo(9);

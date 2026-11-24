@@ -50,7 +50,7 @@ class OwnerHome extends Page
             try {
                 $statement = app(TrustAccounting::class)->statement($owner, $month);
             } catch (\Throwable $e) {
-                $error = $e->getMessage();
+                $error = \App\Support\Messages::ar($e->getMessage());
             }
         }
         $propertyIds = $owner ? OwnershipShare::where('owner_id', $owner->id)->pluck('property_id') : collect();
@@ -95,7 +95,7 @@ class OwnerHome extends Page
                         app(\App\Properties\BuildingWizard::class)->createAgreement($a->owner, $a->properties()->get()->all(), [
                             'is_self' => $a->is_self, 'fee_type' => $a->fee_type, 'fee_percentage_bp' => $a->fee_percentage_bp, 'fee_fixed_minor' => $a->fee_fixed_minor,
                             'spend_cap_minor' => $cap === null ? null : \App\Support\Money\Money::of($cap), 'collector' => $a->collector,
-                            'starts_on' => now()->toDateString(), 'ends_on' => $a->ends_on?->toDateString(),
+                            'starts_on' => \App\Support\Dates\Today::string(), 'ends_on' => $a->ends_on?->toDateString(),
                         ]);
                     });
                     \Filament\Notifications\Notification::make()->title('حُفظ: ' . $R::ruleText($cap))->success()->send();

@@ -27,7 +27,7 @@ class TenantProfiles
         if ($this->cache !== null) {
             return $this->cache;
         }
-        $today ??= CarbonImmutable::today();
+        $today ??= \App\Support\Dates\Today::date();
         $leases = Lease::whereIn('status', PortfolioTree::LIVE)->with('unit.property')->orderByDesc('starts_on')->get()->groupBy('tenant_id');
         $counts = Lease::selectRaw('tenant_id, count(*) n')->groupBy('tenant_id')->pluck('n', 'tenant_id');
         $open = Invoice::where('status', 'issued')->whereNotNull('tenant_id')->get()->groupBy('tenant_id');

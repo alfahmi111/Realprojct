@@ -46,7 +46,7 @@ class ListProperties extends ListRecords
     public function cards(): array
     {
         $ids = app(HomeOverview::class)->propertyIds(auth()->user());
-        $tree = collect(app(PortfolioTree::class)->build($ids, CarbonImmutable::today()))->keyBy('id');
+        $tree = collect(app(PortfolioTree::class)->build($ids, \App\Support\Dates\Today::date()))->keyBy('id');
         $props = Property::whereIn('id', $ids ?: [0])->whereNull('archived_at')->with(['shares.owner', 'buildings'])
             ->when(trim($this->q) !== '', fn ($q) => $q->where(fn ($w) => $w->where('name_ar', 'ilike', '%' . trim($this->q) . '%')->orWhere('city', 'ilike', '%' . trim($this->q) . '%')->orWhere('deed_number', 'ilike', '%' . trim($this->q) . '%')))
             ->orderBy('name_ar')->get();

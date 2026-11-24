@@ -173,7 +173,7 @@ final class Ui
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 throw $e;
             }
-            Notification::make()->title('تعذّر التنفيذ')->body($e->getMessage())->danger()->persistent()->send();
+            Notification::make()->title('تعذّر التنفيذ')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->persistent()->send();
             return null;
         }
     }

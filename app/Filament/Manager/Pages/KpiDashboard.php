@@ -17,6 +17,6 @@ class KpiDashboard extends KpiPage
 
     protected function propertyIds(): array
     {
-        return Property::whereNull('archived_at')->pluck('id')->all();   // RLS: this subscriber only
+        return \App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->pluck('id')->all();   // RLS + the user's scope (REQ-0494)
     }
 }

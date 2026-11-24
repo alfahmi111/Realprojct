@@ -90,7 +90,7 @@ class LeaseResource extends Resource
         return $table->modifyQueryUsing(fn ($query) => $query->with(['unit', 'tenant'])->latest())
             ->columns([
                 TextColumn::make('unit.code')->label('الوحدة')->searchable(), TextColumn::make('tenant.name_ar')->label('المستأجر')->searchable(),
-                TextColumn::make('status')->label('الحالة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge(),
+                TextColumn::make('status')->label('الحالة')->formatStateUsing(fn ($state, Lease $record) => (self::STATUS_AR[$state] ?? $state) . ($record->auto_renewed_at ? ' · تجدّد تلقائياً' : ''))->badge(),
                 TextColumn::make('ejar_contract_number')->label('رقم إيجار'), TextColumn::make('ends_on')->label('النهاية')->date()->sortable(),
                 Ui::moneyColumn('annual_rent_minor', 'الإيجار السنوي'),
             ])
@@ -112,7 +112,7 @@ class LeaseResource extends Resource
                 Action::make('activate')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تفعيل')->visible(fn (Lease $r) => $r->status === 'registered')
                     ->action(fn (Lease $r) => Ui::attempt(fn () => $svc()->activate($r))),
                 Action::make('deposit')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تسجيل التأمين')->visible(fn (Lease $r) => in_array($r->status, ['registered', 'active'], true) && $r->deposit_minor->isPositive())
-                    ->schema([DatePicker::make('on')->label('التاريخ')->required()->default(now()), Select::make('paid_to')->label('استُلم في حساب')->options(['manager' => 'المدير (أمانات)', 'owner' => 'المالك'])->required()])
+                    ->schema([DatePicker::make('on')->label('التاريخ')->required()->default(now()), Select::make('paid_to')->label('استُلم في حساب')->options(fn () => app(\App\Leasing\PolicyService::class)->paidToOptions(\App\Support\Dates\Today::date()))->default('owner')->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => app(PaymentService::class)->recordDeposit($r, $r->deposit_minor, CarbonImmutable::parse($data['on']), $data['paid_to']), 'سُجّل التأمين كالتزام')),
                 Action::make('notice')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إشعار عدم التجديد')->color('warning')->visible(fn (Lease $r) => $r->status === 'active')
                     ->schema(fn (Lease $r) => [
@@ -125,11 +125,27 @@ class LeaseResource extends Resource
                 Action::make('renew')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تجديد')->visible(fn (Lease $r) => in_array($r->status, ['active', 'expired'], true))
                     ->schema([Ui::money('rent', 'الإيجار السنوي الجديد')->required(), TextInput::make('years')->label('سنوات')->integer()->minValue(1)->default(1)->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->renew($r, Money::of((int) $data['rent']), (int) $data['years']), 'تم التجديد')),
+                // Q35: an automatic renewal can be ended early
+                Action::make('terminateRenewal')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إنهاء التجديد التلقائي')->color('danger')->icon('heroicon-o-x-circle')
+                    ->visible(fn (Lease $r) => $r->status === 'active' && $r->auto_renewed_at !== null)
+                    ->modalDescription('ينتهي العقد في التاريخ المحدد، وتُلغى الدفعات غير المفوترة بعده، وتُحسب الدفعة التي يقع فيها بالأيام، وتتحرر الوحدة بعده.')
+                    ->schema([
+                        DatePicker::make('end_on')->label('ينتهي العقد في')->required()->default(now()->addDays(30)),
+                        Select::make('by')->label('بطلب من')->options(['tenant' => 'المستأجر', 'lessor' => 'المؤجر'])->required(),
+                        TextInput::make('reason')->label('السبب')->required()->maxLength(500),
+                    ])
+                    ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->terminateRenewal($r, CarbonImmutable::parse($data['end_on']), $data['by'], $data['reason'], \App\Support\Dates\Today::date()), 'سُجّل إنهاء العقد')),
             ]);
     }
 
     public static function getPages(): array
     {
         return ['index' => Pages\ListLeases::route('/'), 'view' => Pages\ViewLease::route('/{record}')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'unit');
     }
 }

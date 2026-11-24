@@ -53,9 +53,9 @@ class BillingScheduleLineResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $issue = fn (BillingScheduleLine $l) => app(InvoiceService::class)->issueRent($l, CarbonImmutable::today());
+        $issue = fn (BillingScheduleLine $l) => app(InvoiceService::class)->issueRent($l, \App\Support\Dates\Today::date());
         $dates = app(\App\Support\Dates\DateService::class);
-        $today = CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->where('status', 'scheduled')->with(['lease.unit.property', 'lease.tenant'])->orderBy('due_on'))
             // grouped by property, as a tree: property → unit + tenant → its scheduled payments (owner request 2026-11-23)
             ->groups([
@@ -81,7 +81,7 @@ class BillingScheduleLineResource extends Resource
             ])
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('property')->label('العقار')
-                    ->options(fn () => \App\Models\Property::whereNull('archived_at')->pluck('name_ar', 'id'))
+                    ->options(fn () => \App\Filament\Support\PropertyScope::apply(\App\Models\Property::query(), 'property')->whereNull('archived_at')->pluck('name_ar', 'id'))
                     ->query(fn ($query, array $data) => $data['value'] ? $query->whereHas('lease.unit', fn ($q) => $q->where('property_id', $data['value'])) : $query),
                 \Filament\Tables\Filters\SelectFilter::make('when')->label('الاستحقاق')
                     ->options(['due' => 'مستحقة الآن', '30' => 'خلال 30 يوماً', '90' => 'خلال 90 يوماً'])
@@ -98,5 +98,11 @@ class BillingScheduleLineResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListBillingScheduleLines::route('/')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'lease');
     }
 }

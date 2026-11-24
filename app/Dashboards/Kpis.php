@@ -63,8 +63,7 @@ class Kpis
         foreach ($units as $u) {
             $lease = Lease::where('leasable_unit_id', $u->id)->whereIn('status', ['registered', 'active', 'notice_given'])
                 ->where('starts_on', '<=', $on->toDateString())->where('ends_on', '>=', $on->toDateString())->first();
-            $listed = RatePlan::where('leasable_unit_id', $u->id)->where('duration_unit', 'year')->whereNull('archived_at')->first()?->price_minor;
-            $potentialUnit = $listed ?? $lease?->annual_rent_minor;
+            $potentialUnit = $this->potentialRent($u, $lease);
             if ($potentialUnit) {
                 $potential = $potential->plus($potentialUnit);
             }
@@ -73,6 +72,31 @@ class Kpis
             }
         }
         return $potential->isPositive() ? Money::divide($actual->minor() * 10000, $potential->minor(), Rounding::Down) : 0;
+    }
+
+    /**
+     * A unit's potential yearly rent (review M18 F12): its yearly price; else its monthly price × 12; else the current
+     * lease; else the unit's latest lease or last registered rent. A vacant unit with none of these used to count as
+     * zero, which inflated financial occupancy; it now counts at its last known rent, and only a never-priced unit is left out.
+     */
+    public function potentialRent($unit, ?Lease $current): ?Money
+    {
+        $plans = RatePlan::where('leasable_unit_id', $unit->id)->whereNull('archived_at')->whereIn('duration_unit', ['year', 'month'])->get();
+        if ($y = $plans->firstWhere('duration_unit', 'year')) {
+            return $y->price_minor instanceof Money ? $y->price_minor : Money::of((int) $y->price_minor);
+        }
+        if ($m = $plans->firstWhere('duration_unit', 'month')) {
+            return ($m->price_minor instanceof Money ? $m->price_minor : Money::of((int) $m->price_minor))->times(12);
+        }
+        if ($current) {
+            return $current->annual_rent_minor;
+        }
+        $last = Lease::where('leasable_unit_id', $unit->id)->whereNotIn('status', ['cancelled', 'draft'])->orderByDesc('starts_on')->first();
+        if ($last) {
+            return $last->annual_rent_minor;
+        }
+        $reg = $unit->last_registered_rent_minor ?? null;
+        return $reg === null ? null : ($reg instanceof Money ? $reg : Money::of((int) $reg));
     }
 
     /** Collected ÷ due in the period (REQ-0285). */

@@ -70,12 +70,12 @@ class AvailabilityPage extends Page
 
     private function start(): CarbonImmutable
     {
-        return $this->from ? CarbonImmutable::parse($this->from)->startOfDay() : CarbonImmutable::today()->subDays(intdiv($this->span(), 6));
+        return $this->from ? CarbonImmutable::parse($this->from)->startOfDay() : \App\Support\Dates\Today::date()->subDays(intdiv($this->span(), 6));
     }
 
     protected function getViewData(): array
     {
-        $properties = Property::whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id');
+        $properties = \App\Filament\Support\PropertyScope::apply(Property::query(), 'property')->whereNull('archived_at')->orderBy('name_ar')->pluck('name_ar', 'id');   // REQ-0494
         // several properties (owner request 2026-11-24): «كل العقارات» by default, each property under its own heading
         $pid = $properties->has($this->property) ? $this->property : ($properties->count() > 1 ? 0 : $properties->keys()->first());
         $span = $this->span();
@@ -131,7 +131,7 @@ class AvailabilityPage extends Page
                 $months[] = ['at' => (int) $start->diffInDays($d), 'label' => \IntlDateFormatter::formatObject($d, $span > 31 ? 'MMMM' : 'd MMMM', 'ar@calendar=gregorian;numbers=latn')];
             }
         }
-        $todayAt = (int) $start->diffInDays(CarbonImmutable::today(), false);
+        $todayAt = (int) $start->diffInDays(\App\Support\Dates\Today::date(), false);
         $cells = array_sum($totals) ?: 1;
         return [
             'properties' => $properties, 'pid' => $pid, 'start' => $start, 'end' => $end, 'spanDays' => $span, 'lanes' => $lanes, 'months' => $months,

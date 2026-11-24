@@ -64,6 +64,9 @@ class BuildingWizard
         if ($terms['is_self'] ?? false) {
             $terms = array_merge($terms, ['fee_type' => 'fixed', 'fee_percentage_bp' => 0, 'fee_fixed_minor' => 0]);
         }
+        if (! ($terms['is_self'] ?? false)) {
+            app(\App\Leasing\PolicyService::class)->assertOfficeCollectionAllowed($terms['collector'] ?? 'owner', \Carbon\CarbonImmutable::parse($terms['starts_on'] ?? 'today'));   // Q33
+        }
         return DB::transaction(function () use ($owner, $properties, $terms) {
             $a = ManagementAgreement::create($terms + ['owner_id' => $owner->id]);
             foreach ($properties as $p) {

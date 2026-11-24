@@ -111,6 +111,10 @@ class LeasableUnitResource extends Resource
             ]);
     }
 
+    /** Choice attributes in words (review M18 S11: the options showed «events», «roof»…). */
+    public const ENUM_AR = ['events' => 'فعاليات', 'exhibitions' => 'معارض', 'temporary_storage' => 'تخزين مؤقت', 'residential' => 'سكني', 'commercial' => 'تجاري',
+        'agricultural' => 'زراعي', 'roof' => 'سطح', 'facade' => 'واجهة'];
+
     /** Form fields from the unit type's mandatory attributes (§4.3). */
     public static function attributeFields(string $type): array
     {
@@ -126,7 +130,7 @@ class LeasableUnitResource extends Resource
                 $kind === 'bool' => Toggle::make($name)->label($label),
                 $kind === 'int' => TextInput::make($name)->label($label)->integer()->minValue(0)->required(),
                 in_array($kind, ['area', 'decimal'], true) => TextInput::make($name)->label($label)->regex('/^\d{1,9}(\.\d{1,2})?$/')->required(),
-                str_starts_with($kind, 'enum:') => Select::make($name)->label($label)->options(array_combine(explode(',', substr($kind, 5)), explode(',', substr($kind, 5))))->required(),
+                str_starts_with($kind, 'enum:') => Select::make($name)->label($label)->options(collect(explode(',', substr($kind, 5)))->filter()->mapWithKeys(fn ($v) => [$v => self::ENUM_AR[$v] ?? $v])->all())->required(),
                 default => TextInput::make($name)->label($label)->required(),
             };
         }
@@ -149,5 +153,11 @@ class LeasableUnitResource extends Resource
     public static function getPages(): array
     {
         return ['index' => Pages\ListLeasableUnits::route('/'), 'edit' => Pages\EditLeasableUnit::route('/{record}/edit')];
+    }
+
+    /** The user's property scope (REQ-0494, review M18 A2). */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\Support\PropertyScope::apply(parent::getEloquentQuery(), 'property_id');
     }
 }

@@ -72,7 +72,7 @@ class ArchitectureTest extends TestCase
         $this->assertNull(Scope::propertyIds($manager));
         $this->assertSame([$p2->id], Scope::propertyIds($accountant));
         $this->assertFalse(Scope::canSeeProperty($accountant, $p1->id));
-        $this->assertSame([], Scope::propertyIds($newcomer));   // staff without scope see nothing until scoped
+        $this->assertNull(Scope::propertyIds($newcomer));   // no scope rows: what the role permits across the office (M19)
     }
 
     public function test_req_0527_only_recorded_packages_are_required(): void

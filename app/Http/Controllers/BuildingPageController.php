@@ -15,7 +15,7 @@ class BuildingPageController
     {
         $qr = $svc->resolve($code) ?? abort(404);
         $svc->recordScan($qr, $request->query('src'), $request->headers->get('referer'), CarbonImmutable::now());
-        return response()->view('public.building', ['page' => $svc->page($qr, CarbonImmutable::today()), 'code' => $code]);
+        return response()->view('public.building', ['page' => $svc->page($qr, \App\Support\Dates\Today::date()), 'code' => $code]);
     }
 
     public function register(string $code, Request $request, BuildingQrService $svc)
@@ -29,7 +29,7 @@ class BuildingPageController
         try {
             $svc->register($qr, $data + ['budget_minor' => isset($data['budget']) ? Money::parse($data['budget'])->minor() : null], true, CarbonImmutable::now());
         } catch (BuildingQrException $e) {
-            return back()->withErrors(['form' => $e->getMessage()]);
+            return back()->withErrors(['form' => \App\Support\Messages::ar($e->getMessage())]);
         }
         return redirect()->route('building.page', $code)->with('registered', true);
     }
