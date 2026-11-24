@@ -66,10 +66,10 @@ class ReconciliationIssueResource extends Resource
             ])
             ->filters([SelectFilter::make('status')->label('الحالة')->options(['open' => 'مفتوح', 'resolved' => 'محلول'])->default('open')])
             ->headerActions([
-                Action::make('run')->label('تشغيل التسوية الآن')->action(fn () => Ui::attempt(fn () => app(Reconciliation::class)->run(CarbonImmutable::today()), 'اكتملت التسوية')),
+                Action::make('run')->label('تشغيل التسوية الآن')->action(fn () => Ui::attempt(fn () => app(Reconciliation::class)->run(\App\Support\Dates\Today::date()), 'اكتملت التسوية')),
                 Action::make('ejarCsv')->label('مطابقة ملف إيجار (CSV)')
                     ->schema([FileUpload::make('csv')->label('الملف المصدَّر من إيجار')->acceptedFileTypes(['text/csv', 'text/plain'])->disk('local')->directory('ejar-imports')->required()])
-                    ->action(fn (array $data) => Ui::attempt(fn () => app(Reconciliation::class)->matchEjarCsv(Storage::disk('local')->path($data['csv']), CarbonImmutable::today()), 'اكتملت المطابقة')),
+                    ->action(fn (array $data) => Ui::attempt(fn () => app(Reconciliation::class)->matchEjarCsv(Storage::disk('local')->path($data['csv']), \App\Support\Dates\Today::date()), 'اكتملت المطابقة')),
             ])
             ->recordActions([
                 Action::make('resolve')->label('معالجة')->visible(fn (ReconciliationIssue $r) => $r->status === 'open')

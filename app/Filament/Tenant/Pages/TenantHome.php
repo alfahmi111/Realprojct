@@ -64,7 +64,7 @@ class TenantHome extends Page
         $end = \Carbon\CarbonImmutable::parse($lease['ends_on']);
         $span = max(1, $start->diffInDays($end));
         $at = fn ($d) => max(0, min(100, round($start->diffInDays(\Carbon\CarbonImmutable::parse($d), false) * 100 / $span, 1)));
-        $today = \Carbon\CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return [
             'today' => $at($today),
             'notice' => empty($lease['notice_deadline']) ? null : $at($lease['notice_deadline']),

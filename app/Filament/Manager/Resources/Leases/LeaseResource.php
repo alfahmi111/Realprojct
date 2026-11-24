@@ -112,7 +112,7 @@ class LeaseResource extends Resource
                 Action::make('activate')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تفعيل')->visible(fn (Lease $r) => $r->status === 'registered')
                     ->action(fn (Lease $r) => Ui::attempt(fn () => $svc()->activate($r))),
                 Action::make('deposit')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('تسجيل التأمين')->visible(fn (Lease $r) => in_array($r->status, ['registered', 'active'], true) && $r->deposit_minor->isPositive())
-                    ->schema([DatePicker::make('on')->label('التاريخ')->required()->default(now()), Select::make('paid_to')->label('استُلم في حساب')->options(fn () => app(\App\Leasing\PolicyService::class)->paidToOptions(\Carbon\CarbonImmutable::today()))->default('owner')->required()])
+                    ->schema([DatePicker::make('on')->label('التاريخ')->required()->default(now()), Select::make('paid_to')->label('استُلم في حساب')->options(fn () => app(\App\Leasing\PolicyService::class)->paidToOptions(\App\Support\Dates\Today::date()))->default('owner')->required()])
                     ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => app(PaymentService::class)->recordDeposit($r, $r->deposit_minor, CarbonImmutable::parse($data['on']), $data['paid_to']), 'سُجّل التأمين كالتزام')),
                 Action::make('notice')->authorize(fn () => \App\Filament\Support\Ui::allowed('leasing.edit'))->label('إشعار عدم التجديد')->color('warning')->visible(fn (Lease $r) => $r->status === 'active')
                     ->schema(fn (Lease $r) => [
@@ -134,7 +134,7 @@ class LeaseResource extends Resource
                         Select::make('by')->label('بطلب من')->options(['tenant' => 'المستأجر', 'lessor' => 'المؤجر'])->required(),
                         TextInput::make('reason')->label('السبب')->required()->maxLength(500),
                     ])
-                    ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->terminateRenewal($r, CarbonImmutable::parse($data['end_on']), $data['by'], $data['reason'], CarbonImmutable::today()), 'سُجّل إنهاء العقد')),
+                    ->action(fn (Lease $r, array $data) => Ui::attempt(fn () => $svc()->terminateRenewal($r, CarbonImmutable::parse($data['end_on']), $data['by'], $data['reason'], \App\Support\Dates\Today::date()), 'سُجّل إنهاء العقد')),
             ]);
     }
 

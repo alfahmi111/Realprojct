@@ -71,6 +71,12 @@ class DualApproval
                 $req->forceFill(['status' => 'approved', 'decided_at' => now(), 'reason' => 'dual approval disabled by subscriber'])->save();
                 AuditLogger::record('approval.auto_approved', $req, null, ['action' => $action, 'maker_id' => $maker->id]);
                 $execute($req);
+            } else {
+                // tell the managers who can decide it (the event existed but nothing sent it — review M18 L11)
+                $checkers = \App\Models\User::where('role', 'manager')->whereNull('archived_at')->where('id', '!=', $maker->id)->get()->all();
+                if ($checkers) {
+                    app(\App\Notifications\NotificationCenter::class)->dispatch('approval.waiting', $checkers, ['الإجراء' => \App\Filament\Manager\Resources\ApprovalRequests\ApprovalRequestResource::ACTIONS_AR[$action] ?? $action, 'مقدّم الطلب' => (string) $maker->name], \Carbon\CarbonImmutable::now(), subject: $req);
+                }
             }
             return $req;
         });

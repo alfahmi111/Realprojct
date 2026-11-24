@@ -117,7 +117,7 @@ class TechnicianHome extends Page
 
     public function startCount(): void
     {
-        Ui::attempt(fn () => app(FoundingInventory::class)->start(Space::findOrFail($this->countSpace), auth()->user(), CarbonImmutable::today()), 'بدأ جرد التأسيس');
+        Ui::attempt(fn () => app(FoundingInventory::class)->start(Space::findOrFail($this->countSpace), auth()->user(), \App\Support\Dates\Today::date()), 'بدأ جرد التأسيس');
     }
 
     public function recordLine(int $countId): void

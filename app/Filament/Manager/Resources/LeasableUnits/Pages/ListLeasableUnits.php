@@ -37,6 +37,6 @@ class ListLeasableUnits extends ListRecords
     public function tree(): array
     {
         $home = app(HomeOverview::class);
-        return app(PortfolioTree::class)->build($home->propertyIds(auth()->user()), CarbonImmutable::today(), $this->q);
+        return app(PortfolioTree::class)->build($home->propertyIds(auth()->user()), \App\Support\Dates\Today::date(), $this->q);
     }
 }

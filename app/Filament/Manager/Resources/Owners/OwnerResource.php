@@ -92,7 +92,7 @@ class OwnerResource extends Resource
         $agreement = fn (\App\Models\Owner $o) => $o->agreements->filter(fn ($a) => $a->starts_on <= now() && ($a->ends_on === null || $a->ends_on >= now()))->sortByDesc('starts_on')->first();
         $net = function (\App\Models\Owner $o) {
             static $cache = [];
-            return $cache[$o->id] ??= rescue(fn () => app(\App\Finance\TrustAccounting::class)->statement($o, \Carbon\CarbonImmutable::today()->subMonthNoOverflow()->startOfMonth())['net_to_owner'], null, false);
+            return $cache[$o->id] ??= rescue(fn () => app(\App\Finance\TrustAccounting::class)->statement($o, \App\Support\Dates\Today::date()->subMonthNoOverflow()->startOfMonth())['net_to_owner'], null, false);
         };
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with(['shares.property', 'agreements'])->orderBy('name_ar'))
             ->columns([

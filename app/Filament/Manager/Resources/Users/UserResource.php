@@ -66,7 +66,7 @@ class UserResource extends Resource
                 EditAction::make(),
                 Action::make('scope')->label('النطاق')
                     ->schema([
-                        Select::make('scope_type')->label('النوع')->options(['portfolio' => 'محفظة', 'property' => 'عقار'])->required()->live(),
+                        Select::make('scope_type')->label('النوع')->helperText('دون نطاق يرى الموظف كل عقارات المكتب حسب دوره؛ النطاق يحصره فيما تحدده.')->options(['portfolio' => 'محفظة', 'property' => 'عقار'])->required()->live(),
                         Select::make('scope_id')->label('العنصر')->options(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('scope_type') === 'portfolio' ? Portfolio::pluck('name_ar', 'id') : Property::whereNull('archived_at')->pluck('name_ar', 'id'))->required(),
                     ])
                     ->action(fn (User $record, array $data) => Ui::attempt(fn () => UserScope::firstOrCreate(['user_id' => $record->id, 'scope_type' => $data['scope_type'], 'scope_id' => (int) $data['scope_id']]), 'أُضيف النطاق')),

@@ -99,13 +99,14 @@ class WorkOrderResource extends Resource
     {
         return $schema->components([
             Section::make('أمر العمل')->schema([
-                TextEntry::make('number')->label('الرقم'), TextEntry::make('type')->label('النوع'), TextEntry::make('priority')->label('الأولوية'),
+                TextEntry::make('number')->label('الرقم'), TextEntry::make('type')->label('النوع')->formatStateUsing(fn ($state) => self::TYPE_AR[$state] ?? $state),
+                TextEntry::make('priority')->label('الأولوية')->formatStateUsing(fn ($state) => self::PRIORITY_AR[$state] ?? $state)->placeholder('لم تُحدَّد'),
                 TextEntry::make('status')->label('الحالة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge(),
                 TextEntry::make('description')->label('الوصف')->columnSpanFull(), TextEntry::make('tenant_rating')->label('تقييم المستأجر'),
             ])->columns(4),
             Section::make('التكاليف')->schema([
                 RepeatableEntry::make('costLines')->label('')->schema([
-                    TextEntry::make('kind')->label('النوع'), TextEntry::make('description_ar')->label('البند'), TextEntry::make('quantity')->label('الكمية'),
+                    TextEntry::make('kind')->label('النوع')->formatStateUsing(fn ($state) => ['labour' => 'عمالة', 'part' => 'قطع ومواد', 'vendor' => 'مورّد'][$state] ?? $state), TextEntry::make('description_ar')->label('البند'), TextEntry::make('quantity')->label('الكمية'),
                     TextEntry::make('total_minor')->label('الإجمالي')->formatStateUsing(fn ($s) => $s->toDecimalString()),
                 ])->columns(4),
             ]),

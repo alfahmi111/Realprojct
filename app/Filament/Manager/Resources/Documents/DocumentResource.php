@@ -144,8 +144,8 @@ class DocumentResource extends Resource
                 SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
                 SelectFilter::make('expiry')->label('الانتهاء')->options(['expired' => 'منتهية', '30' => 'خلال 30 يوماً', '90' => 'خلال 90 يوماً'])
                     ->query(fn ($query, array $data) => match ($data['value'] ?? null) {
-                        'expired' => $query->where('expires_on', '<', now()->toDateString()),
-                        '30', '90' => $query->whereBetween('expires_on', [now()->toDateString(), now()->addDays((int) $data['value'])->toDateString()]),
+                        'expired' => $query->where('expires_on', '<', \App\Support\Dates\Today::string()),
+                        '30', '90' => $query->whereBetween('expires_on', [\App\Support\Dates\Today::string(), now()->addDays((int) $data['value'])->toDateString()]),
                         default => $query,
                     }),
             ])
@@ -165,7 +165,7 @@ class DocumentResource extends Resource
                             $vault()->add(self::resolveOwner($data['owner']), $data['kind'], (string) ($data['title'] ?? ''), $data['file'], $data['expires_on'] ?? null, auth()->user());
                             Notification::make()->title('رُفع المستند')->success()->send();
                         } catch (\Throwable $e) {
-                            Notification::make()->title('تعذّر الرفع')->body($e->getMessage())->danger()->send();
+                            Notification::make()->title('تعذّر الرفع')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->send();
                         }
                     }),
             ])

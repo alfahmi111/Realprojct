@@ -41,7 +41,7 @@ class AgreementsRelationManager extends RelationManager
     /** Q33: the owner's account first; the office trust account only while the rule allows it, with its warning. */
     public static function collectorOptions(): array
     {
-        $opts = app(\App\Leasing\PolicyService::class)->paidToOptions(\Carbon\CarbonImmutable::today());
+        $opts = app(\App\Leasing\PolicyService::class)->paidToOptions(\App\Support\Dates\Today::date());
         return array_intersect_key(['owner' => self::COLLECTORS['owner'], 'manager' => self::COLLECTORS['manager'] . (str_contains($opts['manager'] ?? '', 'مسودة') ? ' (تحظره مسودة اللائحة)' : '')], $opts);
     }
 

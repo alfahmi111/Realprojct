@@ -84,7 +84,10 @@ final class ExcelTemplate
         if (! $rows) {
             throw new MigrationException('الملف فارغ أو لا يطابق القالب.');
         }
-        $headers = array_map(fn ($h) => trim((string) $h), array_shift($rows));
+        // rows are keyed by their spreadsheet row number, so an error names the row the user sees (review M18 L15)
+        $headerRow = array_key_first($rows);
+        $headers = array_map(fn ($h) => trim((string) $h), $rows[$headerRow]);
+        unset($rows[$headerRow]);
         $expected = array_column(array_values(self::COLUMNS), 0);
         if (array_slice($headers, 0, count($expected)) !== $expected) {
             throw new MigrationException('عناوين الأعمدة لا تطابق القالب. نزّل القالب واستعمله دون تغيير ترتيب الأعمدة.');
@@ -113,9 +116,32 @@ final class ExcelTemplate
                 }
                 $fields[] = ['field' => $field, 'value' => $v === '' ? null : $v, 'confidence' => $conf];
             }
-            $out[] = ['row' => $i + 2, 'fields' => $fields];
+            $out[] = ['row' => (int) $i, 'fields' => $fields];
         }
         return $out;
+    }
+
+    /**
+     * The first sheet's part, from the workbook and its relationships (review M18 L15): a file re-saved by Excel or
+     * another program may not call it sheet1.xml.
+     */
+    private function firstSheetPath(ZipArchive $zip): string
+    {
+        $wb = $zip->getFromName('xl/workbook.xml');
+        $rels = $zip->getFromName('xl/_rels/workbook.xml.rels');
+        if ($wb === false || $rels === false) {
+            return 'xl/worksheets/sheet1.xml';
+        }
+        $w = simplexml_load_string($wb);
+        $first = $w->sheets->sheet[0] ?? null;
+        $rid = $first ? (string) $first->attributes('http://schemas.openxmlformats.org/officeDocument/2006/relationships')['id'] : '';
+        foreach (simplexml_load_string($rels)->Relationship as $rel) {
+            if ((string) $rel['Id'] === $rid) {
+                $target = ltrim((string) $rel['Target'], '/');
+                return str_starts_with($target, 'xl/') ? $target : 'xl/' . $target;
+            }
+        }
+        return 'xl/worksheets/sheet1.xml';
     }
 
     private function excelDate(string $v): ?string
@@ -127,12 +153,13 @@ final class ExcelTemplate
     {
         $h = fopen($path, 'r');
         $rows = [];
+        $n = 0;
         while (($r = fgetcsv($h, escape: '')) !== false) {
-            $rows[] = $r;
+            $rows[++$n] = $r;
         }
         fclose($h);
-        if (isset($rows[0][0])) {
-            $rows[0][0] = preg_replace('/^\xEF\xBB\xBF/', '', $rows[0][0]);   // UTF-8 BOM written by Excel
+        if (isset($rows[1][0])) {
+            $rows[1][0] = preg_replace('/^\xEF\xBB\xBF/', '', $rows[1][0]);   // UTF-8 BOM written by Excel
         }
         return $rows;
     }
@@ -150,7 +177,7 @@ final class ExcelTemplate
                 $shared[] = isset($si->t) ? (string) $si->t : implode('', array_map(fn ($r) => (string) $r->t, iterator_to_array($si->r, false)));
             }
         }
-        $sheet = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $sheet = $zip->getFromName($this->firstSheetPath($zip));
         $zip->close();
         if ($sheet === false) {
             return [];
@@ -172,7 +199,7 @@ final class ExcelTemplate
             }
             if ($r) {
                 ksort($r);
-                $rows[] = array_replace(array_fill(0, max(array_keys($r)) + 1, ''), $r);
+                $rows[(int) $row['r'] ?: count($rows) + 1] = array_replace(array_fill(0, max(array_keys($r)) + 1, ''), $r);
             }
         }
         return $rows;

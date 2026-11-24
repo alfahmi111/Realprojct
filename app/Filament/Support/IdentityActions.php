@@ -35,7 +35,7 @@ final class IdentityActions
             try {
                 $report($fn());
             } catch (\Throwable $e) {
-                Notification::make()->title('تعذّر التحقق')->body($e->getMessage())->danger()->persistent()->send();
+                Notification::make()->title('تعذّر التحقق')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->persistent()->send();
             }
         };
 
@@ -54,7 +54,7 @@ final class IdentityActions
                         $s = $svc()->nafathStart($r, auth()->user());
                         Notification::make()->title('اطلب منه اختيار الرقم ' . $s['random'] . ' في تطبيق نفاذ')->body('ثم اضغط «تأكيد موافقة نفاذ» من القائمة نفسها.')->info()->persistent()->send();
                     } catch (\Throwable $e) {
-                        Notification::make()->title('تعذّر بدء نفاذ')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title('تعذّر بدء نفاذ')->body(\App\Support\Messages::ar($e->getMessage()))->danger()->send();
                     }
                 }),
             Action::make('nafathCheck')->label('تأكيد موافقة نفاذ')->icon(Heroicon::OutlinedCheckBadge)

@@ -42,6 +42,19 @@ class InvoiceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'الفواتير';
 
+    public const STATUS_AR = ['issued' => 'صادرة', 'cancelled' => 'ملغاة', 'draft' => 'مسودة'];
+
+    public const EINVOICE_AR = ['pending' => 'بانتظار الإرسال', 'reported' => 'مُبلَّغ عنها', 'cleared' => 'معتمدة', 'rejected' => 'مرفوضة'];
+
+    /** VAT treatment codes (policies table) in words (review M18 S11). */
+    public const TAX_AR = [
+        \App\Finance\VatEngine::EXEMPT_RESIDENTIAL => 'إيجار سكني معفى',
+        \App\Finance\VatEngine::STANDARD_COMMERCIAL => 'إيجار تجاري خاضع للنسبة الأساسية',
+        \App\Finance\VatEngine::OUT_OF_SCOPE_UNREGISTERED => 'خارج نطاق الضريبة (مؤجر غير مسجل)',
+        \App\Finance\VatEngine::STANDARD_MANAGEMENT_FEE => 'أتعاب إدارة خاضعة للنسبة الأساسية',
+        \App\Finance\VatEngine::STANDARD_MAINTENANCE => 'تحميل صيانة خاضع للنسبة الأساسية',
+    ];
+
     public const KIND_AR = ['rent' => 'إيجار', 'maintenance_recharge' => 'تحميل صيانة', 'service' => 'خدمة', 'management_fee' => 'أتعاب إدارة'];
 
     public static function canCreate(): bool
@@ -64,15 +77,17 @@ class InvoiceResource extends Resource
         $m = fn ($v) => \App\Support\Dates\NumberFormatter::money($v);
         return $schema->components([
             Section::make('الفاتورة')->schema([
-                TextEntry::make('number')->label('الرقم'), TextEntry::make('issue_date')->label('التاريخ')->date(), TextEntry::make('status')->label('الحالة')->badge(),
+                TextEntry::make('number')->label('الرقم'), TextEntry::make('issue_date')->label('التاريخ')->date(), TextEntry::make('status')->label('الحالة')->badge()->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->color(fn ($state) => $state === 'cancelled' ? 'gray' : 'success'),
+                TextEntry::make('kind')->label('النوع')->formatStateUsing(fn ($state) => self::KIND_AR[$state] ?? $state),
                 TextEntry::make('ejar_contract_number')->label('رقم عقد إيجار'), TextEntry::make('unit_code')->label('الوحدة'), TextEntry::make('buyer_vat_number')->label('الرقم الضريبي للمشتري'),
                 TextEntry::make('period_start')->label('الفترة من')->date(), TextEntry::make('period_end')->label('إلى')->date(),
-                TextEntry::make('einvoice_status')->label('حالة الفوترة الإلكترونية'),
+                TextEntry::make('einvoice_status')->label('حالة الفوترة الإلكترونية')->formatStateUsing(fn ($state) => self::EINVOICE_AR[$state] ?? $state)->placeholder('—'),
+                TextEntry::make('sadad_bill_number')->label('رقم سداد')->placeholder('—'),
                 TextEntry::make('subtotal_minor')->label('الصافي')->formatStateUsing($m), TextEntry::make('tax_minor')->label('الضريبة')->formatStateUsing($m), TextEntry::make('total_minor')->label('الإجمالي')->formatStateUsing($m),
             ])->columns(3),
             Section::make('البنود')->schema([
                 RepeatableEntry::make('lines')->label('')->schema([
-                    TextEntry::make('description_ar')->label('البند'), TextEntry::make('tax_code')->label('رمز المعاملة الضريبية'),
+                    TextEntry::make('description_ar')->label('البند'), TextEntry::make('tax_code')->label('المعاملة الضريبية')->formatStateUsing(fn ($state) => self::TAX_AR[$state] ?? $state),
                     TextEntry::make('net_minor')->label('الصافي')->formatStateUsing($m), TextEntry::make('tax_minor')->label('الضريبة')->formatStateUsing($m),
                 ])->columns(4),
             ]),
@@ -81,9 +96,12 @@ class InvoiceResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $out = fn (Invoice $r) => app(InvoiceService::class)->outstanding($r)->minor();
+        // the paid sum comes with the page's query (one query, not one per row and column — review M18 S-performance)
+        $out = fn (Invoice $r) => $r->total_minor->minor() - (int) ($r->paid_minor ?? app(InvoiceService::class)->outstanding($r)->negate()->plus($r->total_minor)->minor());
         $pay = fn (Invoice $r) => $r->status === 'cancelled' ? 'cancelled' : (($o = $out($r)) <= 0 ? 'paid' : ($o < $r->total_minor->minor() ? 'partial' : 'unpaid'));
-        return $table->modifyQueryUsing(fn ($query) => $query->with(['tenant', 'property'])->latest('issue_date')->latest('id'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with(['tenant', 'property'])
+                ->withSum(['allocations as paid_minor' => fn ($q) => $q->whereHas('payment', fn ($p) => $p->where('status', 'recorded'))], 'amount_minor')
+                ->latest('issue_date')->latest('id'))
             ->columns([
                 TextColumn::make('number')->label('الفاتورة')->searchable()->weight('bold')
                     ->description(fn (Invoice $r) => (self::KIND_AR[$r->kind] ?? $r->kind) . ($r->sadad_bill_number ? '، سداد ' . $r->sadad_bill_number : '')),
@@ -100,7 +118,7 @@ class InvoiceResource extends Resource
                     ->formatStateUsing(fn ($state) => ['paid' => 'مسددة', 'partial' => 'مسددة جزئياً', 'unpaid' => 'غير مسددة', 'cancelled' => 'ملغاة'][$state])
                     ->color(fn ($state) => ['paid' => 'success', 'partial' => 'warning', 'unpaid' => 'danger', 'cancelled' => 'gray'][$state]),
                 TextColumn::make('einvoice_status')->label('الفوترة الإلكترونية')->badge()->color('gray')->toggleable()
-                    ->formatStateUsing(fn ($state) => ['pending' => 'بانتظار الإرسال', 'reported' => 'مُبلَّغ عنها', 'cleared' => 'معتمدة', 'rejected' => 'مرفوضة'][$state] ?? $state),
+                    ->formatStateUsing(fn ($state) => self::EINVOICE_AR[$state] ?? $state),
             ])
             ->filters([
                 SelectFilter::make('status')->label('الحالة')->options(['issued' => 'صادرة', 'cancelled' => 'ملغاة']),

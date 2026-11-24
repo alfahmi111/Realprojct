@@ -53,9 +53,9 @@ class BillingScheduleLineResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $issue = fn (BillingScheduleLine $l) => app(InvoiceService::class)->issueRent($l, CarbonImmutable::today());
+        $issue = fn (BillingScheduleLine $l) => app(InvoiceService::class)->issueRent($l, \App\Support\Dates\Today::date());
         $dates = app(\App\Support\Dates\DateService::class);
-        $today = CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->where('status', 'scheduled')->with(['lease.unit.property', 'lease.tenant'])->orderBy('due_on'))
             // grouped by property, as a tree: property → unit + tenant → its scheduled payments (owner request 2026-11-23)
             ->groups([

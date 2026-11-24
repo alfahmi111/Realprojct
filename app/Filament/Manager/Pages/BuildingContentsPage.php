@@ -54,7 +54,7 @@ class BuildingContentsPage extends Page
         $buildings = $home->buildings($home->propertyIds(auth()->user()));
         $id = collect($buildings)->firstWhere('id', $this->building)['id'] ?? ($buildings[0]['id'] ?? null);
         $b = $id ? Building::with('property')->whereIn('property_id', $home->propertyIds(auth()->user()) ?: [0])->find($id) : null;   // REQ-0494
-        $data = $b ? app(AssetValuation::class)->building($b->id, $b->property_id, CarbonImmutable::today()) : null;
+        $data = $b ? app(AssetValuation::class)->building($b->id, $b->property_id, \App\Support\Dates\Today::date()) : null;
         if ($data && $this->filter !== 'all') {
             $data['rows'] = array_values(array_filter($data['rows'], fn ($r) => $r['v']['state'] === $this->filter));
         }

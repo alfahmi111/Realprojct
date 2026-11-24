@@ -38,7 +38,7 @@ class ListLeases extends ListRecords
     public function tree(): array
     {
         $home = app(HomeOverview::class);
-        $tree = app(PortfolioTree::class)->build($home->propertyIds(auth()->user()), CarbonImmutable::today(), $this->q);
+        $tree = app(PortfolioTree::class)->build($home->propertyIds(auth()->user()), \App\Support\Dates\Today::date(), $this->q);
         if (! $this->onlyLeased) {
             return $tree;
         }

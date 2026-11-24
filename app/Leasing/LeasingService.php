@@ -328,7 +328,7 @@ class LeasingService
             }
             DB::update("UPDATE space_occupancies SET period = daterange(lower(period), (?::date + 1), '[)') WHERE lease_id = ?", [$end, $lease->id]);
             $old = CarbonImmutable::parse($lease->ends_on)->toDateString();
-            $lease->forceFill(['ends_on' => $end, 'status' => 'notice_given', 'non_renewal_notice_on' => now()->toDateString(),
+            $lease->forceFill(['ends_on' => $end, 'status' => 'notice_given', 'non_renewal_notice_on' => \App\Support\Dates\Today::string(),
                 'terminated_by' => $by, 'termination_reason' => mb_substr($reason, 0, 500), 'terminated_at' => now()])->save();
             AuditLogger::record('lease.terminated', $lease, ['ends_on' => $old, 'status' => 'active'], ['ends_on' => $end, 'status' => 'notice_given', 'by' => $by, 'reason' => $reason]);
             return $lease;
@@ -407,7 +407,7 @@ class LeasingService
                 $days[$d->toDateString()] = $hit ? ['lease' => 'leased', 'hold' => 'held', 'maintenance' => 'maintenance'][$hit->kind] : 'vacant';
                 $dayLease[$d->toDateString()] = $hit?->lease_id;
             }
-            $today = CarbonImmutable::today();
+            $today = \App\Support\Dates\Today::date();
             $vacating = Lease::where('leasable_unit_id', $unit->id)->where('status', 'notice_given')->where('ends_on', '>=', $today->toDateString())->orderBy('ends_on')->first();
             $rows[$unit->code] = [
                 'unit_id' => $unit->id, 'days' => $days, 'day_leases' => $dayLease, 'composite' => (bool) $unit->is_composite,

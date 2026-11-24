@@ -76,7 +76,8 @@ class NotificationCenter
                     'recipient_type' => $isUser ? 'user' : 'tenant', 'recipient_id' => $r->id, 'locale' => $locale,
                     'body' => $this->render($event, $channel, $locale, $vars), 'payload' => json_encode($vars), 'urgent' => $urgent || $event === 'maintenance.emergency',
                     'status' => 'queued', 'send_after' => $this->sendAfter($channel, $isUser, $urgent || $event === 'maintenance.emergency', $now),
-                    'escalate_at' => $escalate ? $now->addHours($escalate['after_hours']) : null, 'escalate_to_role' => $escalate['to_role'] ?? null,
+                    // only the in-app row can be read, so only it carries the escalation (review M18 L11: one per event, not per channel)
+                    'escalate_at' => $escalate && $channel === 'in_app' ? $now->addHours($escalate['after_hours']) : null, 'escalate_to_role' => $escalate && $channel === 'in_app' ? $escalate['to_role'] : null,
                     'subject_type' => $subject ? class_basename($subject) : null, 'subject_id' => $subject?->getKey(),
                     'created_at' => $now, 'updated_at' => $now,
                 ]);
@@ -191,13 +192,32 @@ class NotificationCenter
     public function escalate(CarbonImmutable $now): int
     {
         $n = 0;
-        foreach (DB::table('notifications_outbox')->whereNotNull('escalate_at')->where('escalate_at', '<=', $now)->whereNull('read_at')->where('escalation_level', 0)->get() as $item) {
+        // One dispatch to several people is one event: it escalates once, and not at all when any of them read it or the
+        // matter was handled (a work order triaged, an approval decided) (review M18 L11).
+        $due = DB::table('notifications_outbox')->whereNotNull('escalate_at')->where('escalate_at', '<=', $now)->where('escalation_level', 0)->get()
+            ->groupBy(fn ($i) => implode('|', [$i->event, $i->subject_type, $i->subject_id, $i->escalate_to_role, $i->created_at]));
+        foreach ($due as $group) {
+            $item = $group->first();
+            $ids = $group->pluck('id')->all();
+            DB::table('notifications_outbox')->whereIn('id', $ids)->update(['escalation_level' => 1]);
+            if ($group->contains(fn ($i) => $i->read_at !== null) || $this->handled($item)) {
+                continue;
+            }
             $targets = User::where('role', $item->escalate_to_role)->whereNull('archived_at')->get()->all();
-            $this->dispatch($item->event, $targets, array_merge(json_decode($item->payload, true), ['escalated' => 'yes']), $now, (bool) $item->urgent);
-            DB::table('notifications_outbox')->where('id', $item->id)->update(['escalation_level' => 1]);
+            $this->dispatch($item->event, $targets, array_merge(json_decode($item->payload, true), ['تصعيد' => 'لم يُتعامل معه في وقته']), $now, (bool) $item->urgent);
             $n++;
         }
         return $n;
+    }
+
+    /** Whether the matter behind a notification was already dealt with, so it need not escalate. */
+    private function handled(object $item): bool
+    {
+        return match ($item->subject_type) {
+            'WorkOrder' => DB::table('work_orders')->where('id', $item->subject_id)->where('status', '!=', 'reported')->exists(),
+            'ApprovalRequest' => DB::table('approval_requests')->where('id', $item->subject_id)->where('status', '!=', 'pending')->exists(),
+            default => false,
+        };
     }
 
     public function markRead(int $id, CarbonImmutable $now): void

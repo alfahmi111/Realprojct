@@ -103,11 +103,21 @@ class HomeOverview
     {
         $b = Building::find($buildingId);
         $spaceIds = Space::where('building_id', $buildingId)->pluck('id');
-        $units = LeasableUnit::whereNull('archived_at')->where('is_composite', false)
-            ->whereHas('spaces', fn ($q) => $q->whereIn('spaces.id', $spaceIds))->get();
+        $all = LeasableUnit::whereNull('archived_at')->whereHas('spaces', fn ($q) => $q->whereIn('spaces.id', $spaceIds))->with('spaces')->get();
+        $units = $all->where('is_composite', false)->values();
         // same statuses as the facade and the occupancy vital, so the three figures agree
-        $active = Lease::whereIn('leasable_unit_id', $units->pluck('id'))->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
-            ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->get()->keyBy('leasable_unit_id');
+        $live = Lease::whereIn('leasable_unit_id', $all->pluck('id'))->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
+            ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->get();
+        // per single unit: its own lease, or a whole-building (composite) lease covering its spaces (review M18 L1)
+        $active = collect();
+        foreach ($units as $u) {
+            $mine = $u->spaces->pluck('id');
+            $l = $live->firstWhere('leasable_unit_id', $u->id)
+                ?? $live->first(fn (Lease $x) => ($c = $all->firstWhere('id', $x->leasable_unit_id)) && $c->is_composite && $c->spaces->pluck('id')->intersect($mine)->isNotEmpty());
+            if ($l) {
+                $active[$u->id] = $l;
+            }
+        }
         // only an expectation about the CURRENT lease and not already past (review M18: a vacancy expected from the
         // previous tenant marked the new tenant as leaving)
         $expected = \App\Models\ExpectedVacancy::whereIn('lease_id', $active->pluck('id'))->whereIn('confidence', ['confirmed', 'probable'])
@@ -209,11 +219,13 @@ class HomeOverview
 
     private function unitTile(Space $space, CarbonImmutable $today): array
     {
-        $unit = $space->leasableUnits()->whereNull('archived_at')->where('is_composite', false)->first();
+        // the unit itself, or a whole-building (composite) unit sharing this space when that one is leased (review M18 L1)
+        $candidates = $space->leasableUnits()->whereNull('archived_at')->get();
         $status = 'vacant';
         $tenant = null;
-        $lease = $unit ? Lease::where('leasable_unit_id', $unit->id)->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
-            ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->with('tenant')->first() : null;
+        $lease = $candidates->isEmpty() ? null : Lease::whereIn('leasable_unit_id', $candidates->pluck('id'))->whereIn('status', ['registered', 'active', 'notice_given', 'draft', 'sent_for_registration', 'awaiting_parties'])
+            ->where('starts_on', '<=', $today->toDateString())->where('ends_on', '>=', $today->toDateString())->with('tenant')->first();
+        $unit = ($lease ? $candidates->firstWhere('id', $lease->leasable_unit_id) : null) ?? $candidates->firstWhere('is_composite', false) ?? $candidates->first();
         if (DB::table('space_occupancies')->where('space_id', $space->id)->where('kind', 'maintenance')->whereRaw('period @> ?::date', [$today->toDateString()])->exists()
             || WorkOrder::where('space_id', $space->id)->where('type', 'unit_prep')->whereNotIn('status', ['closed', 'rejected'])->exists()) {
             $status = 'maint';

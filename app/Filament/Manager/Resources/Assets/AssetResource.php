@@ -97,7 +97,7 @@ class AssetResource extends Resource
     public static function table(Table $table): Table
     {
         $val = app(\App\Maintenance\AssetValuation::class);
-        $today = \Carbon\CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         return $table->modifyQueryUsing(fn ($query) => $query->whereNull('archived_at')->with('space'))
             ->columns([
                 TextColumn::make('qr_code')->label('الرمز')->searchable()->toggleable(isToggledHiddenByDefault: true),

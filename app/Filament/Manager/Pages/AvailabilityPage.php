@@ -70,7 +70,7 @@ class AvailabilityPage extends Page
 
     private function start(): CarbonImmutable
     {
-        return $this->from ? CarbonImmutable::parse($this->from)->startOfDay() : CarbonImmutable::today()->subDays(intdiv($this->span(), 6));
+        return $this->from ? CarbonImmutable::parse($this->from)->startOfDay() : \App\Support\Dates\Today::date()->subDays(intdiv($this->span(), 6));
     }
 
     protected function getViewData(): array
@@ -131,7 +131,7 @@ class AvailabilityPage extends Page
                 $months[] = ['at' => (int) $start->diffInDays($d), 'label' => \IntlDateFormatter::formatObject($d, $span > 31 ? 'MMMM' : 'd MMMM', 'ar@calendar=gregorian;numbers=latn')];
             }
         }
-        $todayAt = (int) $start->diffInDays(CarbonImmutable::today(), false);
+        $todayAt = (int) $start->diffInDays(\App\Support\Dates\Today::date(), false);
         $cells = array_sum($totals) ?: 1;
         return [
             'properties' => $properties, 'pid' => $pid, 'start' => $start, 'end' => $end, 'spanDays' => $span, 'lanes' => $lanes, 'months' => $months,

@@ -37,7 +37,7 @@ class PaymentService
             throw new FinanceException('Payments go to the manager or the owner only — never the platform (REQ-0436).');
         }
         app(\App\Leasing\PolicyService::class)->assertOfficeCollectionAllowed($paidTo, $receivedOn);   // Q33
-        return DB::transaction(function () use ($tenant, $amount, $method, $receivedOn, $paidTo, $by, $reference, $source) {
+        $payment = DB::transaction(function () use ($tenant, $amount, $method, $receivedOn, $paidTo, $by, $reference, $source) {
             $payment = Payment::create([
                 'tenant_id' => $tenant->id, 'receipt_number' => $this->numbering->next('receipt', (int) $receivedOn->format('Y')),
                 'amount_minor' => $amount, 'method' => $method, 'source' => $source, 'received_on' => $receivedOn->toDateString(),
@@ -69,6 +69,8 @@ class PaymentService
             $this->ledger->post($receivedOn->toDateString(), 'payment', 'سند قبض ' . $payment->receipt_number, $lines, $payment);
             return $payment;
         });
+        app(SadadBilling::class)->syncTenant($tenant);   // a SADAD bill follows what is still due (review M18 F12)
+        return $payment;
     }
 
     /** Editing a recorded payment is a sensitive entry: maker/checker, executed as a reversal (REQ-0069). */
@@ -82,7 +84,7 @@ class PaymentService
             DB::transaction(function () use ($payment) {
                 $payment->forceFill(['status' => 'reversed'])->save();
                 foreach (\App\Models\JournalEntry::where('source_type', 'Payment')->where('source_id', (string) $payment->id)->get() as $e) {
-                    $this->ledger->reverse($e, CarbonImmutable::today()->toDateString(), 'عكس سند قبض ' . $payment->receipt_number);
+                    $this->ledger->reverse($e, \App\Support\Dates\Today::date()->toDateString(), 'عكس سند قبض ' . $payment->receipt_number);
                 }
                 // Allocations are append-only; those of a reversed payment no longer count (InvoiceService::outstanding).
             });
@@ -130,6 +132,28 @@ class PaymentService
         return $applied;
     }
 
+    /**
+     * Where a lease's deposit sits: the office trust account, or the owner's own account (Q33). The refund is paid from
+     * the same place, so a deposit kept by the owner never leaves the office trust account (review M18 F12).
+     */
+    public function depositAccount(Lease $lease): string
+    {
+        $held = \Illuminate\Support\Facades\DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
+            ->where('e.kind', 'deposit.received')->where('e.source_type', class_basename($lease))->where('e.source_id', $lease->id)
+            ->whereNotNull('l.debit_minor')->where('l.debit_minor', '>', 0)->orderByDesc('e.id')->value('l.account');
+        return $held === 'owner_direct:deposit' ? 'owner_direct:deposit' : 'trust_bank';
+    }
+
+    /** Refund entry: the liability closes; the tenant is paid from where the deposit sits; documented damages go to the owner. */
+    public function depositRefundLines(Lease $lease, Money $held, Money $deductions, ?int $owner): array
+    {
+        return array_values(array_filter([
+            ["deposit_liability:{$lease->id}", $held, null],
+            $held->minus($deductions)->isPositive() ? [$this->depositAccount($lease), null, $held->minus($deductions)] : null,
+            $deductions->isPositive() ? ["rent_income:$owner", null, $deductions] : null,
+        ]));
+    }
+
     /** Deposit received: a liability, never revenue (REQ-0189, REQ-0433). */
     public function recordDeposit(Lease $lease, Money $amount, CarbonImmutable $on, string $paidTo = 'owner'): void
     {
@@ -159,11 +183,7 @@ class PaymentService
         $payload = ['lease_id' => $lease->id, 'deductions' => array_map(fn ($d) => ['description' => $d['description'], 'amount_minor' => $d['amount']->minor(), 'document' => $d['document']], $deductions)];
         return $this->approvals->submit($maker, 'deposit.refund', $payload, function () use ($lease, $held, $total, $on) {
             $owner = $lease->unit->property->shares->first()?->owner_id;
-            $this->ledger->post($on->toDateString(), 'deposit.refund', 'رد تأمين العقد ' . $lease->id, [
-                ["deposit_liability:{$lease->id}", $held, null],
-                ['trust_bank', null, $held->minus($total)],
-                ["rent_income:$owner", null, $total],   // documented damages compensate the owner
-            ], $lease, $owner);
+            $this->ledger->post($on->toDateString(), 'deposit.refund', 'رد تأمين العقد ' . $lease->id, $this->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
         }, 'lease', (string) $lease->id);
     }
 }

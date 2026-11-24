@@ -52,7 +52,7 @@ class InvoiceService
             throw new FinanceException('This schedule line is already invoiced.');
         }
         $owner = $this->singleOwner($lease);
-        $issueDate ??= CarbonImmutable::today();
+        $issueDate ??= \App\Support\Dates\Today::date();
         $t = $this->vat->treatment('rent', $lease->usage, $owner->vat_registered, $lease->track, $issueDate);
 
         return DB::transaction(function () use ($line, $lease, $owner, $issueDate, $t) {
@@ -153,7 +153,7 @@ class InvoiceService
         DB::transaction(function () use ($invoice) {
             $invoice->forceFill(['status' => 'cancelled'])->save();
             foreach (JournalEntry::where('source_type', 'Invoice')->where('source_id', (string) $invoice->id)->get() as $e) {
-                $this->ledger->reverse($e, CarbonImmutable::today()->toDateString(), 'إلغاء فاتورة ' . $invoice->number);
+                $this->ledger->reverse($e, \App\Support\Dates\Today::date()->toDateString(), 'إلغاء فاتورة ' . $invoice->number);
             }
             if ($invoice->billing_schedule_line_id) {
                 BillingScheduleLine::whereKey($invoice->billing_schedule_line_id)->update(['status' => 'void']);

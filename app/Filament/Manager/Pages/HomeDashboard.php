@@ -45,7 +45,7 @@ class HomeDashboard extends Dashboard
     {
         $user = auth()->user();
         $svc = app(HomeOverview::class);
-        $today = CarbonImmutable::today();
+        $today = \App\Support\Dates\Today::date();
         $ids = $svc->propertyIds($user);
         $buildings = $svc->buildings($ids);
         $buildingId = collect($buildings)->firstWhere('id', $this->building)['id'] ?? ($buildings[0]['id'] ?? null);
