@@ -58,6 +58,36 @@ class Reconciliation
                 $this->flag('unallocated_payment', 'payment', $p->id, ['receipt' => $p->receipt_number, 'unallocated' => $p->amount_minor->minus($allocated)->toDecimalString()], $today, $found);
             }
         }
+        // 6. The same outside transaction recorded more than once (M22): rows from before the unique key existed keep
+        //    no key, so a person reviews them and reverses the extra one through maker/checker; nothing is changed here.
+        //    Q38: uniqueness is per source; the same number from two sources is allowed, but with the same amount it is
+        //    listed as a possible duplicate (a source changed on the screen) — reviewed, never refused automatically.
+        $byKey = [];
+        $byNumber = [];
+        foreach (Payment::where('status', 'recorded')->whereNotNull('reference')->orderBy('id')->get(['id', 'ref_source', 'reference', 'receipt_number', 'amount_minor']) as $p) {
+            if (($k = PaymentService::externalKey($p->reference)) !== null) {
+                $byKey[($p->ref_source ?? 'none') . '|' . $k][] = $p;
+                $byNumber[$k][] = $p;
+            }
+        }
+        foreach ($byKey as $same) {
+            foreach (array_slice($same, 1) as $dup) {
+                $this->flag('duplicate_payment_reference', 'payment', $dup->id, ['receipt' => $dup->receipt_number, 'first_receipt' => $same[0]->receipt_number, 'reference' => $dup->reference], $today, $found);
+            }
+        }
+        foreach ($byNumber as $same) {
+            foreach ($same as $i => $a) {
+                foreach (array_slice($same, $i + 1) as $b) {
+                    if ($a->ref_source !== $b->ref_source && $a->amount_minor->equals($b->amount_minor)) {
+                        $this->flag('possible_duplicate_payment', 'payment', $b->id, ['receipt' => $b->receipt_number, 'other_receipt' => $a->receipt_number, 'reference' => $b->reference], $today, $found);
+                    }
+                }
+            }
+        }
+        // 7. Electronic payments still waiting for their reference (Q38): no financial effect until matched.
+        foreach (Payment::where('status', 'pending_match')->get(['id', 'amount_minor', 'received_on']) as $p) {
+            $this->flag('payment_pending_match', 'payment', $p->id, ['amount' => $p->amount_minor->toDecimalString(), 'received_on' => $p->received_on->toDateString()], $today, $found);
+        }
         return $found;
     }
 

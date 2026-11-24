@@ -99,7 +99,7 @@ class SystemReviewM18Test extends TestCase
     {
         $l = $this->lease('101', '2026-01-01', '2026-12-31', 'annual', '10000');
         $inv = app(InvoiceService::class)->issueRent($l->scheduleLines()->first(), CarbonImmutable::parse('2026-01-01'));
-        app(PaymentService::class)->record($this->tenant, $inv->total_minor, 'bank_transfer', CarbonImmutable::parse('2026-01-05'), 'owner');
+        app(PaymentService::class)->record($this->tenant, $inv->total_minor, 'bank_transfer', CarbonImmutable::parse('2026-01-05'), 'owner', reference: 'FT-S102');
         $s = app(TrustAccounting::class)->statement($this->owner, CarbonImmutable::parse('2026-01-01'));
         $this->assertSame(1000000, $s['collected_by_owner']->minor());
         $this->assertSame(0, $s['held_by_manager']->minor());

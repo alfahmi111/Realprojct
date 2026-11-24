@@ -104,6 +104,15 @@ class WorkOrderResource extends Resource
                 TextEntry::make('status')->label('الحالة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge(),
                 TextEntry::make('description')->label('الوصف')->columnSpanFull(), TextEntry::make('tenant_rating')->label('تقييم المستأجر'),
             ])->columns(4),
+            // Q37: the payment is its own status, apart from the work stage above
+            Section::make('سداد التكلفة')->visible(fn (WorkOrder $r) => $r->payment_status !== null)->schema([
+                TextEntry::make('payment_status')->label('حالة السداد')->badge()->formatStateUsing(fn ($state) => self::PAYMENT_AR[$state] ?? $state)->color(fn ($state) => self::PAYMENT_COLOR[$state] ?? 'gray'),
+                TextEntry::make('paid_by')->label('يدفعه')->formatStateUsing(fn ($state) => ['trust' => 'أمانات المالك لدى المكتب', 'owner' => 'المالك مباشرة'][$state] ?? $state)->placeholder('—'),
+                TextEntry::make('owner_paid_on')->label('تاريخ سداد المالك')->date('Y-m-d')->placeholder('—'),
+                TextEntry::make('owner_payment_amount_minor')->label('المبلغ المسدَّد')->formatStateUsing(fn ($s) => $s ? \App\Support\Dates\NumberFormatter::money($s) : '—')->placeholder('—'),
+                TextEntry::make('owner_payment_reference')->label('المرجع')->placeholder('—'),
+                TextEntry::make('owner_payment_proof')->label('إثبات السداد')->formatStateUsing(fn ($state) => $state ? 'مرفق' : null)->placeholder('—'),
+            ])->columns(3),
             Section::make('التكاليف')->schema([
                 RepeatableEntry::make('costLines')->label('')->schema([
                     TextEntry::make('kind')->label('النوع')->formatStateUsing(fn ($state) => ['labour' => 'عمالة', 'part' => 'قطع ومواد', 'vendor' => 'مورّد'][$state] ?? $state), TextEntry::make('description_ar')->label('البند'), TextEntry::make('quantity')->label('الكمية'),
@@ -135,6 +144,8 @@ class WorkOrderResource extends Resource
                     ->color(fn ($state) => ['emergency' => 'danger', 'urgent' => 'warning', 'normal' => 'info', 'scheduled' => 'gray'][$state] ?? 'gray'),
                 TextColumn::make('status')->label('المرحلة')->formatStateUsing(fn ($state) => self::STATUS_AR[$state] ?? $state)->badge()
                     ->color(fn ($state) => match ($state) { 'reported' => 'danger', 'awaiting_owner_approval' => 'warning', 'completed', 'confirmed', 'closed' => 'success', 'rejected' => 'gray', default => 'info' }),
+                TextColumn::make('payment_status')->label('السداد')->badge()->placeholder('—')   // Q37: apart from the work stage
+                    ->formatStateUsing(fn ($state) => self::PAYMENT_AR[$state] ?? $state)->color(fn ($state) => self::PAYMENT_COLOR[$state] ?? 'gray'),
                 TextColumn::make('who')->label('المنفّذ')->state(fn (WorkOrder $r) => $r->vendor?->name_ar ?? $r->assignee?->name)->placeholder('لم يُسند'),
                 TextColumn::make('cost')->label('التكلفة')->state(fn (WorkOrder $r) => $r->costLines->sum(fn ($c) => $c->total_minor->minor()) ?: ($r->estimated_cost_minor?->minor()))
                     ->formatStateUsing(fn ($state) => $state ? \App\Support\Dates\NumberFormatter::money((int) $state) : '—')
@@ -144,6 +155,7 @@ class WorkOrderResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')->label('المرحلة')->options(self::STATUS_AR),
+                SelectFilter::make('payment_status')->label('السداد')->options(self::PAYMENT_AR),
                 SelectFilter::make('priority')->label('الأولوية')->options(self::PRIORITY_AR),
                 SelectFilter::make('property_id')->label('العقار')->relationship('property', 'name_ar'),
             ])
@@ -178,9 +190,52 @@ class WorkOrderResource extends Resource
                     ->schema([Select::make('kind')->label('النوع')->options(['labour' => 'عمالة', 'part' => 'قطع', 'vendor' => 'مورّد'])->required(), TextInput::make('description')->label('البند')->required(), TextInput::make('quantity')->label('الكمية')->integer()->minValue(1)->default(1)->required(), Ui::money('unit_cost', 'سعر الوحدة')->required()])
                     ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->addCost($r, $data['kind'], $data['description'], (int) $data['quantity'], Money::of((int) $data['unit_cost'])))),
                 Action::make('close')->label('إغلاق وتحويل التكلفة')->visible(fn (WorkOrder $r) => in_array($r->status, ['confirmed', 'completed'], true))
-                    ->schema([FileUpload::make('tenant_caused')->label('موافقة موثّقة لتحميل التكلفة على المستأجر (اختياري)')->directory('work-orders/approvals')])
-                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $data['tenant_caused'] ?? null), 'أُغلق؛ الصرف بانتظار المراجِع')),
+                    ->schema([
+                        // Q37: who pays the vendor; the work stage and the payment are tracked apart
+                        \Filament\Forms\Components\Radio::make('payer')->label('من يدفع للمورّد؟')->required()
+                            ->options(['trust' => 'من رصيد أمانات المالك لدى المكتب (بطلب يعتمده مراجِع)', 'owner' => 'المالك يدفع للمورّد مباشرة (يُرفق إثبات السداد بعد الدفع)'])
+                            ->default(fn (WorkOrder $r) => self::trustCovers($r) ? 'trust' : 'owner')
+                            ->helperText(fn (WorkOrder $r) => self::payerHint($r)),
+                        FileUpload::make('tenant_caused')->label('موافقة موثّقة لتحميل التكلفة على المستأجر (اختياري)')->directory('work-orders/approvals'),
+                    ])
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->close($r, auth()->user(), $data['tenant_caused'] ?? null, $data['payer'] ?? 'trust'),
+                        ($data['payer'] ?? 'trust') === 'owner' ? 'أُغلق؛ بانتظار إثبات سداد المالك للمورّد' : 'أُغلق؛ الصرف بانتظار المراجِع')),
+                Action::make('ownerPaid')->label('تسجيل سداد المالك للمورّد')->icon('heroicon-o-receipt-percent')
+                    ->visible(fn (WorkOrder $r) => $r->status === 'closed' && in_array($r->payment_status, ['awaiting_owner_payment', 'trust_rejected'], true))
+                    ->modalDescription(fn (WorkOrder $r) => 'المبلغ: ' . \App\Support\Dates\NumberFormatter::money(app(MaintenanceService::class)->totalCost($r)) . '. لا يمر بأمانات المكتب ولا يُخصم من صافي المالك؛ يظهر في كشفه بنداً دفعه بنفسه.')
+                    ->schema([
+                        FileUpload::make('proof')->label('إثبات السداد (إيصال المورّد أو صورة الحوالة)')->directory('work-orders/owner-payments')->required(),
+                        \Filament\Forms\Components\DatePicker::make('paid_on')->label('تاريخ السداد')->required()->default(fn () => \App\Support\Dates\Today::string())->maxDate(fn () => \App\Support\Dates\Today::string()),
+                        TextInput::make('reference')->label('رقم الحوالة أو الإيصال (اختياري)'),
+                    ])
+                    ->action(fn (WorkOrder $r, array $data) => Ui::attempt(fn () => $svc()->recordOwnerPayment($r, auth()->user(), (string) $data['proof'], \Carbon\CarbonImmutable::parse($data['paid_on']), $data['reference'] ?? null), 'سُجّل سداد المالك للمورّد')),
         ];
+    }
+
+    /** Payment of the cost, apart from the work stage (Q37). */
+    public const PAYMENT_AR = ['not_required' => 'لا سداد (ضمان أو بلا تكلفة)', 'awaiting_trust_approval' => 'بانتظار اعتماد الصرف من الأمانات', 'paid_from_trust' => 'سُدّد من الأمانات',
+        'trust_rejected' => 'رُفض الصرف من الأمانات', 'awaiting_owner_payment' => 'بانتظار سداد المالك للمورّد', 'paid_by_owner' => 'سدّده المالك للمورّد'];
+
+    public const PAYMENT_COLOR = ['not_required' => 'gray', 'awaiting_trust_approval' => 'warning', 'paid_from_trust' => 'success', 'trust_rejected' => 'danger', 'awaiting_owner_payment' => 'warning', 'paid_by_owner' => 'success'];
+
+    /** Does the owner's available trust balance cover this order's cost? (the default choice of payer) */
+    private static function trustCovers(WorkOrder $r): bool
+    {
+        $owner = \App\Models\OwnershipShare::where('property_id', $r->property_id)->first()?->owner;
+        return $owner !== null && \App\Finance\SoleOwner::shareCount($r->property_id) === 1
+            && ! app(MaintenanceService::class)->totalCost($r)->greaterThan(app(\App\Finance\TrustAccounting::class)->availableBalance($owner));
+    }
+
+    private static function payerHint(WorkOrder $r): string
+    {
+        $total = app(MaintenanceService::class)->totalCost($r);
+        if (\App\Finance\SoleOwner::shareCount($r->property_id) !== 1) {
+            return 'التكلفة ' . \App\Support\Dates\NumberFormatter::money($total) . '.';
+        }
+        $owner = \App\Models\OwnershipShare::where('property_id', $r->property_id)->first()?->owner;
+        $available = $owner ? app(\App\Finance\TrustAccounting::class)->availableBalance($owner) : \App\Support\Money\Money::zero();
+        return 'التكلفة ' . \App\Support\Dates\NumberFormatter::money($total) . '، والمتاح للصرف من أمانات المالك ' . \App\Support\Dates\NumberFormatter::money($available)
+            . ($total->greaterThan($available) ? '؛ لا يكفي، فالصرف من الأمانات سيبقى معلقاً حتى يصل تحصيل.' : '.');
     }
 
     /** The user's property scope (REQ-0494, review M18 A2). */

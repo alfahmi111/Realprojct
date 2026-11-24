@@ -33,7 +33,14 @@ class ApprovalExecutor
 
     public function reject(ApprovalRequest $req, User $checker, string $reason): ApprovalRequest
     {
-        return $this->approvals->reject($req, $checker, $reason);
+        $done = $this->approvals->reject($req, $checker, $reason);
+        // Q37: a refused payment from trust leaves the work order «payment refused» so the owner can pay the vendor himself
+        if ($req->action === 'trust.disburse' && ! empty($req->payload['work_order'])) {
+            foreach (\App\Models\WorkOrder::where('number', $req->payload['work_order'])->where('property_id', (int) ($req->payload['property_id'] ?? 0))->where('payment_status', 'awaiting_trust_approval')->get() as $wo) {
+                $wo->forceFill(['payment_status' => 'trust_rejected'])->save();
+            }
+        }
+        return $done;
     }
 
     public function execute(ApprovalRequest $r): void
@@ -71,38 +78,23 @@ class ApprovalExecutor
         }
     }
 
+    /** Same path as an unreviewed posting: owner lock + available-balance check + entries, in one transaction (M22). */
     private function expense(array $p, string $date): void
     {
-        $cost = Money::of((int) $p['cost_minor']);
-        $ref = $p['work_order'] ?? null;
-        $this->ledger->post($date, 'expense.maintenance', $p['description'] . ($ref ? " ($ref)" : ''), [
-            ["expense_on_behalf:{$p['owner_id']}", $cost, null], ['trust_bank', null, $cost],
-        ], null, (int) $p['owner_id'], (int) $p['property_id'], $ref);
-        if (($p['margin_minor'] ?? 0) > 0) {
-            $m = Money::of((int) $p['margin_minor']);
-            $this->ledger->post($date, 'expense.vendor_margin', 'هامش المدير على فاتورة المورّد' . ($ref ? " ($ref)" : ''), [
-                ["fee_expense:{$p['owner_id']}", $m, null], ['manager_revenue', null, $m],
-            ], null, (int) $p['owner_id'], (int) $p['property_id']);
-        }
+        $margin = ($p['margin_minor'] ?? 0) > 0 ? Money::of((int) $p['margin_minor']) : null;
+        app(\App\Finance\TrustAccounting::class)->postExpense((int) $p['owner_id'], (int) $p['property_id'], Money::of((int) $p['cost_minor']), $margin, $p['description'], $p['work_order'] ?? null, $date);
     }
 
     private function disburse(array $p, string $date): void
     {
-        $amount = Money::of((int) $p['amount_minor']);
-        $this->ledger->post($date, 'owner.disbursement', 'تحويل صافي المالك', [
-            ["owner_payable:{$p['owner_id']}", $amount, null], ['trust_bank', null, $amount],
-        ], null, (int) $p['owner_id']);
+        app(\App\Finance\TrustAccounting::class)->postDisbursement((int) $p['owner_id'], Money::of((int) $p['amount_minor']), $date);
     }
 
     private function depositRefund(array $p, string $date): void
     {
         $lease = Lease::with('unit.property.shares')->findOrFail($p['lease_id']);
-        $held = $this->ledger->balance("deposit_liability:{$lease->id}")->negate();
         $total = Money::sum(array_map(fn ($d) => Money::of((int) $d['amount_minor']), $p['deductions']));
-        if ($total->greaterThan($held)) {
-            throw new FinanceException('Deductions exceed the deposit held.');
-        }
-        $owner = $lease->unit->property->shares->first()?->owner_id;
-        $this->ledger->post($date, 'deposit.refund', 'رد تأمين العقد ' . $lease->id, app(\App\Finance\PaymentService::class)->depositRefundLines($lease, $held, $total, $owner), $lease, $owner);
+        // M22: the same locked path as a direct posting — what is still held is re-read under the lease's lock
+        app(\App\Finance\PaymentService::class)->postDepositRefund($lease, $total, $date);
     }
 }

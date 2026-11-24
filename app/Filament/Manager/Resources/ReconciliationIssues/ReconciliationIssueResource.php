@@ -38,7 +38,7 @@ class ReconciliationIssueResource extends Resource
 
     protected static ?string $pluralModelLabel = 'التسوية ومراقبة الامتثال';
 
-    public const KINDS_AR = ['registered_lease_without_invoice' => 'عقد موثّق بلا فاتورة', 'invoice_without_lease' => 'فاتورة بلا عقد', 'invoice_on_expired_lease' => 'فاتورة على عقد منتهٍ', 'amount_mismatch' => 'مبلغ غير مطابق', 'unallocated_payment' => 'دفعة غير مخصصة', 'ejar_contract_unknown' => 'عقد في إيجار غير موجود عندنا', 'ejar_status_mismatch' => 'حالة مختلفة عن إيجار', 'lease_missing_in_ejar_export' => 'عقد غير موجود في ملف إيجار'];
+    public const KINDS_AR = ['registered_lease_without_invoice' => 'عقد موثّق بلا فاتورة', 'invoice_without_lease' => 'فاتورة بلا عقد', 'invoice_on_expired_lease' => 'فاتورة على عقد منتهٍ', 'amount_mismatch' => 'مبلغ غير مطابق', 'unallocated_payment' => 'دفعة غير مخصصة', 'ejar_contract_unknown' => 'عقد في إيجار غير موجود عندنا', 'ejar_status_mismatch' => 'حالة مختلفة عن إيجار', 'lease_missing_in_ejar_export' => 'عقد غير موجود في ملف إيجار', 'duplicate_payment_reference' => 'حركة دفع مسجّلة أكثر من مرة', 'possible_duplicate_payment' => 'رقم عملية واحد بمصدرين ومبلغ واحد', 'payment_pending_match' => 'دفعة بانتظار رقم العملية'];
 
     public static function canCreate(): bool
     {
